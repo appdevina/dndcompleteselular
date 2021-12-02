@@ -1,0 +1,26 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
+import 'package:get/get.dart';
+import 'package:intl/intl.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:todolist_complete/controller/controllers.dart';
+import 'package:todolist_complete/model/models.dart';
+import 'package:todolist_complete/shared/shareds.dart';
+import 'package:todolist_complete/ui/widget/widgets.dart';
+import 'package:date_picker_timeline/date_picker_timeline.dart';
+import 'package:shimmer/shimmer.dart';
+
+part 'daily_to_do.dart';
+part 'add_task_daily.dart';
+part 'login.dart';
+part 'home_page.dart';
+part 'main_page.dart';
+part 'achievement_page.dart';
+part 'profile_page.dart';
+part 'weekly_to_do.dart';
+part 'add_task_weekly.dart';
+part 'monthly_to_do.dart';
+part 'add_task_monthly.dart';
+part 'detail_daily.dart';
