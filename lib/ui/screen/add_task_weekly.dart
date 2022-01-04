@@ -28,10 +28,23 @@ class AddTaskWeekly extends StatelessWidget {
               hint: "input todo",
               controllerText: controller.title,
             ),
-            DropDownWeek(
-              title: 'Week',
-              weeks: controller.week,
-              controller: controller,
+            Row(
+              children: [
+                Expanded(
+                  child: DropDownWeek(
+                    title: 'Week',
+                    weeks: controller.week,
+                    controller: controller,
+                  ),
+                ),
+                Expanded(
+                  child: DropDownYear(
+                    title: 'Year',
+                    years: controller.year,
+                    controller: controller,
+                  ),
+                ),
+              ],
             ),
             Container(
               height: 100,

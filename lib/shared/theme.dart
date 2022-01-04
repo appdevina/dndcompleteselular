@@ -8,12 +8,12 @@ const primaryClr = bluishClr;
 const Color darkGreyClr = Color(0xFF121212);
 const Color darkHeaderClr = Color(0xFF424242);
 
-TextStyle greyFontStyle = GoogleFonts.lato().copyWith(color: greyColor);
-TextStyle blackFontStyle1 = GoogleFonts.lato()
+TextStyle greyFontStyle = GoogleFonts.poppins().copyWith(color: greyColor);
+TextStyle blackFontStyle1 = GoogleFonts.poppins()
     .copyWith(color: Colors.black, fontSize: 24, fontWeight: FontWeight.w500);
-TextStyle blackFontStyle2 = GoogleFonts.lato()
+TextStyle blackFontStyle2 = GoogleFonts.poppins()
     .copyWith(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w500);
-TextStyle blackFontStyle3 = GoogleFonts.lato()
+TextStyle blackFontStyle3 = GoogleFonts.poppins()
     .copyWith(color: Colors.black, fontWeight: FontWeight.w500);
 
 const double defaultMargin = 24;

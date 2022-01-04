@@ -15,7 +15,7 @@ class DailyController extends GetxController {
   }
 
   void getDaily(DateTime time) async {
-    await DailyService.getDaily(DateFormat('d-M-y').format(time))
+    await DailyService.getDaily(DateFormat('dd-MM-y').format(time))
         .then((value) => daily = value.value);
     loading.toggle();
     update(['daily']);

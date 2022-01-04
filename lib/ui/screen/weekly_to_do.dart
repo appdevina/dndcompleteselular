@@ -118,6 +118,14 @@ class WeeklyToDo extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
+                        "week",
+                        style: int.parse(e) == controller.selectedIndexOfMonth
+                            ? blackFontStyle3.copyWith(
+                                color: white,
+                              )
+                            : blackFontStyle3,
+                      ),
+                      Text(
                         e,
                         style: int.parse(e) == controller.selectedIndexOfMonth
                             ? blackFontStyle1.copyWith(color: white)

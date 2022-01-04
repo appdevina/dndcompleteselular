@@ -1,14 +1,14 @@
 part of 'widgets.dart';
 
-class DropDownStatus extends StatelessWidget {
+class DropDownYear extends StatelessWidget {
   final String title;
-  final List<Map<String, dynamic>> opsi;
-  final DetailDailyController controller;
+  final List<int> years;
+  final WeeklyAddTaskController controller;
 
-  const DropDownStatus({
+  const DropDownYear({
     Key? key,
     required this.title,
-    required this.opsi,
+    required this.years,
     required this.controller,
   }) : super(key: key);
 
@@ -44,7 +44,6 @@ class DropDownStatus extends StatelessWidget {
               children: [
                 Expanded(
                   child: DropdownButtonFormField<int>(
-                    onChanged: (int? val) {},
                     decoration: const InputDecoration(
                       focusedBorder: UnderlineInputBorder(
                         borderSide: BorderSide(
@@ -59,10 +58,15 @@ class DropDownStatus extends StatelessWidget {
                         ),
                       ),
                     ),
-                    items: opsi
+                    items: years
                         .map((e) => DropdownMenuItem<int>(
-                            value: e['no'], child: Text(e['status'])))
+                            value: e, child: Text(e.toString())))
                         .toList(),
+                    onChanged: (int? val) {
+                      if (val != null) {
+                        controller.changeWeek(val);
+                      }
+                    },
                   ),
                 ),
               ],

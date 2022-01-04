@@ -28,8 +28,8 @@ class MyInputField extends GetView<DailyAddTaskController> {
   Widget build(BuildContext context) {
     return Container(
       margin: side
-          ? EdgeInsets.only(top: 1)
-          : EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+          ? const EdgeInsets.only(top: 1)
+          : const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

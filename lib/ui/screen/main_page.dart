@@ -33,7 +33,7 @@ class MainPage extends StatelessWidget {
           items: <BottomNavigationBarItem>[
             _bottomNavBarItem(MdiIcons.home, 'Home'),
             _bottomNavBarItem(MdiIcons.calendarMultipleCheck, 'Achievment'),
-            _bottomNavBarItem(MdiIcons.accountCircle, 'Profile'),
+            // _bottomNavBarItem(MdiIcons.accountCircle, 'Profile'),
           ],
           currentIndex: controller.index,
           selectedItemColor: Colors.blue[400],

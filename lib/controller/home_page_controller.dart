@@ -7,8 +7,8 @@ class HomePageController extends GetxController {
 
   void getUserAndDaily() async {
     var result = await UserServices.getDetailUser();
-    var result2 =
-        await DailyService.getDaily(DateFormat('d-M-y').format(DateTime.now()));
+    var result2 = await DailyService.getDaily(
+        DateFormat('dd-MM-y').format(DateTime.now()));
     if (result.value != null) {
       user = result.value!;
     }

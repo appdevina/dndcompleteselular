@@ -137,55 +137,24 @@ class DailyTodo extends StatelessWidget {
               ),
             )
           : ListView.builder(
-              itemBuilder: (context, index) => GestureDetector(
-                onTap: () {
-                  Get.to(() => DetailDaily(daily: daily![index]),
-                      transition: Transition.cupertino);
-                },
-                child: Card(
-                    margin: const EdgeInsets.symmetric(vertical: 8),
-                    borderOnForeground: false,
-                    shadowColor: white,
-                    shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(15),
+              itemBuilder: (context, index) => daily != null
+                  ? CardDaily(
+                      index: index,
+                    )
+                  : Card(
+                      shape: RoundedRectangleBorder(
+                        side: BorderSide(width: 0.2, color: greyColor),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      elevation: 3,
+                      child: Container(
+                        alignment: Alignment.center,
+                        height: 125,
+                        width: double.infinity,
+                        padding: const EdgeInsetsDirectional.only(bottom: 10),
                       ),
                     ),
-                    elevation: 10,
-                    color: daily == null
-                        ? white
-                        : daily[index].status!
-                            ? Colors.green[300]
-                            : Colors.red[300],
-                    child: ListTile(
-                      title: Text(
-                        daily == null ? '' : daily[index].task!.toUpperCase(),
-                        overflow: TextOverflow.ellipsis,
-                        style: blackFontStyle2.copyWith(
-                            color: white, fontSize: 16),
-                      ),
-                      subtitle: Text(
-                        daily == null
-                            ? ''
-                            : "JAM : ${daily[index].time!} || ${daily[index].status == false ? 'OPEN' : 'CLOSED'}",
-                        style: blackFontStyle2.copyWith(color: white),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      trailing: daily == null
-                          ? const SizedBox()
-                          : Icon(
-                              daily[index].status!
-                                  ? MdiIcons.check
-                                  : MdiIcons.close,
-                              color: daily[index].status!
-                                  ? Colors.green
-                                  : Colors.red,
-                              size: 30,
-                            ),
-                    )),
-              ),
               itemCount: lenght,
-              padding: const EdgeInsetsDirectional.only(bottom: 10),
             ),
     );
   }

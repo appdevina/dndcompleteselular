@@ -5,7 +5,7 @@ class DailyService {
       {http.Client? client}) async {
     await Future.delayed(const Duration(milliseconds: 1500));
 
-    if (date == '29-11-2021') {
+    if (date == '03-01-2022') {
       return ApiReturnValue(value: mockDaily);
     } else {
       return ApiReturnValue(value: []);
