@@ -47,7 +47,7 @@ class AddTaskWeekly extends StatelessWidget {
               ],
             ),
             Container(
-              height: 100,
+              height: 110,
               alignment: Alignment.center,
               child: Row(
                 children: [

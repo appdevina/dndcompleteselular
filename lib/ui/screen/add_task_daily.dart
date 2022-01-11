@@ -8,7 +8,6 @@ class AddTaskDaily extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor: white,
       appBar: _appBar(),
       body: Form(
         key: controller.key,
@@ -19,14 +18,31 @@ class AddTaskDaily extends StatelessWidget {
               margin: const EdgeInsets.only(left: 10),
               child: Text(
                 "Add Task",
-                style: blackFontStyle1,
+                style: blackFontStyle1.copyWith(color: white),
               ),
+            ),
+            Row(
+              children: [
+                Obx(
+                  () => Checkbox(
+                      checkColor: white,
+                      fillColor: MaterialStateProperty.resolveWith(getColor),
+                      value: controller.tambahan.value,
+                      onChanged: (_) {
+                        controller.changeTambahan();
+                      }),
+                ),
+                Text(
+                  "Tambahan ?",
+                  style: blackFontStyle3.copyWith(color: white),
+                )
+              ],
             ),
             MyInputField(
               isPassword: false,
               title: "Todo",
               hint: "input todo",
-              controllerText: controller.title,
+              controllerText: controller.task,
             ),
             Row(
               children: [
@@ -39,7 +55,9 @@ class AddTaskDaily extends StatelessWidget {
                 Expanded(
                   child: GetBuilder<DailyAddTaskController>(
                     id: 'time',
-                    builder: (_) => _timeField(context),
+                    builder: (_) => controller.tambahan.value
+                        ? const SizedBox()
+                        : _timeField(context),
                   ),
                 ),
               ],
@@ -54,7 +72,18 @@ class AddTaskDaily extends StatelessWidget {
                     height: 50,
                     width: 100,
                     label: "+ Add",
-                    onTap: () {},
+                    onTap: () async {
+                      FocusScope.of(context).requestFocus(FocusNode());
+                      await controller
+                          .submit(
+                              controller.task.text,
+                              controller.tambahan.value,
+                              controller.selectedDate!,
+                              jam: controller.selectedTime)
+                          .then((value) => value.value!
+                              ? snackbar(context, true, value.message!)
+                              : snackbar(context, false, value.message!));
+                    },
                   )
                 ],
               ),
@@ -63,6 +92,18 @@ class AddTaskDaily extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Color getColor(Set<MaterialState> states) {
+    const Set<MaterialState> interactiveStates = <MaterialState>{
+      MaterialState.pressed,
+      MaterialState.hovered,
+      MaterialState.focused,
+    };
+    if (states.any(interactiveStates.contains)) {
+      return Colors.white;
+    }
+    return Colors.green;
   }
 
   _timeField(BuildContext context) {
@@ -86,12 +127,16 @@ class AddTaskDaily extends StatelessWidget {
     return MyInputField(
       isPassword: false,
       title: "Date",
-      hint: (controller.selectedDate == null)
-          ? DateFormat.yMMMd().format(controller.lastMonday!)
-          : DateFormat.yMMMd().format(controller.selectedDate!),
+      hint: (controller.tambahan.value)
+          ? (controller.selectedDate == null)
+              ? DateFormat.yMMMd().format(DateTime.now())
+              : DateFormat.yMMMd().format(controller.selectedDate!)
+          : (controller.selectedDate == null)
+              ? DateFormat.yMMMd().format(controller.lastMonday!)
+              : DateFormat.yMMMd().format(controller.selectedDate!),
       widget: IconButton(
         onPressed: () {
-          _getDateUser(context);
+          _getDateUser(context, controller.tambahan.value);
         },
         icon: const Icon(
           Icons.calendar_today_outlined,
@@ -119,14 +164,22 @@ class AddTaskDaily extends StatelessWidget {
         initialEntryMode: TimePickerEntryMode.input);
   }
 
-  _getDateUser(BuildContext context) async {
+  _getDateUser(BuildContext context, bool tambahan) async {
     DateTime? _pickerDate = await showDatePicker(
         context: context,
-        initialDate: DateTime.now().isAfter(controller.lastMonday!)
+        initialDate: tambahan
             ? DateTime.now()
+            : DateTime.now().isAfter(controller.lastMonday!)
+                ? DateTime.now()
+                : controller.lastMonday!,
+        firstDate: tambahan
+            ? DateTime(DateTime.now().year, DateTime.now().month,
+                    DateTime.now().day)
+                .subtract(const Duration(days: 1))
             : controller.lastMonday!,
-        firstDate: controller.lastMonday!,
-        lastDate: controller.lastMonday!.add(const Duration(days: 5)));
+        lastDate: tambahan
+            ? DateTime.now()
+            : controller.lastMonday!.add(const Duration(days: 6)));
 
     if (_pickerDate != null) {
       controller.changeDate(_pickerDate);
@@ -141,15 +194,14 @@ class AddTaskDaily extends StatelessWidget {
         },
         icon: const Icon(
           CupertinoIcons.back,
-          color: Colors.black,
+          color: white,
         ),
       ),
-      backgroundColor: white,
       elevation: 0,
       centerTitle: true,
       title: Text(
         'Add Daily Todo',
-        style: blackFontStyle3,
+        style: blackFontStyle3.copyWith(color: white),
       ),
     );
   }

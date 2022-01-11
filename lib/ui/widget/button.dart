@@ -24,10 +24,12 @@ class MyButton extends StatelessWidget {
         height: height,
         width: width,
         decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12), color: primaryClr),
+            border: Border.all(color: "F6F2D4".toColor(), width: 0.8),
+            borderRadius: BorderRadius.circular(12),
+            color: "5584AC".toColor()),
         child: Text(
           label,
-          style: blackFontStyle3.copyWith(color: white),
+          style: blackFontStyle3.copyWith(color: "F6F2D4".toColor()),
         ),
       ),
     );

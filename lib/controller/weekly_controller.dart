@@ -2,7 +2,10 @@ part of 'controllers.dart';
 
 class WeeklyController extends GetxController {
   PageController pageController = PageController();
-  late int selectedIndexOfMonth;
+  late int selectedWeek;
+  late DateTime lastMonday;
+  int? weeks;
+  DateTime selectedDate = DateTime.now();
 
   List<String> week = [];
 
@@ -11,8 +14,14 @@ class WeeklyController extends GetxController {
     return ((numberWeek - now.weekday + 10) / 7).floor();
   }
 
+  void changeDate(DateTime time) {
+    selectedDate = time;
+    update(['month']);
+  }
+
   void changeWeek(int val) {
-    selectedIndexOfMonth = val;
+    selectedWeek = val;
+    print(selectedWeek);
     update(['month']);
   }
 
@@ -21,7 +30,8 @@ class WeeklyController extends GetxController {
     for (var i = 1; i <= 52; i++) {
       week.add("$i");
     }
-    selectedIndexOfMonth = numOfWeeks(DateTime.now());
+    selectedWeek = numOfWeeks(DateTime.now());
+    weeks = selectedWeek;
     super.onInit();
   }
 }

@@ -7,19 +7,17 @@ class DailyTodo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: white,
       appBar: _appBar(),
       body: SafeArea(
         child: Column(
           children: [
-            _addTaskBar(),
             _addDateBar(),
             GetBuilder<DailyController>(
               id: 'daily',
               builder: (_) => Expanded(
                 child: controller.loading.value
                     ? Shimmer.fromColors(
-                        child: _listToDo(6),
+                        child: _listToDo(10),
                         highlightColor: Colors.grey[300]!,
                         baseColor: Colors.grey[100]!,
                       )
@@ -43,86 +41,77 @@ class DailyTodo extends StatelessWidget {
         },
         icon: const Icon(
           CupertinoIcons.back,
-          color: Colors.black,
+          color: white,
         ),
       ),
-      backgroundColor: white,
       elevation: 0,
       centerTitle: true,
       title: Text(
         'Daily Todo',
-        style: blackFontStyle3,
+        style: blackFontStyle3.copyWith(
+          color: white,
+        ),
       ),
       actions: [
+        IconButton(
+          onPressed: () =>
+              Get.to(() => AddTaskDaily(), transition: Transition.cupertino),
+          icon: const Icon(
+            MdiIcons.plus,
+            color: white,
+          ),
+          iconSize: 18,
+        ),
         IconButton(
           onPressed: () {},
           icon: const Icon(
             MdiIcons.refresh,
-            color: Colors.black,
+            color: white,
           ),
+          iconSize: 16,
         )
       ],
     );
   }
 
-  _addTaskBar() {
-    return Container(
-      margin: const EdgeInsets.only(right: 20, left: 20, top: 10),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                DateFormat.yMMMMd().format(
-                  DateTime.now(),
-                ),
-                style: blackFontStyle1,
-              ),
-              Text(
-                "Today",
-                style: greyFontStyle.copyWith(fontSize: 30),
-              ),
-            ],
-          ),
-          MyButton(
-            height: 50,
-            width: 120,
-            label: "+ Add Task",
-            onTap: () => Get.to(
-              () => AddTaskDaily(),
-              transition: Transition.cupertino,
-            ),
-          )
-        ],
-      ),
-    );
-  }
-
   _addDateBar() {
-    return Container(
-      margin: const EdgeInsets.only(top: 10, left: 15),
-      child: DatePicker(
-        controller.lastMonday.subtract(const Duration(days: 2)),
-        height: 100,
-        width: 70,
-        initialSelectedDate: DateTime.now(),
-        selectedTextColor: white,
-        selectionColor: primaryClr,
-        dateTextStyle: blackFontStyle2.copyWith(
-            fontSize: 20, color: Colors.grey, fontWeight: FontWeight.w600),
-        dayTextStyle: blackFontStyle2.copyWith(
-          fontSize: 12,
-          color: Colors.grey,
-          fontWeight: FontWeight.w600,
-        ),
-        onDateChange: (DateTime val) {
-          controller.changeDate(val);
-        },
-        daysCount: 14,
-      ),
+    return CalendarTimeline(
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2022, 1, 1),
+      lastDate: DateTime(2030, 12, 31),
+      onDateSelected: (date) => controller.changeDate(date!),
+      leftMargin: 20,
+      monthColor: "F6F2D4".toColor(),
+      dayColor: greyColor,
+      activeDayColor: Colors.black,
+      activeBackgroundDayColor: white,
+      dotsColor: const Color(0xFF333A47),
+      locale: 'en_ISO',
     );
+    // Container(
+    //   margin: const EdgeInsets.all(10),
+    //   decoration: const BoxDecoration(
+    //       color: white,
+    //       borderRadius: BorderRadiusDirectional.all(Radius.circular(10))),
+    //   child: DatePicker(
+    //     controller.lastMonday.subtract(const Duration(days: 2)),
+    //     height: 100,
+    //     width: 70,
+    //     initialSelectedDate: DateTime.now(),
+    //     selectedTextColor: white,
+    //     selectionColor: primaryClr,
+    //     dateTextStyle: blackFontStyle2.copyWith(
+    //         fontSize: 20, color: Colors.grey, fontWeight: FontWeight.w600),
+    //     dayTextStyle: blackFontStyle2.copyWith(
+    //       fontSize: 12,
+    //       fontWeight: FontWeight.w600,
+    //     ),
+    //     onDateChange: (DateTime val) {
+    //       controller.changeDate(val);
+    //     },
+    //     daysCount: 14,
+    //   ),
+    // );
   }
 
   _listToDo(int lenght, {List<DailyModel>? daily}) {
@@ -132,7 +121,7 @@ class DailyTodo extends StatelessWidget {
           ? Center(
               child: Text(
                 "Tidak ada to do\n ${DateFormat('d MMMM y').format(controller.selectedDate)}",
-                style: blackFontStyle2,
+                style: blackFontStyle2.copyWith(color: white),
                 textAlign: TextAlign.center,
               ),
             )
@@ -140,6 +129,7 @@ class DailyTodo extends StatelessWidget {
               itemBuilder: (context, index) => daily != null
                   ? CardDaily(
                       index: index,
+                      daily: controller.daily![index],
                     )
                   : Card(
                       shape: RoundedRectangleBorder(
@@ -149,7 +139,7 @@ class DailyTodo extends StatelessWidget {
                       elevation: 3,
                       child: Container(
                         alignment: Alignment.center,
-                        height: 125,
+                        height: 60,
                         width: double.infinity,
                         padding: const EdgeInsetsDirectional.only(bottom: 10),
                       ),

@@ -35,7 +35,7 @@ class MyInputField extends GetView<DailyAddTaskController> {
         children: [
           Text(
             title,
-            style: blackFontStyle3,
+            style: blackFontStyle3.copyWith(color: white),
           ),
           Container(
             margin: const EdgeInsetsDirectional.only(
@@ -46,6 +46,7 @@ class MyInputField extends GetView<DailyAddTaskController> {
             ),
             height: 52,
             decoration: BoxDecoration(
+              color: white,
               border: Border.all(
                 color: Colors.grey,
                 width: 1.0,

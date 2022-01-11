@@ -7,19 +7,19 @@ class WeeklyToDo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: white,
       appBar: _appBar(),
-      body: Column(
-        children: [
-          _addTaskBar(),
-          GetBuilder<WeeklyController>(
-            id: 'month',
-            builder: (_) => _addMonthBar(),
-          ),
-          Expanded(
-            child: _listToDo(20),
-          ),
-        ],
+      body: SafeArea(
+        child: Column(
+          children: [
+            GetBuilder<WeeklyController>(
+              id: 'month',
+              builder: (_) => _addWeek(context),
+            ),
+            Expanded(
+              child: _listToDo(20),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -32,113 +32,74 @@ class WeeklyToDo extends StatelessWidget {
         },
         icon: const Icon(
           CupertinoIcons.back,
-          color: Colors.black,
+          color: white,
         ),
       ),
-      backgroundColor: white,
       elevation: 0,
       centerTitle: true,
       title: Text(
         'Weekly ToDo',
-        style: blackFontStyle3,
+        style: blackFontStyle3.copyWith(color: white),
       ),
       actions: [
+        IconButton(
+          onPressed: () =>
+              Get.to(() => AddTaskWeekly(), transition: Transition.cupertino),
+          icon: const Icon(
+            MdiIcons.plus,
+            color: white,
+          ),
+          iconSize: 18,
+        ),
         IconButton(
           onPressed: () {},
           icon: const Icon(
             MdiIcons.refresh,
-            color: Colors.black,
+            color: white,
           ),
+          iconSize: 18,
         )
       ],
     );
   }
 
-  _addTaskBar() {
+  _addWeek(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(right: 20, left: 20, top: 10),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "Now Week ${controller.numOfWeeks(DateTime.now())}",
-                style: blackFontStyle1,
-              ),
-              Text(
-                DateFormat.yMMMMd().format(
-                  DateTime.now(),
-                ),
-                style: greyFontStyle.copyWith(fontSize: 16),
-              ),
-            ],
-          ),
-          MyButton(
-            height: 50,
-            width: 120,
-            label: "+ Add Task",
-            onTap: () => Get.to(
-              () => AddTaskWeekly(),
-              transition: Transition.cupertino,
+        width: MediaQuery.of(context).size.width - 20,
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                "95D1CC".toColor(),
+                "F6F2D4".toColor(),
+              ],
+              begin: Alignment.bottomLeft,
+              end: Alignment.topRight,
             ),
-          )
-        ],
-      ),
-    );
-  }
-
-  _addMonthBar() {
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 10),
-      padding: const EdgeInsets.only(left: 10),
-      height: 100,
-      width: double.infinity,
-      child: ListView(
-        scrollDirection: Axis.horizontal,
-        children: controller.week
-            .map(
-              (e) => GestureDetector(
-                onTap: () => controller.changeWeek(int.parse(e)),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: int.parse(e) == controller.selectedIndexOfMonth
-                        ? primaryClr
-                        : Colors.grey[200],
-                    borderRadius: const BorderRadiusDirectional.all(
-                      Radius.circular(10),
-                    ),
-                  ),
-                  margin: const EdgeInsets.only(right: 10),
-                  alignment: Alignment.center,
-                  width: 75,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        "week",
-                        style: int.parse(e) == controller.selectedIndexOfMonth
-                            ? blackFontStyle3.copyWith(
-                                color: white,
-                              )
-                            : blackFontStyle3,
-                      ),
-                      Text(
-                        e,
-                        style: int.parse(e) == controller.selectedIndexOfMonth
-                            ? blackFontStyle1.copyWith(color: white)
-                            : blackFontStyle1,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            )
-            .toList(),
-      ),
-    );
+            borderRadius: BorderRadiusDirectional.circular(10)),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Text(
+              "WEEK",
+              style: blackFontStyle3.copyWith(letterSpacing: 2),
+            ),
+            NumberPicker(
+                itemWidth: 60,
+                minValue: 1,
+                axis: Axis.horizontal,
+                maxValue: 52,
+                itemCount: 5,
+                selectedTextStyle:
+                    blackFontStyle1.copyWith(color: Colors.blue[400]),
+                decoration: BoxDecoration(
+                    border: Border.all(color: greyColor),
+                    borderRadius: BorderRadiusDirectional.circular(10)),
+                value: controller.selectedWeek,
+                textStyle: blackFontStyle3.copyWith(color: greyColor),
+                onChanged: (int value) => controller.changeWeek(value)),
+          ],
+        ));
   }
 
   _listToDo(int lenght) {

@@ -8,13 +8,13 @@ class CardDailyHome extends GetView<HomePageController> {
   Widget build(BuildContext context) {
     return Card(
       shape: RoundedRectangleBorder(
-        side: BorderSide(width: 0.2, color: greyColor),
+        side: const BorderSide(width: 0.2, color: Colors.black),
         borderRadius: BorderRadius.circular(10),
       ),
       elevation: 3,
       child: Container(
         alignment: Alignment.center,
-        height: 125,
+        height: 100,
         width: double.infinity,
         child: Column(
           children: [
@@ -29,7 +29,7 @@ class CardDailyHome extends GetView<HomePageController> {
                   child: Text(
                     DateFormat('dd MMM y')
                         .format(controller.daily![index].date!),
-                    style: blackFontStyle3,
+                    style: blackFontStyle3.copyWith(color: Colors.black),
                     overflow: TextOverflow.ellipsis,
                   ),
                 )
@@ -55,6 +55,12 @@ class CardDailyHome extends GetView<HomePageController> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
+                        controller.daily![index].time!,
+                        style: blackFontStyle2.copyWith(
+                            wordSpacing: 1, fontSize: 10, color: greyColor),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      Text(
                         controller.daily![index].task!.toUpperCase(),
                         style: blackFontStyle2.copyWith(
                             wordSpacing: 1, fontSize: 12),
@@ -74,7 +80,7 @@ class CardDailyHome extends GetView<HomePageController> {
                     ),
                     Container(
                       alignment: Alignment.center,
-                      width: MediaQuery.of(context).size.width * 0.1,
+                      width: MediaQuery.of(context).size.width * 0.11,
                       padding: const EdgeInsets.all(5),
                       margin: const EdgeInsets.only(right: 10),
                       decoration: BoxDecoration(
@@ -95,41 +101,9 @@ class CardDailyHome extends GetView<HomePageController> {
                 ),
               ],
             ),
-            const SizedBox(
-              height: 5,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                controller.daily![index].status!
-                    ? const SizedBox()
-                    : _createButton(
-                        "Change Status",
-                        () {},
-                      ),
-              ],
-            ),
           ],
         ),
       ),
     );
   }
-
-  Widget _createButton(String title, Function() function) => GestureDetector(
-        onTap: null,
-        child: Container(
-          margin: const EdgeInsets.only(right: 10),
-          padding: const EdgeInsets.symmetric(
-            horizontal: 10,
-            vertical: 5,
-          ),
-          decoration: BoxDecoration(
-              color: "FF3F0A".toColor(),
-              borderRadius: BorderRadius.circular(8)),
-          child: Text(
-            title,
-            style: blackFontStyle3.copyWith(fontSize: 10, color: Colors.white),
-          ),
-        ),
-      );
 }

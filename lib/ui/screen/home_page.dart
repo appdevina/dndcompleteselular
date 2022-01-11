@@ -1,13 +1,11 @@
-// ignore_for_file: use_key_in_widget_constructors
-
 part of 'screens.dart';
 
 class HomePage extends StatelessWidget {
+  HomePage({Key? key}) : super(key: key);
   final controller = Get.put(HomePageController());
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.blue[300],
       body: SafeArea(
         child: SizedBox(
           height: MediaQuery.of(context).size.height,
@@ -26,7 +24,10 @@ class HomePage extends StatelessWidget {
                 child: Text(
                   "To Do List Today",
                   style: blackFontStyle2.copyWith(
-                      fontWeight: FontWeight.w600, fontSize: 18),
+                    fontWeight: FontWeight.w600,
+                    fontSize: 18,
+                    color: white,
+                  ),
                 ),
               ),
               GetBuilder<HomePageController>(
@@ -53,9 +54,9 @@ class HomePage extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 10),
       height: 170,
       width: MediaQuery.of(context).size.width,
-      decoration: BoxDecoration(
-        borderRadius: const BorderRadius.all(Radius.circular(10)),
-        color: Colors.grey[100],
+      decoration: const BoxDecoration(
+        borderRadius: BorderRadius.all(Radius.circular(10)),
+        color: white,
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -70,17 +71,13 @@ class HomePage extends StatelessWidget {
                 child: _menuItem('day.png', 'Daily'),
               ),
               GestureDetector(
-                onTap: () {
-                  Get.to((() => WeeklyToDo()),
-                      transition: Transition.cupertino);
-                },
+                onTap: () => Get.to((() => WeeklyToDo()),
+                    transition: Transition.cupertino),
                 child: _menuItem('week.png', 'Weekly'),
               ),
               GestureDetector(
-                onTap: () {
-                  Get.to((() => MonthlyToDo()),
-                      transition: Transition.cupertino);
-                },
+                onTap: () =>
+                    snackbar(context, false, "Fitur belum proses develop"),
                 child: _menuItem('month.png', 'Monthly'),
               ),
             ],
@@ -89,23 +86,18 @@ class HomePage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               GestureDetector(
-                onTap: () {
-                  Get.to((() => DailyTodo()), transition: Transition.cupertino);
-                },
+                onTap: () =>
+                    snackbar(context, false, "Fitur belum proses develop"),
                 child: _menuItem('result.png', 'Result'),
               ),
               GestureDetector(
-                onTap: () {
-                  Get.to((() => WeeklyToDo()),
-                      transition: Transition.cupertino);
-                },
+                onTap: () =>
+                    snackbar(context, false, "Fitur belum proses develop"),
                 child: _menuItem('request.png', 'Request'),
               ),
               GestureDetector(
-                onTap: () {
-                  Get.to((() => MonthlyToDo()),
-                      transition: Transition.cupertino);
-                },
+                onTap: () =>
+                    snackbar(context, false, "Fitur belum proses develop"),
                 child: _menuItem('approved.png', 'Approve'),
               ),
             ],
@@ -117,15 +109,22 @@ class HomePage extends StatelessWidget {
 
   _header() {
     return controller.loading.value
-        ? Shimmer.fromColors(
-            child: Container(
-              height: 110,
-              width: double.infinity,
-              color: white,
+        ? Container(
+            height: 110,
+            width: double.infinity,
+            padding: const EdgeInsets.all(10),
+            child: Shimmer.fromColors(
+              child: Container(
+                  height: 90,
+                  width: double.infinity - 20,
+                  margin: const EdgeInsets.only(bottom: 10),
+                  decoration: const BoxDecoration(
+                      color: white,
+                      borderRadius: BorderRadius.all(Radius.circular(10)))),
+              highlightColor: Colors.grey[300]!,
+              baseColor: Colors.grey[100]!,
+              period: const Duration(milliseconds: 500),
             ),
-            highlightColor: Colors.grey[300]!,
-            baseColor: Colors.grey[100]!,
-            period: const Duration(milliseconds: 500),
           )
         : Container(
             height: 110,
@@ -140,20 +139,19 @@ class HomePage extends StatelessWidget {
                   children: [
                     Text(
                       controller.user!.namaLengkap!,
-                      style:
-                          blackFontStyle1.copyWith(fontWeight: FontWeight.bold),
+                      style: blackFontStyle1.copyWith(
+                          fontWeight: FontWeight.bold, color: white),
                       overflow: TextOverflow.ellipsis,
                     ),
                     Text(
                       "${controller.user!.divisi!.nama!} - ${controller.user!.area!.nama}",
-                      style:
-                          blackFontStyle3.copyWith(fontWeight: FontWeight.w100),
+                      style: blackFontStyle3.copyWith(
+                          fontWeight: FontWeight.w100, color: white),
                     ),
                   ],
                 ),
                 const CircleAvatar(
-                  backgroundImage: NetworkImage(
-                      'http://serveritcs.ddnsku.my.id:3900/itsupport/member/usep.jpg'),
+                  backgroundImage: AssetImage('assets/usep.jpg'),
                   backgroundColor: white,
                 )
               ],
@@ -182,7 +180,9 @@ class HomePage extends StatelessWidget {
         ),
         Text(
           name,
-          style: blackFontStyle2.copyWith(fontSize: 10),
+          style: blackFontStyle2.copyWith(
+            fontSize: 10,
+          ),
         )
       ],
     );
@@ -195,7 +195,7 @@ class HomePage extends StatelessWidget {
           ? Center(
               child: Text(
                 "Tidak ada to do\n ${DateFormat('d MMMM y').format(DateTime.now())}",
-                style: blackFontStyle2,
+                style: blackFontStyle2.copyWith(color: white),
                 textAlign: TextAlign.center,
               ),
             )

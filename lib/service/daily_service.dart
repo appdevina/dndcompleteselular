@@ -5,7 +5,7 @@ class DailyService {
       {http.Client? client}) async {
     await Future.delayed(const Duration(milliseconds: 1500));
 
-    if (date == '03-01-2022') {
+    if (date == '11-01-2022') {
       return ApiReturnValue(value: mockDaily);
     } else {
       return ApiReturnValue(value: []);
@@ -38,5 +38,22 @@ class DailyService {
     // } catch (e) {
     //   return ApiReturnValue(value: [], message: 'ada masalah pada server');
     // }
+  }
+
+  static Future<ApiReturnValue<List<DailyModel>>> changeStatus(
+      String date, int id,
+      {http.Client? client}) async {
+    await Future.delayed(const Duration(milliseconds: 1500));
+
+    if (date == '11-01-2022') {
+      for (var day in mockDaily) {
+        if (day.id == id) {
+          day.status = !day.status!;
+        }
+      }
+      return ApiReturnValue(value: mockDaily);
+    } else {
+      return ApiReturnValue(value: []);
+    }
   }
 }

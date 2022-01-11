@@ -21,6 +21,18 @@ class DailyController extends GetxController {
     update(['daily']);
   }
 
+  Future<ApiReturnValue<bool>> changeStatus(int id) async {
+    HomePageController home = Get.find();
+    ApiReturnValue<List<DailyModel>> result =
+        await DailyService.changeStatus('11-01-2022', id);
+
+    home.daily = result.value;
+    daily = result.value;
+    home.updateBack();
+    update(['daily']);
+    return ApiReturnValue(value: true, message: "berhasil merubah status");
+  }
+
   @override
   void onInit() {
     lastMonday =
