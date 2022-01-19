@@ -7,7 +7,6 @@ class AddTaskMonthly extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: white,
       resizeToAvoidBottomInset: false,
       appBar: _appBar(),
       body: Form(
@@ -15,39 +14,45 @@ class AddTaskMonthly extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              padding: const EdgeInsets.only(left: 10),
-              child: Text(
-                'Add Task',
-                style: blackFontStyle1,
-              ),
-            ),
             MyInputField(
               isPassword: false,
-              title: "Todo",
-              hint: "input todo",
+              title: "Your Task",
+              hint: "Monthly Objective",
               controllerText: controller.title,
             ),
-            DropDownMonth(
-              title: 'Month',
-              controller: controller,
-              month: controller.month,
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              width: double.infinity,
+              height: 90,
+              margin: const EdgeInsets.only(top: 15),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Month",
+                    style: blackFontStyle3.copyWith(color: white),
+                  ),
+                  _pickMonth(context),
+                ],
+              ),
             ),
             Container(
-              height: 100,
+              height: 115,
               alignment: Alignment.center,
               child: Row(
                 children: [
                   Obx(
                     () => Checkbox(
                         value: controller.check.value,
+                        fillColor: MaterialStateProperty.all(white),
+                        checkColor: Colors.green,
                         onChanged: (bool? val) {
                           controller.check.toggle();
                         }),
                   ),
                   Text(
                     "Result ?",
-                    style: blackFontStyle3,
+                    style: blackFontStyle3.copyWith(color: white),
                   ),
                   const SizedBox(
                     width: 10,
@@ -60,7 +65,7 @@ class AddTaskMonthly extends StatelessWidget {
                               children: [
                                 MyInputField(
                                     typeInput: TextInputType.number,
-                                    controllerText: controller.value,
+                                    controllerText: controller.valueCon,
                                     side: true,
                                     title: "",
                                     hint: 'Input Value',
@@ -69,7 +74,8 @@ class AddTaskMonthly extends StatelessWidget {
                                   margin: const EdgeInsets.only(left: 10),
                                   child: Text(
                                     "nominal",
-                                    style: blackFontStyle3,
+                                    style:
+                                        blackFontStyle3.copyWith(color: white),
                                   ),
                                 )
                               ],
@@ -103,15 +109,49 @@ class AddTaskMonthly extends StatelessWidget {
         },
         icon: const Icon(
           CupertinoIcons.back,
-          color: Colors.black,
+          color: white,
         ),
       ),
-      backgroundColor: white,
       elevation: 0,
       centerTitle: true,
       title: Text(
-        'Add Monthly',
-        style: blackFontStyle3,
+        'Add Monthly Objective',
+        style: blackFontStyle3.copyWith(color: white),
+      ),
+    );
+  }
+
+  _pickMonth(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: SizedBox(
+              width: double.infinity,
+              child: GetBuilder<MonthlyAddTaskController>(
+                id: 'month',
+                builder: (_) => Text(
+                    DateFormat('MMMM  -  y').format(controller.selectedMonth),
+                    style: blackFontStyle1.copyWith(color: white),
+                    textAlign: TextAlign.center),
+              ),
+            ),
+          ),
+          MyButton(
+            height: 45,
+            width: 120,
+            label: "CHANGE",
+            onTap: () => showMonthPicker(
+              context: context,
+              initialDate: controller.selectedMonth,
+              firstDate: controller.minMonth,
+              lastDate: DateTime(2025),
+            ).then((value) =>
+                value != null ? controller.changeMonth(value) : null),
+          )
+        ],
       ),
     );
   }

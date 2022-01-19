@@ -24,13 +24,17 @@ class DailyController extends GetxController {
   Future<ApiReturnValue<bool>> changeStatus(int id) async {
     HomePageController home = Get.find();
     ApiReturnValue<List<DailyModel>> result =
-        await DailyService.changeStatus('11-01-2022', id);
+        await DailyService.changeStatus('18-01-2022', id);
 
     home.daily = result.value;
     daily = result.value;
     home.updateBack();
     update(['daily']);
     return ApiReturnValue(value: true, message: "berhasil merubah status");
+  }
+
+  Color getColor(DailyModel daily) {
+    return daily.status! ? Colors.green[400]! : Colors.green[100]!;
   }
 
   @override

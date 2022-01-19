@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.todolist_complete">
+    package="com.complete.todolist_complete">
     <uses-permission android:name="android.permission.INTERNET"/>
    <application
         android:label="todolist_complete"

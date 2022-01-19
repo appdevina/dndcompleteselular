@@ -22,7 +22,7 @@ class HomePage extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 10),
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  "To Do List Today",
+                  "Today's To Do List",
                   style: blackFontStyle2.copyWith(
                     fontWeight: FontWeight.w600,
                     fontSize: 18,
@@ -68,7 +68,7 @@ class HomePage extends StatelessWidget {
                 onTap: () {
                   Get.to((() => DailyTodo()), transition: Transition.cupertino);
                 },
-                child: _menuItem('day.png', 'Daily'),
+                child: _menuItem('daily.png', 'Daily'),
               ),
               GestureDetector(
                 onTap: () => Get.to((() => WeeklyToDo()),
@@ -76,9 +76,9 @@ class HomePage extends StatelessWidget {
                 child: _menuItem('week.png', 'Weekly'),
               ),
               GestureDetector(
-                onTap: () =>
-                    snackbar(context, false, "Fitur belum proses develop"),
-                child: _menuItem('month.png', 'Monthly'),
+                onTap: () => Get.to(() => MonthlyToDo(),
+                    transition: Transition.cupertino),
+                child: _menuItem('monthly.png', 'Monthly'),
               ),
             ],
           ),
@@ -203,6 +203,7 @@ class HomePage extends StatelessWidget {
               itemCount: lenght,
               itemBuilder: (context, index) => daily != null
                   ? CardDailyHome(
+                      daily: controller.daily![index],
                       index: index,
                     )
                   : Card(

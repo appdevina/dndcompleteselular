@@ -14,13 +14,6 @@ class AddTaskDaily extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              margin: const EdgeInsets.only(left: 10),
-              child: Text(
-                "Add Task",
-                style: blackFontStyle1.copyWith(color: white),
-              ),
-            ),
             Row(
               children: [
                 Obx(
@@ -33,15 +26,15 @@ class AddTaskDaily extends StatelessWidget {
                       }),
                 ),
                 Text(
-                  "Tambahan ?",
+                  "Extra Task ?",
                   style: blackFontStyle3.copyWith(color: white),
                 )
               ],
             ),
             MyInputField(
               isPassword: false,
-              title: "Todo",
-              hint: "input todo",
+              title: "Your Task",
+              hint: "Daily Objective",
               controllerText: controller.task,
             ),
             Row(
@@ -200,7 +193,7 @@ class AddTaskDaily extends StatelessWidget {
       elevation: 0,
       centerTitle: true,
       title: Text(
-        'Add Daily Todo',
+        'Add Daily To Do',
         style: blackFontStyle3.copyWith(color: white),
       ),
     );

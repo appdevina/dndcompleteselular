@@ -8,41 +8,31 @@ class AddTaskWeekly extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor: white,
       appBar: _appBar(),
       body: Form(
         key: controller.key,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              padding: const EdgeInsets.only(left: 10),
-              child: Text(
-                'Add Task',
-                style: blackFontStyle1,
-              ),
-            ),
             MyInputField(
               isPassword: false,
-              title: "Todo",
-              hint: "input todo",
+              title: "Your Task",
+              hint: "Weekly Objective",
               controllerText: controller.title,
             ),
+            const SizedBox(
+              height: 10,
+            ),
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Expanded(
-                  child: DropDownWeek(
-                    title: 'Week',
-                    weeks: controller.week,
-                    controller: controller,
-                  ),
+                GetBuilder<WeeklyAddTaskController>(
+                  id: 'week',
+                  builder: (_) => _pickWeek(context, 'Week'),
                 ),
-                Expanded(
-                  child: DropDownYear(
-                    title: 'Year',
-                    years: controller.year,
-                    controller: controller,
-                  ),
+                GetBuilder<WeeklyAddTaskController>(
+                  id: 'year',
+                  builder: (_) => _pickYear(context, 'Year'),
                 ),
               ],
             ),
@@ -53,6 +43,8 @@ class AddTaskWeekly extends StatelessWidget {
                 children: [
                   Obx(
                     () => Checkbox(
+                        fillColor: MaterialStateProperty.all(white),
+                        checkColor: Colors.green,
                         value: controller.check.value,
                         onChanged: (bool? val) {
                           controller.check.toggle();
@@ -60,7 +52,7 @@ class AddTaskWeekly extends StatelessWidget {
                   ),
                   Text(
                     "Result ?",
-                    style: blackFontStyle3,
+                    style: blackFontStyle3.copyWith(color: white),
                   ),
                   const SizedBox(
                     width: 10,
@@ -73,7 +65,7 @@ class AddTaskWeekly extends StatelessWidget {
                               children: [
                                 MyInputField(
                                     typeInput: TextInputType.number,
-                                    controllerText: controller.value,
+                                    controllerText: controller.valueCon,
                                     side: true,
                                     title: "",
                                     hint: 'Input Value',
@@ -82,7 +74,8 @@ class AddTaskWeekly extends StatelessWidget {
                                   margin: const EdgeInsets.only(left: 10),
                                   child: Text(
                                     "nominal",
-                                    style: blackFontStyle3,
+                                    style:
+                                        blackFontStyle3.copyWith(color: white),
                                   ),
                                 )
                               ],
@@ -100,7 +93,12 @@ class AddTaskWeekly extends StatelessWidget {
               alignment: Alignment.centerRight,
               margin: const EdgeInsets.only(right: 10, top: 10),
               child: MyButton(
-                  label: "Submit", onTap: () {}, height: 50, width: 100),
+                  label: "Submit",
+                  onTap: () {
+                    print(controller.valueCon.numberValue.toInt());
+                  },
+                  height: 50,
+                  width: 100),
             ),
           ],
         ),
@@ -116,16 +114,194 @@ class AddTaskWeekly extends StatelessWidget {
         },
         icon: const Icon(
           CupertinoIcons.back,
-          color: Colors.black,
+          color: white,
         ),
       ),
-      backgroundColor: white,
       elevation: 0,
       centerTitle: true,
       title: Text(
-        'Add Weekly',
-        style: blackFontStyle3,
+        'Add Weekly Objective',
+        style: blackFontStyle3.copyWith(color: white),
       ),
     );
+  }
+
+  _pickWeek(BuildContext context, String title) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: blackFontStyle3.copyWith(color: white),
+          ),
+          _week(context),
+        ],
+      ),
+    );
+  }
+
+  _week(BuildContext context) {
+    return Row(children: [
+      SizedBox(
+        width: 150,
+        height: 75,
+        child: Row(
+          children: [
+            Column(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Row(
+                  children: [
+                    IconButton(
+                        onPressed: () => controller.buttonWeek(false)
+                            ? null
+                            : snackbar(context, false,
+                                "Tidak bisa kurang dari week ${controller.minWeek}"),
+                        icon: const Icon(
+                          MdiIcons.minusCircle,
+                          color: white,
+                        )),
+                    Container(
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10)),
+                      width: 50,
+                      height: 50,
+                      padding: EdgeInsets.only(
+                          left: controller.week.text.length > 1 ? 8 : 14,
+                          bottom: 3),
+                      child: TextField(
+                        keyboardType: TextInputType.number,
+                        onSubmitted: (val) {
+                          if (val.isNotEmpty) {
+                            if (val.toInt()! < controller.minWeek) {
+                              snackbar(context, false,
+                                  "Tidak bisa kurang dari week ${controller.minWeek}");
+                              controller.selectedWeek = controller.minWeek;
+                              controller.week.text =
+                                  controller.minWeek.toString();
+                              controller.changeWeek(controller.selectedWeek);
+                            } else if (val.toInt()! > 52) {
+                              snackbar(
+                                  context, false, "Tidak bisa lebih dari 52");
+                              controller.selectedWeek = 52;
+                              controller.week.text = "52";
+                              controller.changeWeek(controller.selectedWeek);
+                            } else {
+                              controller.changeWeek(val.toInt()!);
+                            }
+                            controller.update(['week']);
+                          }
+                        },
+                        decoration: const InputDecoration(
+                          border: InputBorder.none,
+                        ),
+                        controller: controller.week,
+                        style: blackFontStyle1.copyWith(
+                            color: white, fontSize: 30),
+                      ),
+                    ),
+                    IconButton(
+                        onPressed: () => controller.buttonWeek(true)
+                            ? null
+                            : snackbar(context, false,
+                                "Tidak bisa lebih dari week 52"),
+                        icon: const Icon(
+                          MdiIcons.plusCircle,
+                          color: white,
+                        )),
+                  ],
+                ),
+              ],
+            ),
+          ],
+        ),
+      )
+    ]);
+  }
+
+  _pickYear(BuildContext context, String title) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: blackFontStyle3.copyWith(color: white),
+          ),
+          _year(context),
+        ],
+      ),
+    );
+  }
+
+  _year(BuildContext context) {
+    return Row(children: [
+      SizedBox(
+        width: 200,
+        height: 75,
+        child: Row(
+          children: [
+            Column(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Row(
+                  children: [
+                    IconButton(
+                        onPressed: () => controller.buttonYear(false)
+                            ? null
+                            : snackbar(context, false,
+                                "Tidak bisa kurang dari tahun ${controller.minyear}"),
+                        icon: const Icon(
+                          MdiIcons.minusCircle,
+                          color: white,
+                        )),
+                    Container(
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10)),
+                      width: 100,
+                      height: 50,
+                      padding: const EdgeInsets.only(left: 16, bottom: 3),
+                      child: TextField(
+                        keyboardType: TextInputType.number,
+                        onSubmitted: (val) {
+                          if (val.isNotEmpty) {
+                            if (val.toInt()! < controller.minyear) {
+                              snackbar(context, false,
+                                  "Tidak bisa kurang dari tahun ${controller.minyear}");
+                              controller.selectedYear = controller.minyear;
+                              controller.year.text =
+                                  controller.minyear.toString();
+                              controller.changeYear(controller.selectedYear);
+                            } else {
+                              controller.changeYear(val.toInt()!);
+                            }
+                            controller.update(['year']);
+                          }
+                        },
+                        decoration: const InputDecoration(
+                          border: InputBorder.none,
+                        ),
+                        controller: controller.year,
+                        style: blackFontStyle1.copyWith(
+                            color: white, fontSize: 30),
+                      ),
+                    ),
+                    IconButton(
+                        onPressed: () => controller.buttonYear(true),
+                        icon: const Icon(
+                          MdiIcons.plusCircle,
+                          color: white,
+                        )),
+                  ],
+                ),
+              ],
+            ),
+          ],
+        ),
+      )
+    ]);
   }
 }

@@ -13,7 +13,7 @@ class CardDaily extends GetView<DailyController> {
         side: BorderSide(width: 0.2, color: greyColor),
         borderRadius: BorderRadius.circular(10),
       ),
-      elevation: 3,
+      elevation: 10,
       child: Container(
         alignment: Alignment.center,
         height: 60,
@@ -39,38 +39,98 @@ class CardDaily extends GetView<DailyController> {
                   Text(
                     daily.time!,
                     style: blackFontStyle2.copyWith(
-                        wordSpacing: 1, fontSize: 10, color: greyColor),
+                        wordSpacing: 1,
+                        fontSize: 12,
+                        color: greyColor,
+                        fontWeight: FontWeight.w600),
                     overflow: TextOverflow.ellipsis,
                   ),
                   Text(
                     daily.task!.toUpperCase(),
-                    style:
-                        blackFontStyle2.copyWith(wordSpacing: 1, fontSize: 12),
+                    style: blackFontStyle2.copyWith(
+                      wordSpacing: 1,
+                      fontSize: 12,
+                    ),
                     overflow: TextOverflow.ellipsis,
                   ),
                 ],
               ),
             ),
-            InkWell(
-              onTap: () => controller.changeStatus(daily.id!),
-              child: Container(
-                alignment: Alignment.center,
-                width: 30,
-                padding: const EdgeInsets.all(5),
-                margin: const EdgeInsets.only(right: 10),
-                decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: daily.status! ? Colors.green[400] : Colors.red[400]),
-                child: Icon(
-                  daily.status! ? Icons.check : Icons.close_sharp,
-                  color: Colors.white,
-                  size: 20,
+            Row(
+              children: [
+                InkWell(
+                  onTap: () async => await controller
+                      .changeStatus(daily.id!)
+                      .then((value) =>
+                          snackbar(context, value.value!, value.message!)),
+                  child: Container(
+                    alignment: Alignment.center,
+                    width: 30,
+                    padding: const EdgeInsets.all(5),
+                    margin: const EdgeInsets.only(right: 10),
+                    decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: controller.getColor(daily)),
+                    child: const Icon(
+                      Icons.check,
+                      color: Colors.white,
+                      size: 20,
+                    ),
+                  ),
                 ),
-              ),
+                InkWell(
+                  onTap: () => showDialog<String>(
+                      context: context,
+                      builder: (context) => _dialogDelete(context)),
+                  child: Container(
+                    alignment: Alignment.center,
+                    width: 30,
+                    padding: const EdgeInsets.all(5),
+                    margin: const EdgeInsets.only(right: 10),
+                    decoration: BoxDecoration(
+                        shape: BoxShape.circle, color: Colors.red[400]),
+                    child: const Icon(
+                      Icons.delete_rounded,
+                      color: Colors.white,
+                      size: 20,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
         ),
       ),
+    );
+  }
+
+  _dialogDelete(BuildContext context) {
+    return AlertDialog(
+      title: Text(
+        "Hapus",
+        style: blackFontStyle1,
+      ),
+      content: Text(
+        'Apakah anda yakin menghapus\n"${daily.task}"',
+        style: blackFontStyle3,
+      ),
+      actions: [
+        TextButton(
+            onPressed: () {
+              snackbar(context, false, "Menghapus ${daily.task}");
+              Get.back();
+            },
+            child: Text(
+              "YES",
+              style: blackFontStyle3.copyWith(color: Colors.green[400]),
+            )),
+        TextButton(
+            onPressed: () => Get.back(),
+            child: Text(
+              "NO",
+              style: blackFontStyle3.copyWith(color: Colors.red[400]),
+            )),
+      ],
     );
   }
 }

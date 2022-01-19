@@ -7,17 +7,22 @@ class MonthlyToDo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: white,
       appBar: _appBar(),
       body: Column(
         children: [
-          _addTaskBar(),
-          GetBuilder<MonthlyController>(
-            id: 'month',
-            builder: (_) => _monthBar(),
-          ),
+          _pickMonth(context),
           Expanded(
-            child: _listToDo(10),
+            child: GetBuilder<MonthlyController>(
+              id: 'monthly',
+              builder: (_) => controller.isLoading.value
+                  ? Shimmer.fromColors(
+                      child: _listToDo(10),
+                      highlightColor: Colors.grey[300]!,
+                      baseColor: Colors.grey[100]!,
+                    )
+                  : _listToDo(controller.monthly.length,
+                      monthly: controller.monthly),
+            ),
           ),
         ],
       ),
@@ -32,140 +37,105 @@ class MonthlyToDo extends StatelessWidget {
         },
         icon: const Icon(
           CupertinoIcons.back,
-          color: Colors.black,
+          color: Colors.white,
         ),
       ),
-      backgroundColor: white,
       elevation: 0,
       centerTitle: true,
       title: Text(
         'Monthly To Do',
-        style: blackFontStyle3,
+        style: blackFontStyle3.copyWith(color: white),
       ),
       actions: [
+        IconButton(
+          onPressed: () =>
+              Get.to(() => AddTaskMonthly(), transition: Transition.cupertino),
+          icon: const Icon(
+            MdiIcons.plus,
+            color: white,
+          ),
+          iconSize: 18,
+        ),
         IconButton(
           onPressed: () {},
           icon: const Icon(
             MdiIcons.refresh,
-            color: Colors.black,
+            color: Colors.white,
           ),
+          iconSize: 18,
         )
       ],
     );
   }
 
-  _addTaskBar() {
+  _pickMonth(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(right: 20, left: 20, top: 10),
+      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "Now ${DateFormat.MMMM().format(controller.now)}",
-                style: blackFontStyle1,
+          Expanded(
+            child: SizedBox(
+              width: double.infinity,
+              child: GetBuilder<MonthlyController>(
+                id: 'month',
+                builder: (_) => Text(
+                    DateFormat('MMMM  -  y')
+                        .format(controller.selectedMonthYear),
+                    style: blackFontStyle1.copyWith(color: white),
+                    textAlign: TextAlign.center),
               ),
-              Text(
-                DateFormat.yMMMMd().format(
-                  DateTime.now(),
-                ),
-                style: greyFontStyle.copyWith(fontSize: 16),
-              ),
-            ],
+            ),
           ),
           MyButton(
             height: 50,
             width: 120,
-            label: "+ Add Task",
-            onTap: () => Get.to(
-              () => AddTaskMonthly(),
-              transition: Transition.cupertino,
-            ),
+            label: "CHANGE",
+            onTap: () => showMonthPicker(
+              context: context,
+              initialDate: DateTime.now(),
+              firstDate: controller.minMonthYear,
+              lastDate: DateTime(2025),
+            ).then((value) =>
+                value != null ? controller.changeMonth(value) : null),
           )
         ],
       ),
     );
   }
 
-  _monthBar() {
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 10),
-      padding: const EdgeInsets.only(left: 10),
-      height: 100,
-      width: double.infinity,
-      child: ListView(
-        scrollDirection: Axis.horizontal,
-        children: controller.month
-            .map(
-              (e) => GestureDetector(
-                onTap: () => controller.changeMonth(e['no']),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: e['no'] == controller.selectedMonth
-                        ? primaryClr
-                        : Colors.grey[200],
-                    borderRadius: const BorderRadiusDirectional.all(
-                      Radius.circular(10),
-                    ),
-                  ),
-                  margin: const EdgeInsets.only(right: 10),
-                  alignment: Alignment.center,
-                  width: 75,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        e['bulan'],
-                        style: e['no'] == controller.selectedMonth
-                            ? blackFontStyle1.copyWith(color: white)
-                            : blackFontStyle1,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            )
-            .toList(),
-      ),
-    );
-  }
-
-  _listToDo(int lenght) {
+  _listToDo(int lenght, {List<MonthlyModel>? monthly}) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10),
-      child: ListView.builder(
-        itemBuilder: (context, index) => GestureDetector(
-          child: Card(
-            margin: const EdgeInsets.symmetric(vertical: 8),
-            borderOnForeground: false,
-            shadowColor: white,
-            shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(
-                Radius.circular(15),
-              ),
-            ),
-            elevation: 10,
-            color: primaryClr,
-            child: ListTile(
-              title: Text(
-                "TODO YANG KE ${index.toString()}",
-                overflow: TextOverflow.ellipsis,
-                style: blackFontStyle2.copyWith(color: white, fontSize: 18),
-              ),
-              subtitle: Text(
-                "ini untuk jam : ${index.toString()} AM/PM",
+      child: monthly != null && monthly.isEmpty
+          ? Center(
+              child: Text(
+                "Tidak ada to do\n ${DateFormat('MMMM - y').format(controller.selectedMonthYear)}",
                 style: blackFontStyle2.copyWith(color: white),
-                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
               ),
+            )
+          : ListView.builder(
+              itemBuilder: (context, index) => monthly != null
+                  ? CardMonthly(
+                      index: index,
+                      monthly: controller.monthly[index],
+                    )
+                  : Card(
+                      shape: RoundedRectangleBorder(
+                        side: BorderSide(width: 0.2, color: greyColor),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      elevation: 3,
+                      child: Container(
+                        alignment: Alignment.center,
+                        height: 60,
+                        width: double.infinity,
+                        padding: const EdgeInsetsDirectional.only(bottom: 10),
+                      ),
+                    ),
+              itemCount: lenght,
             ),
-          ),
-        ),
-        itemCount: lenght,
-        padding: const EdgeInsetsDirectional.only(bottom: 10),
-      ),
     );
   }
 }

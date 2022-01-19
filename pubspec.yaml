@@ -9,8 +9,8 @@ dependencies:
   calendar_timeline: ^1.0.4
   connectivity: ^3.0.6
   cupertino_icons: ^1.0.2
-  date_picker_timeline: ^1.2.3
   equatable: ^2.0.3
+  extended_masked_text: ^2.3.1
   flutter:
     sdk: flutter
   get: ^4.3.8
@@ -18,11 +18,11 @@ dependencies:
   http: ^0.13.4
   intl: ^0.17.0
   material_design_icons_flutter: ^5.0.6295
-  numberpicker: ^2.1.1
+  month_picker_dialog: ^0.4.0
+  onesignal_flutter: ^3.2.7
   shared_preferences: ^2.0.8
   shimmer: ^2.0.0
   supercharged: ^2.1.1
-  week_of_year: ^2.0.0
 
 dev_dependencies:
   flutter_lints: ^1.0.0

@@ -47,7 +47,7 @@ class DailyTodo extends StatelessWidget {
       elevation: 0,
       centerTitle: true,
       title: Text(
-        'Daily Todo',
+        'Daily To Do List',
         style: blackFontStyle3.copyWith(
           color: white,
         ),

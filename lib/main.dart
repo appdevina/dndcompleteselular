@@ -1,11 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:todolist_complete/controller/controllers.dart';
 import 'package:todolist_complete/ui/screen/screens.dart';
 import 'package:supercharged/supercharged.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 
-void main() {
-  Get.put(LoginController());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  //Remove this method to stop OneSignal Debugging
+  OneSignal.shared.setLogLevel(OSLogLevel.verbose, OSLogLevel.none);
+
+  OneSignal.shared.setAppId("2edc35b0-dfab-42c0-9555-5bda70459f7c");
+  OneSignal.shared.promptUserForPushNotificationPermission().then((accepted) {
+    print("Accepted permission: $accepted");
+  });
+
   runApp(const MyApp());
 }
 

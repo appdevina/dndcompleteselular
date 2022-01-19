@@ -12,11 +12,21 @@ class WeeklyToDo extends StatelessWidget {
         child: Column(
           children: [
             GetBuilder<WeeklyController>(
-              id: 'month',
+              id: 'week',
               builder: (_) => _addWeek(context),
             ),
             Expanded(
-              child: _listToDo(20),
+              child: GetBuilder<WeeklyController>(
+                id: 'weekly',
+                builder: (_) => controller.isLoading.value
+                    ? Shimmer.fromColors(
+                        child: _listToDo(10),
+                        highlightColor: Colors.grey[300]!,
+                        baseColor: Colors.grey[100]!,
+                      )
+                    : _listToDo(controller.weekly.length,
+                        weekly: controller.weekly),
+              ),
             ),
           ],
         ),
@@ -38,7 +48,7 @@ class WeeklyToDo extends StatelessWidget {
       elevation: 0,
       centerTitle: true,
       title: Text(
-        'Weekly ToDo',
+        'Weekly Objective',
         style: blackFontStyle3.copyWith(color: white),
       ),
       actions: [
@@ -65,75 +75,201 @@ class WeeklyToDo extends StatelessWidget {
 
   _addWeek(BuildContext context) {
     return Container(
-        width: MediaQuery.of(context).size.width - 20,
-        padding: const EdgeInsets.symmetric(vertical: 10),
-        decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                "95D1CC".toColor(),
-                "F6F2D4".toColor(),
-              ],
-              begin: Alignment.bottomLeft,
-              end: Alignment.topRight,
+      color: "22577E".toColor(),
+      width: double.infinity,
+      margin: const EdgeInsets.only(bottom: 4),
+      padding: const EdgeInsets.only(left: 10),
+      child: Row(
+        children: [
+          Column(
+            children: [
+              _week(context),
+              _year(context),
+            ],
+          ),
+          Expanded(
+            child: SizedBox(
+              child: Text(
+                "17 Jan - 22 Jan",
+                textAlign: TextAlign.center,
+                style: blackFontStyle1.copyWith(
+                    letterSpacing: 2, color: "b6defa".toColor()),
+              ),
             ),
-            borderRadius: BorderRadiusDirectional.circular(10)),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Text(
-              "WEEK",
-              style: blackFontStyle3.copyWith(letterSpacing: 2),
-            ),
-            NumberPicker(
-                itemWidth: 60,
-                minValue: 1,
-                axis: Axis.horizontal,
-                maxValue: 52,
-                itemCount: 5,
-                selectedTextStyle:
-                    blackFontStyle1.copyWith(color: Colors.blue[400]),
-                decoration: BoxDecoration(
-                    border: Border.all(color: greyColor),
-                    borderRadius: BorderRadiusDirectional.circular(10)),
-                value: controller.selectedWeek,
-                textStyle: blackFontStyle3.copyWith(color: greyColor),
-                onChanged: (int value) => controller.changeWeek(value)),
-          ],
-        ));
+          )
+        ],
+      ),
+    );
   }
 
-  _listToDo(int lenght) {
+  _listToDo(int lenght, {List<WeeklyModel>? weekly}) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10),
-      child: ListView.builder(
-        itemBuilder: (context, index) => GestureDetector(
-          child: Card(
-            margin: const EdgeInsets.symmetric(vertical: 8),
-            borderOnForeground: false,
-            shadowColor: white,
-            shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(
-                Radius.circular(15),
-              ),
-            ),
-            elevation: 10,
-            color: primaryClr,
-            child: ListTile(
-              title: Text(
-                "TODO YANG KE ${index.toString()}",
-                overflow: TextOverflow.ellipsis,
-                style: blackFontStyle2.copyWith(color: white, fontSize: 18),
-              ),
-              subtitle: Text(
-                "ini untuk jam : ${index.toString()} AM/PM",
+      child: weekly != null && weekly.isEmpty
+          ? Center(
+              child: Text(
+                "Tidak ada to do\n week ${controller.selectedWeek} tahun ${controller.selectedYear}",
                 style: blackFontStyle2.copyWith(color: white),
-                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
               ),
+            )
+          : ListView.builder(
+              itemBuilder: (context, index) => weekly != null
+                  ? CardWeekly(
+                      index: index,
+                      weekly: controller.weekly[index],
+                    )
+                  : Card(
+                      shape: RoundedRectangleBorder(
+                        side: BorderSide(width: 0.2, color: greyColor),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      elevation: 3,
+                      child: Container(
+                        alignment: Alignment.center,
+                        height: 60,
+                        width: double.infinity,
+                        padding: const EdgeInsetsDirectional.only(bottom: 10),
+                      ),
+                    ),
+              itemCount: lenght,
             ),
+    );
+  }
+
+  _week(BuildContext context) {
+    return SizedBox(
+      width: 150,
+      height: 50,
+      child: Row(
+        children: [
+          Column(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              Row(
+                children: [
+                  IconButton(
+                      onPressed: () => controller.buttonWeek(false)
+                          ? null
+                          : snackbar(context, false,
+                              "Tidak bisa kurang dari week ${controller.minWeek}"),
+                      icon: const Icon(
+                        MdiIcons.minusCircle,
+                        color: white,
+                      )),
+                  Container(
+                    decoration: BoxDecoration(
+                        // border: Border.all(width: 1, color: white),
+                        borderRadius: BorderRadius.circular(10)),
+                    width: 50,
+                    height: 50,
+                    padding: EdgeInsets.only(
+                        left: controller.weekNumber.text.length > 1 ? 10 : 16,
+                        bottom: 3),
+                    child: TextField(
+                      keyboardType: TextInputType.number,
+                      onSubmitted: (val) {
+                        if (val.isNotEmpty) {
+                          if (val.toInt()! < 1) {
+                            snackbar(
+                                context, false, "Tidak bisa kurang dari 1");
+                            controller.selectedWeek = 1;
+                            controller.weekNumber.text = "1";
+                            controller.changeWeek(controller.selectedWeek);
+                          } else if (val.toInt()! > 52) {
+                            snackbar(
+                                context, false, "Tidak bisa lebih dari 52");
+                            controller.selectedWeek = 52;
+                            controller.weekNumber.text = "52";
+                            controller.changeWeek(controller.selectedWeek);
+                          } else {
+                            controller.changeWeek(val.toInt()!);
+                          }
+                        }
+                      },
+                      decoration: const InputDecoration(
+                        border: InputBorder.none,
+                      ),
+                      controller: controller.weekNumber,
+                      style:
+                          blackFontStyle1.copyWith(color: white, fontSize: 30),
+                    ),
+                  ),
+                  IconButton(
+                      onPressed: () => controller.buttonWeek(true),
+                      icon: const Icon(
+                        MdiIcons.plusCircle,
+                        color: white,
+                      )),
+                ],
+              ),
+            ],
           ),
-        ),
-        itemCount: lenght,
-        padding: const EdgeInsetsDirectional.only(bottom: 10),
+        ],
+      ),
+    );
+  }
+
+  _year(BuildContext context) {
+    return SizedBox(
+      width: 150,
+      height: 50,
+      child: Row(
+        children: [
+          Column(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              Row(
+                children: [
+                  IconButton(
+                      onPressed: () => controller.buttonYear(false)
+                          ? null
+                          : snackbar(context, false,
+                              "Tidak bisa kurang dari tahun ${controller.minyear}"),
+                      icon: const Icon(
+                        MdiIcons.minusCircle,
+                        color: white,
+                      )),
+                  Container(
+                    decoration:
+                        BoxDecoration(borderRadius: BorderRadius.circular(10)),
+                    width: 50,
+                    height: 50,
+                    padding: const EdgeInsets.only(left: 8, bottom: 3),
+                    child: TextField(
+                      keyboardType: TextInputType.number,
+                      onSubmitted: (val) {
+                        if (val.isNotEmpty) {
+                          if (val.toInt()! < controller.minyear) {
+                            snackbar(context, false,
+                                "Tidak bisa kurang dari tahun ${controller.minyear}");
+                            controller.selectedYear = 2022;
+                            controller.yearNumber.text = "2022";
+                            controller.changeWeek(controller.selectedYear);
+                          } else {
+                            controller.changeWeek(val.toInt()!);
+                          }
+                        }
+                      },
+                      decoration: const InputDecoration(
+                        border: InputBorder.none,
+                      ),
+                      controller: controller.yearNumber,
+                      style:
+                          blackFontStyle1.copyWith(color: white, fontSize: 15),
+                    ),
+                  ),
+                  IconButton(
+                      onPressed: () => controller.buttonYear(true),
+                      icon: const Icon(
+                        MdiIcons.plusCircle,
+                        color: white,
+                      )),
+                ],
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
