@@ -18,8 +18,8 @@ class AddTaskDaily extends StatelessWidget {
               children: [
                 Obx(
                   () => Checkbox(
-                      checkColor: white,
-                      fillColor: MaterialStateProperty.resolveWith(getColor),
+                      fillColor: MaterialStateProperty.all(white),
+                      checkColor: Colors.green,
                       value: controller.tambahan.value,
                       onChanged: (_) {
                         controller.changeTambahan();
@@ -81,6 +81,21 @@ class AddTaskDaily extends StatelessWidget {
                 ],
               ),
             ),
+            const Spacer(),
+            Obx(() => controller.tambahan.value
+                ? Container(
+                    padding: const EdgeInsetsDirectional.all(10),
+                    height: 20,
+                    margin: const EdgeInsetsDirectional.only(bottom: 8),
+                    width: double.infinity,
+                    child: Text(
+                      "*Batas waktu input tambahan daily hari sebelumnya sampai (H+1) jam 10",
+                      style:
+                          blackFontStyle3.copyWith(color: white, fontSize: 10),
+                      overflow: TextOverflow.visible,
+                    ),
+                  )
+                : const SizedBox())
           ],
         ),
       ),

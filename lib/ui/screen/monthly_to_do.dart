@@ -70,7 +70,7 @@ class MonthlyToDo extends StatelessWidget {
 
   _pickMonth(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -88,8 +88,8 @@ class MonthlyToDo extends StatelessWidget {
             ),
           ),
           MyButton(
-            height: 50,
-            width: 120,
+            height: 40,
+            width: 100,
             label: "CHANGE",
             onTap: () => showMonthPicker(
               context: context,

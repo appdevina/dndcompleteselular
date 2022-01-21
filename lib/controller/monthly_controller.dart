@@ -47,10 +47,7 @@ class MonthlyController extends GetxController {
     selectedMonthYear = DateTime.now();
     minMonthYear = DateTime(2022, 1);
     valueResult = MoneyMaskedTextController(
-        initialValue: 0,
-        precision: 0,
-        thousandSeparator: '.',
-        decimalSeparator: '');
+        precision: 0, thousandSeparator: '.', decimalSeparator: '');
     getMonthlyObjective(selectedMonthYear.year, selectedMonthYear.month);
     super.onInit();
   }

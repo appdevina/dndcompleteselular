@@ -98,8 +98,7 @@ class WeeklyController extends GetxController {
 
   Future<ApiReturnValue<bool>> changeStatus(int week, int id, String type,
       {int? value}) async {
-    ApiReturnValue<List<WeeklyModel>> result =
-        await WeeklyService.changeStatus(week, id, type, value: value);
+    await WeeklyService.changeStatus(week, id, type, value: value);
 
     update(['weekly']);
     return ApiReturnValue(value: true, message: "berhasil merubah");
@@ -110,15 +109,22 @@ class WeeklyController extends GetxController {
     selectedWeek = numOfWeeks(DateTime.now());
     weekNumber = TextEditingController(text: selectedWeek.toString());
     valueResult = MoneyMaskedTextController(
-        initialValue: 0,
-        precision: 0,
-        thousandSeparator: '.',
-        decimalSeparator: '');
+      precision: 0,
+      thousandSeparator: '.',
+      decimalSeparator: '',
+    );
     selectedYear = DateTime.now().year;
     minWeek = 1;
     yearNumber = TextEditingController(text: DateTime.now().year.toString());
     minyear = 2022;
     getWeekObjective(selectedYear, selectedWeek);
     super.onInit();
+  }
+
+  @override
+  void onClose() {
+    weekNumber.dispose();
+    yearNumber.dispose();
+    super.onClose();
   }
 }

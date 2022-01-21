@@ -24,7 +24,7 @@ class DailyController extends GetxController {
   Future<ApiReturnValue<bool>> changeStatus(int id) async {
     HomePageController home = Get.find();
     ApiReturnValue<List<DailyModel>> result =
-        await DailyService.changeStatus('18-01-2022', id);
+        await DailyService.changeStatus('21-01-2022', id);
 
     home.daily = result.value;
     daily = result.value;

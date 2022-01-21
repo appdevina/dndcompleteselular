@@ -5,7 +5,9 @@ class WeeklyAddTaskController extends GetxController {
   late TextEditingController title, week, year;
   late int selectedWeek, selectedYear, minWeek, minyear;
   RxBool check = false.obs;
+  RxBool tambahan = false.obs;
   late MoneyMaskedTextController valueCon;
+  int maxWeek = 52;
 
   void changeWeek(int val) {
     selectedWeek = val;
@@ -15,9 +17,24 @@ class WeeklyAddTaskController extends GetxController {
     selectedYear = val;
   }
 
+  void changeTambahan() {
+    tambahan.toggle();
+    minWeek = tambahan.value
+        ? numOfWeeks(DateTime.now()) == 1
+            ? 1
+            : DateFormat('E').format(DateTime.now()) == "Mon"
+                ? numOfWeeks(DateTime.now()) - 1
+                : numOfWeeks(DateTime.now())
+        : numOfWeeks(DateTime.now());
+    maxWeek = tambahan.value ? numOfWeeks(DateTime.now()) : 52;
+    selectedWeek = minWeek;
+    week.text = minWeek.toString();
+    update(['week']);
+  }
+
   bool buttonWeek(bool isAdd) {
     if (isAdd) {
-      if (selectedWeek == 52) {
+      if (selectedWeek == maxWeek) {
         null;
         return false;
       } else {
@@ -75,10 +92,10 @@ class WeeklyAddTaskController extends GetxController {
         precision: 0,
         thousandSeparator: '.',
         decimalSeparator: '');
-    week = TextEditingController(text: numOfWeeks(DateTime.now()).toString());
-    year = TextEditingController(text: DateTime.now().year.toString());
     selectedWeek = numOfWeeks(DateTime.now());
     selectedYear = DateTime.now().year;
+    week = TextEditingController(text: selectedWeek.toString());
+    year = TextEditingController(text: selectedYear.toString());
     minWeek = numOfWeeks(DateTime.now());
     minyear = DateTime.now().year;
     super.onInit();
@@ -88,6 +105,8 @@ class WeeklyAddTaskController extends GetxController {
   void onClose() {
     title.dispose();
     valueCon.dispose();
+    week.dispose();
+    year.dispose();
     super.onClose();
   }
 }

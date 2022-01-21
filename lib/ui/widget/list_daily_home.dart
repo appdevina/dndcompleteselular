@@ -40,7 +40,7 @@ class CardDailyHome extends GetView<HomePageController> {
                     daily.time!,
                     style: blackFontStyle2.copyWith(
                         wordSpacing: 1,
-                        fontSize: 12,
+                        fontSize: 10,
                         color: greyColor,
                         fontWeight: FontWeight.w600),
                     overflow: TextOverflow.ellipsis,

@@ -86,8 +86,8 @@ class HomePage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               GestureDetector(
-                onTap: () =>
-                    snackbar(context, false, "Fitur belum proses develop"),
+                onTap: () => Get.to(() => const Result(),
+                    transition: Transition.cupertino),
                 child: _menuItem('result.png', 'Result'),
               ),
               GestureDetector(

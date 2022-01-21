@@ -14,6 +14,23 @@ class AddTaskWeekly extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Row(
+              children: [
+                Obx(
+                  () => Checkbox(
+                      fillColor: MaterialStateProperty.all(white),
+                      checkColor: Colors.green,
+                      value: controller.tambahan.value,
+                      onChanged: (_) {
+                        controller.changeTambahan();
+                      }),
+                ),
+                Text(
+                  "Extra Task ?",
+                  style: blackFontStyle3.copyWith(color: white),
+                )
+              ],
+            ),
             MyInputField(
               isPassword: false,
               title: "Your Task",
@@ -100,6 +117,21 @@ class AddTaskWeekly extends StatelessWidget {
                   height: 50,
                   width: 100),
             ),
+            const Spacer(),
+            Obx(() => controller.tambahan.value
+                ? Container(
+                    padding: const EdgeInsetsDirectional.all(10),
+                    height: 20,
+                    margin: const EdgeInsetsDirectional.only(bottom: 8),
+                    width: double.infinity,
+                    child: Text(
+                      "*Batas waktu input tambahan weekly sebelumnya sampai hari senin jam 10",
+                      style:
+                          blackFontStyle3.copyWith(color: white, fontSize: 10),
+                      overflow: TextOverflow.visible,
+                    ),
+                  )
+                : const SizedBox())
           ],
         ),
       ),
@@ -182,11 +214,12 @@ class AddTaskWeekly extends StatelessWidget {
                               controller.week.text =
                                   controller.minWeek.toString();
                               controller.changeWeek(controller.selectedWeek);
-                            } else if (val.toInt()! > 52) {
-                              snackbar(
-                                  context, false, "Tidak bisa lebih dari 52");
-                              controller.selectedWeek = 52;
-                              controller.week.text = "52";
+                            } else if (val.toInt()! > controller.maxWeek) {
+                              snackbar(context, false,
+                                  "Tidak bisa lebih dari ${controller.maxWeek}");
+                              controller.selectedWeek = controller.minWeek;
+                              controller.week.text =
+                                  controller.minWeek.toString();
                               controller.changeWeek(controller.selectedWeek);
                             } else {
                               controller.changeWeek(val.toInt()!);
@@ -206,7 +239,7 @@ class AddTaskWeekly extends StatelessWidget {
                         onPressed: () => controller.buttonWeek(true)
                             ? null
                             : snackbar(context, false,
-                                "Tidak bisa lebih dari week 52"),
+                                "Tidak bisa lebih dari week ${controller.maxWeek}"),
                         icon: const Icon(
                           MdiIcons.plusCircle,
                           color: white,

@@ -40,7 +40,7 @@ class CardWeekly extends GetView<WeeklyController> {
                     "WEEKLY ${weekly.type! == 'NON' ? "NON RESULT" : "RESULT"}",
                     style: blackFontStyle2.copyWith(
                         wordSpacing: 1,
-                        fontSize: 12,
+                        fontSize: 10,
                         color: greyColor,
                         fontWeight: FontWeight.w600),
                     overflow: TextOverflow.ellipsis,
@@ -49,7 +49,7 @@ class CardWeekly extends GetView<WeeklyController> {
                     "${weekly.task!.toUpperCase()} ${weekly.type != "NON" ? controller.formatNumber(weekly.valPlan!.toString()) : ""}",
                     style: blackFontStyle2.copyWith(
                       wordSpacing: 1,
-                      fontSize: 14,
+                      fontSize: 12,
                     ),
                     overflow: TextOverflow.ellipsis,
                   ),

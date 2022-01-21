@@ -40,16 +40,16 @@ class CardMonthly extends GetView<MonthlyController> {
                     "MONTHLY ${monthly.type! == 'NON' ? "NON RESULT" : "RESULT"}",
                     style: blackFontStyle2.copyWith(
                         wordSpacing: 1,
-                        fontSize: 12,
+                        fontSize: 10,
                         color: greyColor,
                         fontWeight: FontWeight.w600),
                     overflow: TextOverflow.ellipsis,
                   ),
                   Text(
-                    "${monthly.task!.toUpperCase()} ${monthly.type != "NON" ? controller.formatNumber(monthly.valPlan!.toString()) : ""}",
+                    monthly.task!.toUpperCase(),
                     style: blackFontStyle2.copyWith(
                       wordSpacing: 1,
-                      fontSize: 14,
+                      fontSize: 12,
                     ),
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -172,7 +172,7 @@ class CardMonthly extends GetView<MonthlyController> {
           ),
           MyInputField(
             title: "Value Actual",
-            hint: "Value",
+            hint: "Value Actual",
             isPassword: false,
             controllerText: controller.valueResult,
             typeInput: TextInputType.number,

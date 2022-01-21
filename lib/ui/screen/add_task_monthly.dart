@@ -14,6 +14,23 @@ class AddTaskMonthly extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Row(
+              children: [
+                Obx(
+                  () => Checkbox(
+                      fillColor: MaterialStateProperty.all(white),
+                      checkColor: Colors.green,
+                      value: controller.tambahan.value,
+                      onChanged: (_) {
+                        controller.changeTambahan();
+                      }),
+                ),
+                Text(
+                  "Extra Task ?",
+                  style: blackFontStyle3.copyWith(color: white),
+                )
+              ],
+            ),
             MyInputField(
               isPassword: false,
               title: "Your Task",
@@ -95,6 +112,21 @@ class AddTaskMonthly extends StatelessWidget {
               child: MyButton(
                   label: "Submit", onTap: () {}, height: 50, width: 100),
             ),
+            const Spacer(),
+            Obx(() => controller.tambahan.value
+                ? Container(
+                    padding: const EdgeInsetsDirectional.all(10),
+                    height: 20,
+                    margin: const EdgeInsetsDirectional.only(bottom: 8),
+                    width: double.infinity,
+                    child: Text(
+                      "*Batas waktu input tambahan monthly sebelumnya (H+5) bulan berikutnya",
+                      style:
+                          blackFontStyle3.copyWith(color: white, fontSize: 10),
+                      overflow: TextOverflow.visible,
+                    ),
+                  )
+                : const SizedBox())
           ],
         ),
       ),
@@ -125,11 +157,9 @@ class AddTaskMonthly extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Expanded(
             child: SizedBox(
-              width: double.infinity,
               child: GetBuilder<MonthlyAddTaskController>(
                 id: 'month',
                 builder: (_) => Text(
@@ -140,14 +170,14 @@ class AddTaskMonthly extends StatelessWidget {
             ),
           ),
           MyButton(
-            height: 45,
-            width: 120,
+            height: 40,
+            width: 100,
             label: "CHANGE",
             onTap: () => showMonthPicker(
               context: context,
               initialDate: controller.selectedMonth,
               firstDate: controller.minMonth,
-              lastDate: DateTime(2025),
+              lastDate: controller.maxMonth,
             ).then((value) =>
                 value != null ? controller.changeMonth(value) : null),
           )

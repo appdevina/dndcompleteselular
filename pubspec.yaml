@@ -11,6 +11,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   equatable: ^2.0.3
   extended_masked_text: ^2.3.1
+  fl_chart: ^0.41.0
   flutter:
     sdk: flutter
   get: ^4.3.8
