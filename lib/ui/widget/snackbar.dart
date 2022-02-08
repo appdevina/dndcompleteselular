@@ -1,9 +1,9 @@
 part of 'widgets.dart';
 
-snackbar(BuildContext context, bool status, String message) {
+snackbar(BuildContext context, bool status, String message, {int? duration}) {
   return ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
-      duration: const Duration(milliseconds: 900),
+      duration: Duration(milliseconds: duration ?? 2000),
       elevation: 10,
       content: Text(
         message,

@@ -2,11 +2,11 @@ part of 'controllers.dart';
 
 class WeeklyAddTaskController extends GetxController {
   final GlobalKey key = GlobalKey<FormState>();
-  late TextEditingController title, week, year;
+  late TextEditingController task, week, year;
   late int selectedWeek, selectedYear, minWeek, minyear;
-  RxBool check = false.obs;
+  RxBool isResult = false.obs;
   RxBool tambahan = false.obs;
-  late MoneyMaskedTextController valueCon;
+  late MoneyMaskedTextController resultValue;
   int maxWeek = 52;
 
   void changeWeek(int val) {
@@ -79,15 +79,42 @@ class WeeklyAddTaskController extends GetxController {
     }
   }
 
+  Future<ApiReturnValue<bool>> submit({
+    required bool extraTask,
+    required String taskVal,
+    required int week,
+    required int year,
+    required bool isResultVal,
+    String? resultValueText,
+  }) async {
+    ApiReturnValue<bool> result = await WeeklyService.submit(
+      extraTask: extraTask,
+      task: taskVal,
+      week: week,
+      year: year,
+      isResult: isResultVal,
+      resultValue: resultValueText,
+    );
+    if (result.value!) {
+      task.clear();
+      resultValue.clear();
+      tambahan.value = false;
+      isResult.value = false;
+      update();
+    }
+
+    return result;
+  }
+
   int numOfWeeks(DateTime now) {
     int numberWeek = int.parse(DateFormat("D").format(now));
-    return ((numberWeek - now.weekday + 10) / 7).floor() + 1;
+    return ((numberWeek - now.weekday + 10) / 7).floor();
   }
 
   @override
   void onInit() {
-    title = TextEditingController();
-    valueCon = MoneyMaskedTextController(
+    task = TextEditingController();
+    resultValue = MoneyMaskedTextController(
         initialValue: 0,
         precision: 0,
         thousandSeparator: '.',
@@ -97,14 +124,14 @@ class WeeklyAddTaskController extends GetxController {
     week = TextEditingController(text: selectedWeek.toString());
     year = TextEditingController(text: selectedYear.toString());
     minWeek = numOfWeeks(DateTime.now());
-    minyear = DateTime.now().year;
+    minyear = DateTime(2022).year;
     super.onInit();
   }
 
   @override
   void onClose() {
-    title.dispose();
-    valueCon.dispose();
+    task.dispose();
+    resultValue.dispose();
     week.dispose();
     year.dispose();
     super.onClose();

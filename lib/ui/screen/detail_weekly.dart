@@ -1,7 +1,7 @@
 part of 'screens.dart';
 
-class DetailDaily extends GetView<ResultController> {
-  const DetailDaily({
+class DetailWeekly extends GetView<ResultController> {
+  const DetailWeekly({
     Key? key,
   }) : super(key: key);
 
@@ -14,44 +14,38 @@ class DetailDaily extends GetView<ResultController> {
         height: double.infinity,
         decoration: BoxDecoration(borderRadius: BorderRadius.circular(15)),
         padding: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
-        child: GetBuilder<ResultController>(
-          id: 'dailys',
-          builder: (_) => ListView.builder(
-            itemBuilder: (context, index) => Card(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 10, vertical: 15),
-                    width: double.infinity,
-                    child: Row(
+        child: Card(
+          elevation: 10,
+          child: ListView(
+            children: [
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+                width: double.infinity,
+                child: Column(
+                  children: [
+                    Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          "Tanggal : ${index + 1}",
+                          "Week : 4",
                           style: blackFontStyle2,
                         ),
                         Text(
-                          "${controller.dailys[index].where((element) => element.status!).toList().length} / ${controller.dailys[index].where((element) => element.isPlan!).toList().length}",
+                          "${controller.weeklies.where((element) => element.value != 0.0).toList().length} / ${controller.weeklies.length}",
                           style: blackFontStyle3,
                         )
                       ],
                     ),
-                  ),
-                  const Divider(
-                    height: 2,
-                    color: Colors.black,
-                  ),
-                  ...controller.dailys[index]
-                      .map(
-                        (e) => _task(e),
-                      )
-                      .toList(),
-                ],
+                    const Divider(
+                      height: 2,
+                      color: Colors.black,
+                    ),
+                    ...controller.weeklies.map((e) => _task(e)).toList()
+                  ],
+                ),
               ),
-            ),
-            itemCount: controller.dailys.length,
+            ],
           ),
         ),
       ),
@@ -72,16 +66,15 @@ class DetailDaily extends GetView<ResultController> {
       elevation: 0,
       centerTitle: true,
       title: Text(
-        'Detail Result Daily',
+        'Detail Result Weekly',
         style: blackFontStyle3.copyWith(color: white),
       ),
     );
   }
 
-  _task(DailyModel e) {
+  _task(WeeklyModel e) {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 5),
-      padding: const EdgeInsets.symmetric(horizontal: 10),
       child: Row(
         children: [
           Expanded(
@@ -89,7 +82,7 @@ class DetailDaily extends GetView<ResultController> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  e.time ?? 'Extra Task',
+                  "WEEKLY ${e.type! == 'NON' ? "NON RESULT" : "RESULT"} ${e.isAdd! ? '' : '(Extra Task)'}",
                   style:
                       blackFontStyle3.copyWith(fontSize: 12, color: greyColor),
                   overflow: TextOverflow.ellipsis,
@@ -99,6 +92,13 @@ class DetailDaily extends GetView<ResultController> {
                   style: blackFontStyle1.copyWith(fontSize: 14),
                   maxLines: 1,
                 ),
+                e.type! == 'RESULT'
+                    ? Text(
+                        "Plan : ${controller.formatNumber('${e.valPlan}')} <> Actual : ${controller.formatNumber(e.valAct!.floor().toInt().toString())}",
+                        style: blackFontStyle1.copyWith(fontSize: 10),
+                        overflow: TextOverflow.ellipsis,
+                      )
+                    : const SizedBox(),
               ],
             ),
           ),
@@ -106,14 +106,14 @@ class DetailDaily extends GetView<ResultController> {
             alignment: Alignment.center,
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(15),
-                color: e.status! ? Colors.green[100] : Colors.red[100]),
+                color: e.value! != 0.0 ? Colors.green[100] : Colors.red[100]),
             width: 60,
             height: 20,
             child: Text(
-              e.status! ? "Closed" : 'Open',
+              e.value! != 0.0 ? "Closed" : 'Open',
               style: blackFontStyle3.copyWith(
                   fontSize: 10,
-                  color: e.status! ? Colors.green[500] : Colors.red[500]),
+                  color: e.value! != 0.0 ? Colors.green[500] : Colors.red[500]),
               textAlign: TextAlign.center,
             ),
           ),

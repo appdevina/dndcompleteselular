@@ -8,17 +8,19 @@ class WeeklyController extends GetxController {
   late List<WeeklyModel> weekly;
   late TextEditingController weekNumber, yearNumber;
   late MoneyMaskedTextController valueResult;
+  RxString date = '-'.obs;
 
   int numOfWeeks(DateTime now) {
     int numberWeek = int.parse(DateFormat("D").format(now));
     return ((numberWeek - now.weekday + 10) / 7).floor();
   }
 
-  void getWeekObjective(int year, int week) async {
+  void getWeekObjective(int year, int week, {bool? isloading}) async {
     ApiReturnValue<List<WeeklyModel>> result =
-        await WeeklyService.getWeekly(year, week);
+        await WeeklyService.getWeekly(week: week, year: year);
+    await getDate(week, year);
     weekly = result.value!;
-    isLoading.toggle();
+    isloading ?? isLoading.toggle();
     update(['weekly']);
   }
 
@@ -34,6 +36,13 @@ class WeeklyController extends GetxController {
         int.parse(s),
       );
 
+  Future<ApiReturnValue<String>> getDate(int week, int year) async {
+    ApiReturnValue<String> result =
+        await WeeklyService.getDate(week: week, year: year);
+    date.value = result.value!;
+    return result;
+  }
+
   void changeWeek(int val) {
     isLoading.toggle();
     update(['weekly']);
@@ -43,11 +52,7 @@ class WeeklyController extends GetxController {
   }
 
   Color getColor(String type, WeeklyModel weekly) {
-    if (type == "NON") {
-      return weekly.statNon! ? Colors.green[400]! : Colors.green[100]!;
-    } else {
-      return weekly.statRes == 0.0 ? Colors.green[100]! : Colors.green[400]!;
-    }
+    return weekly.value != 0.0 ? Colors.green[400]! : Colors.green[100]!;
   }
 
   bool buttonYear(bool isAdd) {
@@ -96,16 +101,16 @@ class WeeklyController extends GetxController {
     }
   }
 
-  Future<ApiReturnValue<bool>> changeStatus(int week, int id, String type,
+  Future<ApiReturnValue<bool>> changeStatus(int id, String type,
       {int? value}) async {
-    await WeeklyService.changeStatus(week, id, type, value: value);
-
-    update(['weekly']);
-    return ApiReturnValue(value: true, message: "berhasil merubah");
+    ApiReturnValue<bool> result =
+        await WeeklyService.changeStatus(id: id, type: type, value: value);
+    getWeekObjective(selectedYear, selectedWeek, isloading: true);
+    return result;
   }
 
   @override
-  void onInit() {
+  void onInit() async {
     selectedWeek = numOfWeeks(DateTime.now());
     weekNumber = TextEditingController(text: selectedWeek.toString());
     valueResult = MoneyMaskedTextController(

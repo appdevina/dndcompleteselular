@@ -2,44 +2,141 @@ part of 'services.dart';
 
 class WeeklyService {
   static Future<ApiReturnValue<List<WeeklyModel>>> getWeekly(
-      int year, int week) async {
+      {required int week, required int year, http.Client? client}) async {
     try {
-      await Future.delayed(const Duration(seconds: 2));
-      if (week == 3 && year == 2022) {
-        return ApiReturnValue(value: mockWeekly, message: "berhasil");
+      client ??= http.Client();
+      String url = baseUrl + 'weekly?week=$week&year=$year';
+      Uri uri = Uri.parse(url);
+      var response = await client.get(
+        uri,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': token,
+        },
+      );
+
+      if (response.statusCode != 200) {
+        var data = jsonDecode(response.body);
+        String message = data['meta']['message'];
+        return ApiReturnValue(value: [], message: message);
       }
-      return ApiReturnValue(value: [], message: "berhasil");
+      var data = jsonDecode(response.body);
+      String message = data['meta']['message'];
+
+      List<WeeklyModel> value = (data['data'] as Iterable)
+          .map(((e) => WeeklyModel.fromJson(e)))
+          .toList();
+
+      return ApiReturnValue(value: value, message: message);
     } catch (e) {
-      return ApiReturnValue(value: [], message: "gagal");
+      return ApiReturnValue(value: [], message: e.toString());
     }
   }
 
-  static Future<ApiReturnValue<List<WeeklyModel>>> changeStatus(
-    int week,
-    int id,
-    String type, {
-    int? value,
+  static Future<ApiReturnValue<bool>> submit({
+    required bool extraTask,
+    required String task,
+    required int week,
+    required int year,
+    required bool isResult,
+    String? resultValue,
+    http.Client? client,
   }) async {
     try {
-      await Future.delayed(const Duration(seconds: 1));
-      if (week == 3) {
-        for (WeeklyModel week in mockWeekly) {
-          if (week.id == id) {
-            if (type == "NON") {
-              week.statNon = !week.statNon!;
-              week.value = 1;
-            } else {
-              week.statRes = ((value! / week.valPlan!) * 100).toDouble();
-              week.value = week.statRes;
-            }
-          }
-        }
-      }
+      client ??= http.Client();
 
-      return ApiReturnValue(
-          value: mockWeekly, message: "berhasil merubah status");
+      String url = baseUrl + 'weekly';
+      Uri uri = Uri.parse(url);
+      Map<String, dynamic> body = {
+        'is_add': extraTask,
+        'task': task,
+        'week': week,
+        'year': year,
+        'tipe': isResult ? 'RESULT' : 'NON',
+        'value_plan': isResult ? resultValue : null,
+        'status_non': isResult ? null : false,
+        'status_result': isResult ? false : null,
+        'value_actual': isResult ? 0 : null,
+      };
+
+      var response = await client.post(
+        uri,
+        body: jsonEncode(body),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': token,
+        },
+      );
+
+      if (response.statusCode != 200) {
+        var data = jsonDecode(response.body);
+        String message = data['meta']['message'];
+        return ApiReturnValue(value: false, message: message);
+      }
+      var data = jsonDecode(response.body);
+      String message = data['meta']['message'];
+      return ApiReturnValue(value: true, message: message);
     } catch (e) {
-      return ApiReturnValue(value: [], message: "gagal merubah status");
+      return ApiReturnValue(value: false, message: e.toString());
+    }
+  }
+
+  static Future<ApiReturnValue<bool>> changeStatus({
+    required int id,
+    required String type,
+    int? value,
+    http.Client? client,
+  }) async {
+    try {
+      client ??= http.Client();
+      String url = baseUrl + 'weekly/change';
+      Uri uri = Uri.parse(url);
+      Map<String, dynamic> body = {
+        'id': id,
+        'value': value,
+      };
+
+      var response = await client.post(
+        uri,
+        body: jsonEncode(body),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': token,
+        },
+      );
+
+      if (response.statusCode != 200) {
+        var data = jsonDecode(response.body);
+        String message = data['meta']['message'];
+        return ApiReturnValue(value: false, message: message);
+      }
+      var data = jsonDecode(response.body);
+      String message = data['meta']['message'];
+      return ApiReturnValue(value: true, message: message);
+    } catch (e) {
+      return ApiReturnValue(value: false, message: e.toString());
+    }
+  }
+
+  static Future<ApiReturnValue<String>> getDate(
+      {required int week, required int year, http.Client? client}) async {
+    try {
+      client ??= http.Client();
+      String url = baseUrl + 'date?week=$week&year=$year';
+      Uri uri = Uri.parse(url);
+
+      var response = await client.get(uri);
+
+      if (response.statusCode != 200) {
+        return ApiReturnValue(value: "error");
+      }
+      var data = jsonDecode(response.body);
+
+      String tanggal =
+          "${DateFormat('d MMM').format(DateTime.fromMillisecondsSinceEpoch(data['data']['monday']))} - ${DateFormat('d MMM').format(DateTime.fromMillisecondsSinceEpoch(data['data']['sunday']))}";
+      return ApiReturnValue(value: tanggal);
+    } catch (e) {
+      return ApiReturnValue(value: 'error');
     }
   }
 }

@@ -22,6 +22,11 @@ class AddTaskMonthly extends StatelessWidget {
                       checkColor: Colors.green,
                       value: controller.tambahan.value,
                       onChanged: (_) {
+                        if (_!) {
+                          snackbar(context, false,
+                              "Hanya bisa menambahkan monthly kemarin dan sekarang, untuk monthly kemarin batas maksimal H+5 bulan baru",
+                              duration: 6000);
+                        }
                         controller.changeTambahan();
                       }),
                 ),
@@ -112,21 +117,6 @@ class AddTaskMonthly extends StatelessWidget {
               child: MyButton(
                   label: "Submit", onTap: () {}, height: 50, width: 100),
             ),
-            const Spacer(),
-            Obx(() => controller.tambahan.value
-                ? Container(
-                    padding: const EdgeInsetsDirectional.all(10),
-                    height: 20,
-                    margin: const EdgeInsetsDirectional.only(bottom: 8),
-                    width: double.infinity,
-                    child: Text(
-                      "*Batas waktu input tambahan monthly sebelumnya (H+5) bulan berikutnya",
-                      style:
-                          blackFontStyle3.copyWith(color: white, fontSize: 10),
-                      overflow: TextOverflow.visible,
-                    ),
-                  )
-                : const SizedBox())
           ],
         ),
       ),

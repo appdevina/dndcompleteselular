@@ -21,14 +21,16 @@ class CardWeekly extends GetView<WeeklyController> {
         padding: const EdgeInsets.symmetric(vertical: 10),
         child: Row(
           children: [
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 10),
-              child: SizedBox(
-                height: 30,
-                width: 30,
-                child: Icon(
-                  MdiIcons.calendarMonth,
-                  size: 30,
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 10),
+              height: 30,
+              width: 30,
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage(
+                    'assets/task.png',
+                  ),
+                  fit: BoxFit.fill,
                 ),
               ),
             ),
@@ -37,7 +39,7 @@ class CardWeekly extends GetView<WeeklyController> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "WEEKLY ${weekly.type! == 'NON' ? "NON RESULT" : "RESULT"}",
+                    "WEEKLY ${weekly.type! == 'NON' ? "NON RESULT" : "RESULT"} ${!weekly.isAdd! ? '' : '(Extra Task)'}",
                     style: blackFontStyle2.copyWith(
                         wordSpacing: 1,
                         fontSize: 10,
@@ -45,13 +47,13 @@ class CardWeekly extends GetView<WeeklyController> {
                         fontWeight: FontWeight.w600),
                     overflow: TextOverflow.ellipsis,
                   ),
-                  Text(
+                  SelectableText(
                     "${weekly.task!.toUpperCase()} ${weekly.type != "NON" ? controller.formatNumber(weekly.valPlan!.toString()) : ""}",
+                    maxLines: 1,
                     style: blackFontStyle2.copyWith(
                       wordSpacing: 1,
                       fontSize: 12,
                     ),
-                    overflow: TextOverflow.ellipsis,
                   ),
                 ],
               ),

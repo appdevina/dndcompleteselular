@@ -7,7 +7,6 @@ import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:todolist_complete/model/models.dart';
 import 'package:todolist_complete/service/services.dart';
-import 'package:todolist_complete/shared/shareds.dart';
 import 'package:supercharged/supercharged.dart';
 import 'package:connectivity/connectivity.dart';
 
@@ -20,4 +19,4 @@ part 'monthly_add_task_controller.dart';
 part 'weekly_add_task_controller.dart';
 part 'monthly_controller.dart';
 part 'home_page_controller.dart';
-part 'detail_daily_controller.dart';
+part 'result_controller.dart';

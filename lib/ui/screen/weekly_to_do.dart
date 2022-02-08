@@ -62,7 +62,7 @@ class WeeklyToDo extends StatelessWidget {
           iconSize: 18,
         ),
         IconButton(
-          onPressed: () {},
+          onPressed: () => controller.changeWeek(controller.selectedWeek),
           icon: const Icon(
             MdiIcons.refresh,
             color: white,
@@ -89,11 +89,13 @@ class WeeklyToDo extends StatelessWidget {
           ),
           Expanded(
             child: SizedBox(
-              child: Text(
-                "17 Jan - 22 Jan",
-                textAlign: TextAlign.center,
-                style: blackFontStyle1.copyWith(
-                    letterSpacing: 2, color: "b6defa".toColor()),
+              child: Obx(
+                () => Text(
+                  controller.date.value,
+                  textAlign: TextAlign.center,
+                  style: blackFontStyle1.copyWith(
+                      letterSpacing: 2, color: "b6defa".toColor()),
+                ),
               ),
             ),
           )

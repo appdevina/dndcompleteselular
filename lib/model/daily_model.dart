@@ -5,9 +5,23 @@ class DailyModel extends Equatable {
   final String? task;
   final DateTime? date;
   final String? time;
-  bool? status;
+  final bool? status;
+  final double? ontime;
+  final bool? isPlan;
+  final bool? isUpdate;
+  final UserModel? tag;
 
-  DailyModel({this.id, this.task, this.date, this.time, this.status});
+  const DailyModel({
+    this.id,
+    this.task,
+    this.date,
+    this.status,
+    this.time,
+    this.ontime,
+    this.isPlan,
+    this.isUpdate,
+    this.tag,
+  });
 
   DailyModel copyWith({
     int? id,
@@ -15,6 +29,10 @@ class DailyModel extends Equatable {
     DateTime? date,
     String? time,
     bool? status,
+    double? ontime,
+    bool? isPlan,
+    bool? isUpdate,
+    UserModel? tag,
   }) =>
       DailyModel(
         id: id ?? this.id,
@@ -22,6 +40,10 @@ class DailyModel extends Equatable {
         date: date ?? this.date,
         time: time ?? this.time,
         status: status ?? this.status,
+        ontime: ontime ?? this.ontime,
+        isPlan: isPlan ?? this.isPlan,
+        isUpdate: isUpdate ?? this.isUpdate,
+        tag: tag ?? this.tag,
       );
 
   @override
@@ -30,52 +52,22 @@ class DailyModel extends Equatable {
         task,
         date,
         time,
+        ontime,
         status,
+        isPlan,
+        isUpdate,
+        tag,
       ];
 
   factory DailyModel.fromJson(Map<String, dynamic> json) => DailyModel(
         id: json['id'],
         task: json['task'],
         date: DateTime.fromMillisecondsSinceEpoch(json["date"]),
-        time: json['time'],
         status: json['status'] == 0 ? false : true,
+        time: json['time'],
+        ontime: json['ontime'],
+        isPlan: json['isplan'] == 0 ? false : true,
+        isUpdate: json['isupdate'] == 0 ? false : true,
+        tag: json['tag'] == null ? null : UserModel.fromJson(json['tag']),
       );
 }
-
-List<DailyModel> mockDaily = [
-  DailyModel(
-    id: 1,
-    task: 'Meeting sistem development',
-    date: DateTime.now(),
-    time: '10:00 AM',
-    status: true,
-  ),
-  DailyModel(
-    id: 2,
-    task: 'Review Progress dan plan next week',
-    date: DateTime.now(),
-    time: '1:00 PM',
-    status: false,
-  ),
-  DailyModel(
-    id: 3,
-    task: 'Meeting outdoor busdev',
-    date: DateTime.now(),
-    time: '2:00 PM',
-    status: false,
-  ),
-  DailyModel(
-    id: 4,
-    task: 'Monitoring server',
-    date: DateTime.now(),
-    time: '3:00 PM',
-    status: false,
-  ),
-  DailyModel(
-    id: 5,
-    task: 'Helpdesk CLOUD,IMO & SAM',
-    date: DateTime.now(),
-    time: '4:00 PM',
-    status: false,
-  ),
-];

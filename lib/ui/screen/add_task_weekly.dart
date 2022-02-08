@@ -22,6 +22,11 @@ class AddTaskWeekly extends StatelessWidget {
                       checkColor: Colors.green,
                       value: controller.tambahan.value,
                       onChanged: (_) {
+                        if (_!) {
+                          snackbar(context, false,
+                              "Hanya bisa menambahkan weekly minggu kemarin dan minggu ini, untuk weekly kemarin batas maksimal input Senin week baru jam 10 Pagi",
+                              duration: 6000);
+                        }
                         controller.changeTambahan();
                       }),
                 ),
@@ -35,7 +40,7 @@ class AddTaskWeekly extends StatelessWidget {
               isPassword: false,
               title: "Your Task",
               hint: "Weekly Objective",
-              controllerText: controller.title,
+              controllerText: controller.task,
             ),
             const SizedBox(
               height: 10,
@@ -62,9 +67,9 @@ class AddTaskWeekly extends StatelessWidget {
                     () => Checkbox(
                         fillColor: MaterialStateProperty.all(white),
                         checkColor: Colors.green,
-                        value: controller.check.value,
+                        value: controller.isResult.value,
                         onChanged: (bool? val) {
-                          controller.check.toggle();
+                          controller.isResult.toggle();
                         }),
                   ),
                   Text(
@@ -75,14 +80,14 @@ class AddTaskWeekly extends StatelessWidget {
                     width: 10,
                   ),
                   Obx(
-                    () => controller.check.value
+                    () => controller.isResult.value
                         ? Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 MyInputField(
                                     typeInput: TextInputType.number,
-                                    controllerText: controller.valueCon,
+                                    controllerText: controller.resultValue,
                                     side: true,
                                     title: "",
                                     hint: 'Input Value',
@@ -111,27 +116,22 @@ class AddTaskWeekly extends StatelessWidget {
               margin: const EdgeInsets.only(right: 10, top: 10),
               child: MyButton(
                   label: "Submit",
-                  onTap: () {
-                    print(controller.valueCon.numberValue.toInt());
-                  },
+                  onTap: () async => await controller
+                      .submit(
+                          extraTask: controller.tambahan.value,
+                          taskVal: controller.task.text,
+                          week: controller.selectedWeek,
+                          year: controller.selectedYear,
+                          isResultVal: controller.isResult.value,
+                          resultValueText: controller.isResult.value
+                              ? controller.resultValue.value.text
+                                  .replaceAll('.', '')
+                              : null)
+                      .then((value) =>
+                          snackbar(context, value.value!, value.message!)),
                   height: 50,
                   width: 100),
             ),
-            const Spacer(),
-            Obx(() => controller.tambahan.value
-                ? Container(
-                    padding: const EdgeInsetsDirectional.all(10),
-                    height: 20,
-                    margin: const EdgeInsetsDirectional.only(bottom: 8),
-                    width: double.infinity,
-                    child: Text(
-                      "*Batas waktu input tambahan weekly sebelumnya sampai hari senin jam 10",
-                      style:
-                          blackFontStyle3.copyWith(color: white, fontSize: 10),
-                      overflow: TextOverflow.visible,
-                    ),
-                  )
-                : const SizedBox())
           ],
         ),
       ),

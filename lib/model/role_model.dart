@@ -1,10 +1,10 @@
 part of 'models.dart';
 
-class DivisiModel extends Equatable {
+class RoleModel extends Equatable {
   final int? id;
   final String? nama;
 
-  const DivisiModel({this.id, this.nama});
+  const RoleModel({this.id, this.nama});
 
   @override
   List<Object?> get props => [
@@ -12,7 +12,7 @@ class DivisiModel extends Equatable {
         nama,
       ];
 
-  factory DivisiModel.fromJson(Map<String, dynamic> json) => DivisiModel(
+  factory RoleModel.fromJson(Map<String, dynamic> json) => RoleModel(
         id: json['id'],
         nama: json['name'],
       );

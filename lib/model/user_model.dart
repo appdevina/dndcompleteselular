@@ -1,10 +1,9 @@
 part of 'models.dart';
 
-enum BackdateMode { none, daily, weekly, monthly }
-
 class UserModel extends Equatable {
   final int? id;
   final String? namaLengkap;
+  final RoleModel? role;
   final AreaModel? area;
   final DivisiModel? divisi;
   final bool? daily;
@@ -12,11 +11,11 @@ class UserModel extends Equatable {
   final bool? weeklyNon;
   final bool? monthlyResult;
   final bool? monthlyNon;
-  final BackdateMode? backDate;
 
   const UserModel({
     this.id,
     this.namaLengkap,
+    this.role,
     this.area,
     this.divisi,
     this.daily,
@@ -24,13 +23,13 @@ class UserModel extends Equatable {
     this.weeklyNon,
     this.monthlyResult,
     this.monthlyNon,
-    this.backDate,
   });
 
   @override
   List<Object?> get props => [
         id,
         namaLengkap,
+        role,
         area,
         divisi,
         daily,
@@ -38,12 +37,12 @@ class UserModel extends Equatable {
         weeklyNon,
         monthlyResult,
         monthlyNon,
-        backDate,
       ];
 
   factory UserModel.fromJson(Map<String, dynamic> json) => UserModel(
         id: json['id'],
         namaLengkap: json['nama_lengkap'],
+        role: RoleModel.fromJson(json['role']),
         area: AreaModel.fromJson(json['area']),
         divisi: DivisiModel.fromJson(json['divisi']),
         daily: json['d'] == 0 ? false : true,
@@ -51,25 +50,18 @@ class UserModel extends Equatable {
         weeklyNon: json['wn'] == 0 ? false : true,
         monthlyResult: json['mr'] == 0 ? false : true,
         monthlyNon: json['mn'] == 0 ? false : true,
-        backDate: json['bd'] == 0
-            ? BackdateMode.none
-            : json['bd'] == 1
-                ? BackdateMode.daily
-                : json['bd'] == 2
-                    ? BackdateMode.weekly
-                    : BackdateMode.monthly,
       );
 }
 
 UserModel mockUser = const UserModel(
-  id: 1,
+  id: 4,
   namaLengkap: 'USEP HERMANTO',
-  area: AreaModel(nama: 'COO'),
-  divisi: DivisiModel(nama: 'BUSDEV'),
+  role: RoleModel(id: 2, nama: 'STAFF'),
+  area: AreaModel(id: 1, nama: 'COO'),
+  divisi: DivisiModel(id: 4, nama: 'BUSDEV'),
   daily: true,
   weeklyNon: true,
   weeklyResult: false,
   monthlyNon: false,
   monthlyResult: false,
-  backDate: BackdateMode.none,
 );

@@ -7,6 +7,8 @@ class LoginController extends GetxController {
   Rx<bool> loading = false.obs;
   Rx<bool> obsecure = true.obs;
 
+  final GlobalKey key = GlobalKey<FormState>();
+
   @override
   void onInit() async {
     userName = TextEditingController();
@@ -31,23 +33,11 @@ class LoginController extends GetxController {
     super.onClose();
   }
 
-  void showError(String judul, String msg) {
-    Get.snackbar('title', 'message',
-        snackPosition: SnackPosition.TOP,
-        margin: const EdgeInsets.all(10),
-        titleText:
-            Text(judul, style: blackFontStyle1.copyWith(color: Colors.white)),
-        messageText:
-            Text(msg, style: blackFontStyle2.copyWith(color: Colors.white)),
-        backgroundColor: "FF3F0A".toColor());
-  }
-
   Future<bool> signIn(String userName, String pass) async {
     if (userName.isEmpty ||
         pass.isEmpty ||
         userName.isBlank! ||
         pass.isBlank!) {
-      showError('Salah !', 'Username / Password harus di isi dan lengkap');
       return false;
     } else {
       ApiReturnValue<UserModel> signIn =
@@ -55,7 +45,6 @@ class LoginController extends GetxController {
       if (signIn.value != null) {
         return true;
       }
-      showError('Salah !', 'Username / Password salah');
       return false;
     }
   }

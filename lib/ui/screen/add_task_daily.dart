@@ -1,7 +1,16 @@
 part of 'screens.dart';
 
 class AddTaskDaily extends StatelessWidget {
-  final controller = Get.put(DailyAddTaskController());
+  final controller = Get.arguments == null
+      ? Get.put(DailyAddTaskController())
+      : Get.put(
+          DailyAddTaskController(
+            oldDate: Get.arguments['oldDate'],
+            oldTask: Get.arguments['oldTask'],
+            oldTime: Get.arguments['oldTime'],
+            oldId: Get.arguments['oldId'],
+          ),
+        );
   AddTaskDaily({Key? key}) : super(key: key);
 
   @override
@@ -9,95 +18,154 @@ class AddTaskDaily extends StatelessWidget {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: _appBar(),
-      body: Form(
-        key: controller.key,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Obx(
-                  () => Checkbox(
-                      fillColor: MaterialStateProperty.all(white),
-                      checkColor: Colors.green,
-                      value: controller.tambahan.value,
-                      onChanged: (_) {
-                        controller.changeTambahan();
-                      }),
+      body: ListView(
+        children: [
+          Get.arguments == null
+              ? Row(
+                  children: [
+                    Obx(
+                      () => Checkbox(
+                          fillColor: MaterialStateProperty.all(white),
+                          checkColor: Colors.green,
+                          value: controller.tambahan.value,
+                          onChanged: (bool? value) {
+                            if (value!) {
+                              snackbar(context, false,
+                                  "Hanya bisa menambahkan daily hari kemarin dan hari ini, untuk daily kemarin batas maksimal input H+1 jam 10:00",
+                                  duration: 5000);
+                            }
+                            controller.changeTambahan();
+                          }),
+                    ),
+                    Text(
+                      "Extra Task ?",
+                      style: blackFontStyle3.copyWith(color: white),
+                    )
+                  ],
+                )
+              : const SizedBox(),
+          MyInputField(
+            isPassword: false,
+            title: "Your Task",
+            hint: "Daily Objective",
+            controllerText: controller.taskText,
+          ),
+          Row(
+            children: [
+              Expanded(
+                child: GetBuilder<DailyAddTaskController>(
+                  id: 'date',
+                  builder: (_) => _dateField(context),
                 ),
-                Text(
-                  "Extra Task ?",
-                  style: blackFontStyle3.copyWith(color: white),
+              ),
+              Expanded(
+                child: GetBuilder<DailyAddTaskController>(
+                  id: 'time',
+                  builder: (_) => controller.tambahan.value
+                      ? const SizedBox()
+                      : _timeField(context),
+                ),
+              ),
+            ],
+          ),
+          controller.oldId == null
+              ? GetBuilder<DailyAddTaskController>(
+                  id: 'tag',
+                  builder: (_) =>
+                      controller.isLoading.value || controller.tambahan.value
+                          ? const SizedBox()
+                          : _tag(),
+                )
+              : const SizedBox(),
+          Container(
+            padding: const EdgeInsets.only(right: 10),
+            margin: const EdgeInsets.only(top: defaultMargin),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                MyButton(
+                  height: 50,
+                  width: 100,
+                  label: "+ Add",
+                  onTap: () async {
+                    FocusScope.of(context).requestFocus(FocusNode());
+                    await controller
+                        .submit(
+                      task: controller.taskText.text,
+                      isAdd: controller.tambahan.value,
+                      date: controller.selectedDate!,
+                      time: controller.selectedTime,
+                      id: controller.oldId,
+                      tags: controller.selectedPerson,
+                    )
+                        .then((_) {
+                      if (!_.value!) {
+                        snackbar(context, _.value!, _.message!);
+                      } else {
+                        if (controller.oldId != null) {
+                          DailyController daily = Get.find<DailyController>();
+                          daily.getDaily(daily.selectedDate, isloading: true);
+                          Get.back();
+                        }
+                        snackbar(context, _.value!, _.message!);
+                      }
+                      return _;
+                    });
+                  },
                 )
               ],
             ),
-            MyInputField(
-              isPassword: false,
-              title: "Your Task",
-              hint: "Daily Objective",
-              controllerText: controller.task,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Container _tag() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10),
+      margin: const EdgeInsets.symmetric(vertical: 10),
+      child: Column(
+        children: [
+          MultiSelectDialogField(
+            buttonIcon: const Icon(
+              MdiIcons.arrowLeftBottom,
+              color: white,
             ),
-            Row(
-              children: [
-                Expanded(
-                  child: GetBuilder<DailyAddTaskController>(
-                    id: 'date',
-                    builder: (_) => _dateField(context),
-                  ),
-                ),
-                Expanded(
-                  child: GetBuilder<DailyAddTaskController>(
-                    id: 'time',
-                    builder: (_) => controller.tambahan.value
-                        ? const SizedBox()
-                        : _timeField(context),
-                  ),
-                ),
-              ],
+            listType: MultiSelectListType.CHIP,
+            searchable: true,
+            buttonText: Text(
+              "Tag Daily To :",
+              style: blackFontStyle3.copyWith(color: white),
             ),
-            Container(
-              padding: const EdgeInsets.only(right: 10),
-              margin: const EdgeInsets.only(top: defaultMargin),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  MyButton(
-                    height: 50,
-                    width: 100,
-                    label: "+ Add",
-                    onTap: () async {
-                      FocusScope.of(context).requestFocus(FocusNode());
-                      await controller
-                          .submit(
-                              controller.task.text,
-                              controller.tambahan.value,
-                              controller.selectedDate!,
-                              jam: controller.selectedTime)
-                          .then((value) => value.value!
-                              ? snackbar(context, true, value.message!)
-                              : snackbar(context, false, value.message!));
-                    },
-                  )
-                ],
-              ),
+            title: Text("Nama", style: blackFontStyle3),
+            items: controller.users
+                .map((e) => MultiSelectItem(
+                    e.id!, "${e.namaLengkap!} - ${e.divisi!.nama}"))
+                .toList(),
+            onConfirm: (values) {
+              controller.selectedPerson = values;
+              controller.update(['tag']);
+            },
+            chipDisplay: MultiSelectChipDisplay(
+              chipColor: white,
+              textStyle: blackFontStyle3.copyWith(color: "22577E".toColor()),
+              onTap: (value) {
+                controller.selectedPerson.remove(value);
+                controller.update(['tag']);
+              },
             ),
-            const Spacer(),
-            Obx(() => controller.tambahan.value
-                ? Container(
-                    padding: const EdgeInsetsDirectional.all(10),
-                    height: 20,
-                    margin: const EdgeInsetsDirectional.only(bottom: 8),
-                    width: double.infinity,
-                    child: Text(
-                      "*Batas waktu input tambahan daily hari sebelumnya sampai (H+1) jam 10",
-                      style:
-                          blackFontStyle3.copyWith(color: white, fontSize: 10),
-                      overflow: TextOverflow.visible,
-                    ),
-                  )
-                : const SizedBox())
-          ],
-        ),
+          ),
+          controller.selectedPerson.isEmpty
+              ? Container(
+                  padding: const EdgeInsets.all(10),
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    "None selected tag",
+                    style: blackFontStyle3.copyWith(color: white),
+                  ))
+              : Container(),
+        ],
       ),
     );
   }
@@ -208,7 +276,7 @@ class AddTaskDaily extends StatelessWidget {
       elevation: 0,
       centerTitle: true,
       title: Text(
-        'Add Daily To Do',
+        '${Get.arguments == null ? "Add" : "Edit"} Daily To Do',
         style: blackFontStyle3.copyWith(color: white),
       ),
     );

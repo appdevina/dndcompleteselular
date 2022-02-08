@@ -14,6 +14,6 @@ class AreaModel extends Equatable {
 
   factory AreaModel.fromJson(Map<String, dynamic> json) => AreaModel(
         id: json['id'],
-        nama: json['nama'],
+        nama: json['name'],
       );
 }

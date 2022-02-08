@@ -11,7 +11,7 @@ import 'package:shimmer/shimmer.dart';
 import 'package:calendar_timeline/calendar_timeline.dart';
 import 'package:supercharged/supercharged.dart';
 import 'package:month_picker_dialog/month_picker_dialog.dart';
-import 'package:fl_chart/fl_chart.dart';
+import 'package:multi_select_flutter/multi_select_flutter.dart';
 
 part 'daily_to_do.dart';
 part 'add_task_daily.dart';
@@ -27,3 +27,5 @@ part 'result.dart';
 part 'result_daily.dart';
 part 'result_weekly.dart';
 part 'result_monthly.dart';
+part 'detail_weekly.dart';
+part 'detail_monthly.dart';

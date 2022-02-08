@@ -21,14 +21,16 @@ class CardMonthly extends GetView<MonthlyController> {
         padding: const EdgeInsets.symmetric(vertical: 10),
         child: Row(
           children: [
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 10),
-              child: SizedBox(
-                height: 30,
-                width: 30,
-                child: Icon(
-                  MdiIcons.calendarMonth,
-                  size: 30,
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 10),
+              height: 30,
+              width: 30,
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage(
+                    'assets/task.png',
+                  ),
+                  fit: BoxFit.fill,
                 ),
               ),
             ),
@@ -37,7 +39,7 @@ class CardMonthly extends GetView<MonthlyController> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "MONTHLY ${monthly.type! == 'NON' ? "NON RESULT" : "RESULT"}",
+                    "MONTHLY ${monthly.type! == 'NON' ? "NON RESULT" : "RESULT"} ${monthly.isPlan! ? '' : '(Extra Task)'}",
                     style: blackFontStyle2.copyWith(
                         wordSpacing: 1,
                         fontSize: 10,
@@ -45,13 +47,13 @@ class CardMonthly extends GetView<MonthlyController> {
                         fontWeight: FontWeight.w600),
                     overflow: TextOverflow.ellipsis,
                   ),
-                  Text(
+                  SelectableText(
                     monthly.task!.toUpperCase(),
                     style: blackFontStyle2.copyWith(
                       wordSpacing: 1,
                       fontSize: 12,
                     ),
-                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
                   ),
                 ],
               ),
@@ -184,7 +186,8 @@ class CardMonthly extends GetView<MonthlyController> {
                 Get.back();
                 await controller
                     .changeStatus(week, id, type,
-                        value: controller.valueResult.text)
+                        value: int.parse(controller.valueResult.value.text
+                            .replaceAll('.', '')))
                     .then((_) =>
                         snackbar(context, true, "berhasil input result value"));
                 controller.valueResult.clear();

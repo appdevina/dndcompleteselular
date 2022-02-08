@@ -63,7 +63,7 @@ class DailyTodo extends StatelessWidget {
           iconSize: 18,
         ),
         IconButton(
-          onPressed: () {},
+          onPressed: () => controller.changeDate(controller.selectedDate),
           icon: const Icon(
             MdiIcons.refresh,
             color: white,
@@ -88,30 +88,6 @@ class DailyTodo extends StatelessWidget {
       dotsColor: const Color(0xFF333A47),
       locale: 'en_ISO',
     );
-    // Container(
-    //   margin: const EdgeInsets.all(10),
-    //   decoration: const BoxDecoration(
-    //       color: white,
-    //       borderRadius: BorderRadiusDirectional.all(Radius.circular(10))),
-    //   child: DatePicker(
-    //     controller.lastMonday.subtract(const Duration(days: 2)),
-    //     height: 100,
-    //     width: 70,
-    //     initialSelectedDate: DateTime.now(),
-    //     selectedTextColor: white,
-    //     selectionColor: primaryClr,
-    //     dateTextStyle: blackFontStyle2.copyWith(
-    //         fontSize: 20, color: Colors.grey, fontWeight: FontWeight.w600),
-    //     dayTextStyle: blackFontStyle2.copyWith(
-    //       fontSize: 12,
-    //       fontWeight: FontWeight.w600,
-    //     ),
-    //     onDateChange: (DateTime val) {
-    //       controller.changeDate(val);
-    //     },
-    //     daysCount: 14,
-    //   ),
-    // );
   }
 
   _listToDo(int lenght, {List<DailyModel>? daily}) {
@@ -128,7 +104,6 @@ class DailyTodo extends StatelessWidget {
           : ListView.builder(
               itemBuilder: (context, index) => daily != null
                   ? CardDaily(
-                      index: index,
                       daily: controller.daily![index],
                     )
                   : Card(

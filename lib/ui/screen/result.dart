@@ -1,7 +1,7 @@
 part of 'screens.dart';
 
 class Result extends StatefulWidget {
-  const Result({Key? key}) : super(key: key);
+  Result({Key? key}) : super(key: key);
 
   @override
   _ResultState createState() => _ResultState();
@@ -9,6 +9,7 @@ class Result extends StatefulWidget {
 
 class _ResultState extends State<Result> with SingleTickerProviderStateMixin {
   TabController? _tabController;
+  final controller = Get.put(ResultController());
 
   @override
   void initState() {
@@ -30,9 +31,11 @@ class _ResultState extends State<Result> with SingleTickerProviderStateMixin {
           ),
         ),
         elevation: 0,
-        title: Text(
-          "Point KPI : 87",
-          style: blackFontStyle3.copyWith(color: white),
+        title: Obx(
+          () => Text(
+            "Point KPI : ${controller.totalKpi}",
+            style: blackFontStyle3.copyWith(color: white),
+          ),
         ),
         actions: [
           Container(
@@ -43,7 +46,7 @@ class _ResultState extends State<Result> with SingleTickerProviderStateMixin {
               children: [
                 IconButton(
                   onPressed: () {},
-                  icon: const Icon(MdiIcons.plusCircle),
+                  icon: const Icon(MdiIcons.minusCircle),
                   iconSize: 18,
                 ),
                 Text(
@@ -52,7 +55,7 @@ class _ResultState extends State<Result> with SingleTickerProviderStateMixin {
                 ),
                 IconButton(
                   onPressed: () {},
-                  icon: const Icon(MdiIcons.minusCircle),
+                  icon: const Icon(MdiIcons.plusCircle),
                   iconSize: 18,
                 ),
               ],
@@ -66,11 +69,10 @@ class _ResultState extends State<Result> with SingleTickerProviderStateMixin {
           children: [
             TabBar(
               unselectedLabelColor: greyColor,
-              // indicatorColor: greyColor,
               indicator: BoxDecoration(
                 border: Border(
                   bottom: BorderSide(
-                      width: 1, color: greyColor, style: BorderStyle.solid),
+                      width: 0.5, color: greyColor, style: BorderStyle.solid),
                 ),
               ),
               unselectedLabelStyle:

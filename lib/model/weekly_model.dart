@@ -6,25 +6,28 @@ class WeeklyModel extends Equatable {
   final int? week;
   final int? year;
   final String? type;
-  int? valPlan;
-  double? valAct;
-  bool? statNon;
-  double? statRes;
-  double? value;
+  final int? valPlan;
+  final int? valAct;
+  final bool? statNon;
+  final bool? statRes;
+  final double? value;
+  final bool? isAdd;
   final bool? isUpdate;
 
-  WeeklyModel(
-      {this.id,
-      this.task,
-      this.week,
-      this.type,
-      this.valPlan,
-      this.valAct,
-      this.statNon,
-      this.year,
-      this.statRes,
-      this.value,
-      this.isUpdate});
+  const WeeklyModel({
+    this.id,
+    this.task,
+    this.week,
+    this.type,
+    this.valPlan,
+    this.valAct,
+    this.statNon,
+    this.year,
+    this.statRes,
+    this.value,
+    this.isUpdate,
+    this.isAdd,
+  });
 
   @override
   List<Object?> get props => [
@@ -39,79 +42,27 @@ class WeeklyModel extends Equatable {
         value,
         isUpdate,
       ];
-}
 
-List<WeeklyModel> mockWeekly = [
-  WeeklyModel(
-    id: 1,
-    task: "Pembuatan IK fitur monitoring visit SAM",
-    week: 3,
-    type: "NON",
-    valPlan: null,
-    valAct: null,
-    statNon: false,
-    statRes: null,
-    value: 0,
-    isUpdate: false,
-  ),
-  WeeklyModel(
-    id: 2,
-    task: "Pembuatan UI weekly TDL",
-    week: 3,
-    type: "NON",
-    valPlan: null,
-    valAct: null,
-    statNon: false,
-    statRes: null,
-    value: 0,
-    isUpdate: false,
-  ),
-  WeeklyModel(
-    id: 3,
-    task: "Input user dan outlet baru realme region jogja dan solo ke SAM",
-    week: 3,
-    type: "NON",
-    valPlan: null,
-    valAct: null,
-    statNon: false,
-    statRes: null,
-    value: 0,
-    isUpdate: false,
-  ),
-  WeeklyModel(
-    id: 4,
-    task: "Monitoring dan Helpdesk server CLOUD, IMO dan SAM",
-    week: 3,
-    type: "NON",
-    valPlan: null,
-    valAct: null,
-    statNon: false,
-    statRes: null,
-    value: 0,
-    isUpdate: false,
-  ),
-  WeeklyModel(
-    id: 5,
-    task: "Kirim AMPM tepat waktu",
-    week: 3,
-    type: "NON",
-    valPlan: null,
-    valAct: null,
-    statNon: false,
-    statRes: null,
-    value: 0,
-    isUpdate: false,
-  ),
-  WeeklyModel(
-    id: 6,
-    task: "Sales Area A",
-    week: 3,
-    type: "RESULT",
-    valPlan: 1000000,
-    valAct: 0,
-    statNon: false,
-    statRes: 0.0,
-    value: 0,
-    isUpdate: false,
-  ),
-];
+  factory WeeklyModel.fromJson(Map<String, dynamic> json) => WeeklyModel(
+        id: json['id'],
+        task: json['task'],
+        week: json['week'],
+        year: json['year'],
+        type: json['tipe'],
+        valPlan: json['value_plan'],
+        valAct: json['value_actual'],
+        statNon: json['status_non'] == null
+            ? null
+            : json['status_non'] == 0
+                ? false
+                : true,
+        statRes: json['status_result'] == null
+            ? null
+            : json['status_result'] == 0
+                ? false
+                : true,
+        value: json['value'] ?? 0.0,
+        isAdd: json['is_add'] == 0 ? false : true,
+        isUpdate: json['is_update'] == 0 ? false : true,
+      );
+}

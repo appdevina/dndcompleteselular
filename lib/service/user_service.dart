@@ -76,4 +76,29 @@ class UserServices {
     await Future.delayed(const Duration(milliseconds: 1500));
     return ApiReturnValue(value: mockUser);
   }
+
+  static Future<ApiReturnValue<List<UserModel>>> tag(
+      {http.Client? client}) async {
+    try {
+      client ??= http.Client();
+      String url = baseUrl + 'user/tag';
+      Uri uri = Uri.parse(url);
+      var response = await client.get(uri, headers: {
+        'Content-Type': 'application/json',
+        'Authorization': token,
+      });
+      if (response.statusCode != 200) {
+        var data = jsonDecode(response.body);
+        String message = data['meta']['message'];
+        return ApiReturnValue(value: [], message: message);
+      }
+      var data = jsonDecode(response.body);
+      String message = data['meta']['message'];
+      List<UserModel> value =
+          (data['data'] as Iterable).map((e) => UserModel.fromJson(e)).toList();
+      return ApiReturnValue(value: value, message: message);
+    } catch (e) {
+      return ApiReturnValue(value: [], message: e.toString());
+    }
+  }
 }

@@ -13,7 +13,7 @@ class MonthlyServices {
 
   static Future<ApiReturnValue<List<MonthlyModel>>> changeStatus(
       int month, int id, String type,
-      {num? value}) async {
+      {int? value}) async {
     try {
       await Future.delayed(const Duration(seconds: 1));
       if (month == 1) {
@@ -23,7 +23,8 @@ class MonthlyServices {
               month.statNon = !month.statNon!;
               month.value = 1;
             } else {
-              month.statRes = (value! / month.valPlan!) * 100;
+              month.valAct = value!;
+              month.statRes = (value / month.valPlan!).toDouble();
               month.value = month.statRes;
             }
           }

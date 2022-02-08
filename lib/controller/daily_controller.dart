@@ -3,7 +3,6 @@ part of 'controllers.dart';
 class DailyController extends GetxController {
   List<DailyModel>? daily;
   DateTime selectedDate = DateTime.now();
-  late DateTime lastMonday;
   DateTime now = DateTime.now();
   RxBool loading = true.obs;
 
@@ -14,33 +13,42 @@ class DailyController extends GetxController {
     getDaily(val);
   }
 
-  void getDaily(DateTime time) async {
-    await DailyService.getDaily(DateFormat('dd-MM-y').format(time))
+  void getDaily(DateTime time, {bool? isloading}) async {
+    await DailyService.getDaily(DateFormat('y-MM-dd').format(time))
         .then((value) => daily = value.value);
-    loading.toggle();
+    isloading ?? loading.toggle();
     update(['daily']);
   }
 
   Future<ApiReturnValue<bool>> changeStatus(int id) async {
     HomePageController home = Get.find();
-    ApiReturnValue<List<DailyModel>> result =
-        await DailyService.changeStatus('21-01-2022', id);
-
-    home.daily = result.value;
-    daily = result.value;
+    ApiReturnValue<bool> result = await DailyService.change(id: id);
+    getDaily(selectedDate, isloading: true);
     home.updateBack();
     update(['daily']);
-    return ApiReturnValue(value: true, message: "berhasil merubah status");
+    return result;
+  }
+
+  Future<ApiReturnValue<bool>> delete({required int id}) async {
+    ApiReturnValue<bool> result =
+        await DailyService.delete(id: id).then((_) => _);
+    getDaily(selectedDate, isloading: true);
+    update(['daily']);
+    return result;
   }
 
   Color getColor(DailyModel daily) {
     return daily.status! ? Colors.green[400]! : Colors.green[100]!;
   }
 
+  getDate(DateTime d) => DateTime(d.year, d.month, d.day);
+
+  getMonday(DateTime d) => getDate(d.subtract(Duration(days: d.weekday - 1)));
+
+  getNextWeek(DateTime d) => getDate(getMonday(d).add(const Duration(days: 7)));
+
   @override
   void onInit() {
-    lastMonday =
-        DateTime.now().subtract(Duration(days: DateTime.now().weekday - 1));
     getDaily(selectedDate);
     super.onInit();
   }

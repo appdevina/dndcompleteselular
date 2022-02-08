@@ -1,12 +1,24 @@
 part of 'controllers.dart';
 
 class DailyAddTaskController extends GetxController {
-  final TextEditingController task = TextEditingController();
-  final GlobalKey key = GlobalKey<FormState>();
+  final String? oldTask;
+  final String? oldTime;
+  final DateTime? oldDate;
+  final int? oldId;
+  DailyAddTaskController({
+    this.oldTask,
+    this.oldTime,
+    this.oldDate,
+    this.oldId,
+  });
+  late TextEditingController taskText;
   String selectedTime = DateFormat.jm().format(DateTime.now());
   DateTime? selectedDate, lastMonday;
   RxBool tambahan = false.obs;
-  DateTime today = DateTime.now();
+  late DateTime today = DateTime.now();
+  late List<UserModel> users;
+  List<Object?> selectedPerson = [];
+  RxBool isLoading = true.obs;
 
   void changeDate(DateTime val) {
     selectedDate = val;
@@ -24,49 +36,92 @@ class DailyAddTaskController extends GetxController {
     if (!tambahan.value) {
       selectedTime = DateFormat.jm().format(DateTime.now());
     }
-    update(['date', 'time']);
+    update(['date', 'time', 'tag']);
   }
 
-  Future<ApiReturnValue<bool>> submit(String task, bool tambahan, DateTime date,
-      {String? jam}) async {
-    if (tambahan) {
-      if (date.add(const Duration(hours: 9, minutes: 59, seconds: 59)).isAfter(
-          DateTime(today.year, today.month, today.day)
-              .subtract(const Duration(days: 1))
-              .add(const Duration(hours: 10)))) {
-        if (date.isAfter(DateTime.now())) {
-          return ApiReturnValue(
-              value: false,
-              message:
-                  "Tidak bisa menambahkan tambahan todolist setelah hari ini");
-        }
-        return ApiReturnValue(
-          value: true,
-          message: "bisa menambahkan tambahan todolist",
-        );
-      } else {
-        return ApiReturnValue(
-          value: false,
-          message: "tidak bisa menambahkan sudah melebihi jam 10",
-        );
+  Future<ApiReturnValue<bool>> submit({
+    required String task,
+    required DateTime date,
+    required bool isAdd,
+    String? time,
+    int? id,
+    List<Object?>? tags,
+  }) async {
+    if (taskText.text.length < 5 || taskText.text.isEmpty) {
+      return ApiReturnValue(
+        value: false,
+        message: "Kolom task harus di isi minimal 5 karakter",
+      );
+    }
+    tags ??= [];
+    String newTag = '';
+    if (tags.isNotEmpty) {
+      for (var tag in tags) {
+        newTag += tag.toString();
       }
     }
-    return ApiReturnValue(value: true, message: "Bisa input todo");
+
+    ApiReturnValue<bool> result = await DailyService.submit(
+      task: task,
+      date: date,
+      isAdd: isAdd,
+      time: time,
+      id: id,
+      tag: newTag,
+    ).then((value) {
+      if (value.value!) {
+        taskText.clear();
+        selectedPerson.clear();
+        update(['date', 'time', 'tag']);
+        if (isAdd) {
+          changeTambahan();
+        }
+      }
+      return value;
+    });
+
+    return result;
   }
 
+  Future<ApiReturnValue<List<UserModel>>> tag() async {
+    ApiReturnValue<List<UserModel>> result = await UserServices.tag();
+
+    return result;
+  }
+
+  getDate(DateTime d) => DateTime(d.year, d.month, d.day);
+
+  getMonday(DateTime d) => getDate(d.subtract(Duration(days: d.weekday - 1)));
+
+  getNextWeek(DateTime d) => getDate(getMonday(d).add(const Duration(days: 7)));
+
   @override
-  void onInit() {
-    lastMonday = DateTime.now()
-        .add(const Duration(days: 7))
-        .subtract(Duration(days: DateTime.now().weekday - 1));
-    selectedTime = DateFormat.jm().format(DateTime.now());
-    selectedDate = lastMonday;
+  void onInit() async {
+    final con = Get.find<HomePageController>();
+    lastMonday = con.user!.area!.id == 2 &&
+            DateTime.now().isBefore(getMonday(DateTime.now())
+                .add(const Duration(days: 1, hours: 10)))
+        ? getMonday(DateTime.now())
+        : DateTime.now().isBefore(
+                getMonday(DateTime.now()).add(const Duration(hours: 17)))
+            ? getMonday(DateTime.now())
+            : getNextWeek(DateTime.now());
+    selectedTime = oldTime ?? DateFormat.jm().format(DateTime.now());
+    selectedDate = oldDate ?? lastMonday;
+    taskText = oldTask == null
+        ? TextEditingController()
+        : TextEditingController(text: oldTask);
+    await tag().then((value) {
+      users = value.value!;
+      isLoading.toggle();
+      update(['tag']);
+    });
     super.onInit();
   }
 
   @override
   void onClose() {
-    task.dispose();
+    taskText.dispose();
     super.onClose();
   }
 }

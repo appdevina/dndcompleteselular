@@ -21,14 +21,16 @@ class CardDailyHome extends GetView<HomePageController> {
         padding: const EdgeInsets.symmetric(vertical: 10),
         child: Row(
           children: [
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 10),
-              child: SizedBox(
-                height: 30,
-                width: 30,
-                child: Icon(
-                  MdiIcons.calendarMonth,
-                  size: 30,
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 10),
+              height: 30,
+              width: 30,
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage(
+                    'assets/task.png',
+                  ),
+                  fit: BoxFit.fill,
                 ),
               ),
             ),
@@ -37,7 +39,7 @@ class CardDailyHome extends GetView<HomePageController> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    daily.time!,
+                    daily.time ?? 'Extra Task',
                     style: blackFontStyle2.copyWith(
                         wordSpacing: 1,
                         fontSize: 10,

@@ -86,8 +86,8 @@ class HomePage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               GestureDetector(
-                onTap: () => Get.to(() => const Result(),
-                    transition: Transition.cupertino),
+                onTap: () =>
+                    Get.to(() => Result(), transition: Transition.cupertino),
                 child: _menuItem('result.png', 'Result'),
               ),
               GestureDetector(
@@ -115,12 +115,18 @@ class HomePage extends StatelessWidget {
             padding: const EdgeInsets.all(10),
             child: Shimmer.fromColors(
               child: Container(
-                  height: 90,
-                  width: double.infinity - 20,
-                  margin: const EdgeInsets.only(bottom: 10),
-                  decoration: const BoxDecoration(
-                      color: white,
-                      borderRadius: BorderRadius.all(Radius.circular(10)))),
+                height: 90,
+                width: double.infinity - 20,
+                margin: const EdgeInsets.only(bottom: 10),
+                decoration: const BoxDecoration(
+                  color: white,
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(
+                      10,
+                    ),
+                  ),
+                ),
+              ),
               highlightColor: Colors.grey[300]!,
               baseColor: Colors.grey[100]!,
               period: const Duration(milliseconds: 500),
@@ -150,9 +156,46 @@ class HomePage extends StatelessWidget {
                     ),
                   ],
                 ),
-                const CircleAvatar(
-                  backgroundImage: AssetImage('assets/usep.jpg'),
-                  backgroundColor: white,
+                GestureDetector(
+                  onTap: () => Get.bottomSheet(
+                    Container(
+                      height: 100,
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(10),
+                      decoration: const BoxDecoration(
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(15),
+                          topRight: Radius.circular(15),
+                        ),
+                        color: white,
+                      ),
+                      child: ListView(
+                        children: [
+                          MyButton(
+                              label: "Change Image",
+                              onTap: () {},
+                              height: 40,
+                              width: double.infinity),
+                          MyButton(
+                            label: "Log Out",
+                            onTap: () {
+                              Get.back();
+                              Get.offAll(
+                                () => const Login(),
+                              );
+                            },
+                            height: 40,
+                            width: double.infinity,
+                            color: Colors.red[300],
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                  child: const CircleAvatar(
+                    backgroundImage: AssetImage('assets/usep.jpg'),
+                    backgroundColor: white,
+                  ),
                 )
               ],
             ),

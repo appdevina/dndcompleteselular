@@ -35,9 +35,8 @@ class MonthlyController extends GetxController {
       );
 
   Future<ApiReturnValue<bool>> changeStatus(int month, int id, String type,
-      {String? value}) async {
-    await MonthlyServices.changeStatus(month, id, type,
-        value: double.parse(value ?? '0'));
+      {int? value}) async {
+    await MonthlyServices.changeStatus(month, id, type, value: value);
     update(['monthly']);
     return ApiReturnValue(value: true, message: "berhasil merubah");
   }
