@@ -7,11 +7,13 @@ class WeeklyService {
       client ??= http.Client();
       String url = baseUrl + 'weekly?week=$week&year=$year';
       Uri uri = Uri.parse(url);
+      SharedPreferences pref = await SharedPreferences.getInstance();
+
       var response = await client.get(
         uri,
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': token,
+          'Authorization': 'Bearer ${pref.getString('token')}',
         },
       );
 
@@ -34,18 +36,20 @@ class WeeklyService {
   }
 
   static Future<ApiReturnValue<bool>> submit({
+    required bool isUpdate,
     required bool extraTask,
     required String task,
     required int week,
     required int year,
     required bool isResult,
     String? resultValue,
+    int? id,
     http.Client? client,
   }) async {
     try {
       client ??= http.Client();
 
-      String url = baseUrl + 'weekly';
+      String url = baseUrl + (isUpdate ? 'weekly/edit/$id' : 'weekly');
       Uri uri = Uri.parse(url);
       Map<String, dynamic> body = {
         'is_add': extraTask,
@@ -58,13 +62,14 @@ class WeeklyService {
         'status_result': isResult ? false : null,
         'value_actual': isResult ? 0 : null,
       };
+      SharedPreferences pref = await SharedPreferences.getInstance();
 
       var response = await client.post(
         uri,
         body: jsonEncode(body),
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': token,
+          'Authorization': 'Bearer ${pref.getString('token')}',
         },
       );
 
@@ -83,7 +88,6 @@ class WeeklyService {
 
   static Future<ApiReturnValue<bool>> changeStatus({
     required int id,
-    required String type,
     int? value,
     http.Client? client,
   }) async {
@@ -95,13 +99,14 @@ class WeeklyService {
         'id': id,
         'value': value,
       };
+      SharedPreferences pref = await SharedPreferences.getInstance();
 
       var response = await client.post(
         uri,
         body: jsonEncode(body),
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': token,
+          'Authorization': 'Bearer ${pref.getString('token')}',
         },
       );
 
@@ -112,6 +117,37 @@ class WeeklyService {
       }
       var data = jsonDecode(response.body);
       String message = data['meta']['message'];
+      return ApiReturnValue(value: true, message: message);
+    } catch (e) {
+      return ApiReturnValue(value: false, message: e.toString());
+    }
+  }
+
+  static Future<ApiReturnValue<bool>> delete(
+      {required int id, http.Client? client}) async {
+    try {
+      client ??= http.Client();
+      String url = baseUrl + 'weekly/delete/$id';
+      Uri uri = Uri.parse(url);
+      SharedPreferences pref = await SharedPreferences.getInstance();
+
+      var response = await client.get(
+        uri,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${pref.getString('token')}',
+        },
+      );
+
+      if (response.statusCode != 200) {
+        var data = jsonDecode(response.body);
+        String message = data['meta']['message'];
+        return ApiReturnValue(value: false, message: message);
+      }
+
+      var data = jsonDecode(response.body);
+      String message = data['meta']['message'];
+
       return ApiReturnValue(value: true, message: message);
     } catch (e) {
       return ApiReturnValue(value: false, message: e.toString());

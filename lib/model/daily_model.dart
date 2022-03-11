@@ -59,13 +59,28 @@ class DailyModel extends Equatable {
         tag,
       ];
 
+  Map<String, dynamic> toJson() => {
+        'task': task,
+        'date': DateFormat('y-MM-dd').format(date!),
+        'time': time,
+        'status': status,
+        'ontime': ontime,
+        'isplan': isPlan,
+        'isupdate': isUpdate,
+        'tag_id': tag
+      };
+
   factory DailyModel.fromJson(Map<String, dynamic> json) => DailyModel(
         id: json['id'],
         task: json['task'],
         date: DateTime.fromMillisecondsSinceEpoch(json["date"]),
         status: json['status'] == 0 ? false : true,
         time: json['time'],
-        ontime: json['ontime'],
+        ontime: json['ontime'] == 0
+            ? 0.0
+            : json['ontime'] == 1
+                ? 1.0
+                : 0.5,
         isPlan: json['isplan'] == 0 ? false : true,
         isUpdate: json['isupdate'] == 0 ? false : true,
         tag: json['tag'] == null ? null : UserModel.fromJson(json['tag']),

@@ -28,7 +28,7 @@ class DetailWeekly extends GetView<ResultController> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          "Week : 4",
+                          "Week : ${controller.weeklies[0].week} <> Tahun : ${controller.weeklies[0].year}",
                           style: blackFontStyle2,
                         ),
                         Text(
@@ -82,7 +82,7 @@ class DetailWeekly extends GetView<ResultController> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "WEEKLY ${e.type! == 'NON' ? "NON RESULT" : "RESULT"} ${e.isAdd! ? '' : '(Extra Task)'}",
+                  "WEEKLY ${e.type! == 'NON' ? "NON RESULT" : "RESULT"} ${!e.isAdd! ? '' : '(Extra Task)'}",
                   style:
                       blackFontStyle3.copyWith(fontSize: 12, color: greyColor),
                   overflow: TextOverflow.ellipsis,

@@ -1,11 +1,13 @@
 part of 'controllers.dart';
 
 class MonthlyAddTaskController extends GetxController {
+  final MonthlyModel? monthly;
+  MonthlyAddTaskController({this.monthly});
   final GlobalKey key = GlobalKey<FormState>();
   late TextEditingController title;
   late MoneyMaskedTextController valueCon;
   late DateTime selectedMonth, minMonth, maxMonth;
-  RxBool check = false.obs;
+  RxBool isResult = false.obs;
   RxBool tambahan = false.obs;
 
   void changeMonth(DateTime val) {
@@ -15,13 +17,12 @@ class MonthlyAddTaskController extends GetxController {
 
   void changeTambahan() {
     tambahan.toggle();
-    minMonth = tambahan.value
-        ? DateTime.now().isAfter(
+    minMonth = tambahan.value &&
+            DateTime.now().isBefore(
                 DateTime(DateTime.now().year, DateTime.now().month)
                     .add(const Duration(days: 5)))
-            ? DateTime.now().add(const Duration(days: 30))
-            : DateTime.now().subtract(const Duration(days: 30))
-        : DateTime.now().add(const Duration(days: 30));
+        ? DateTime(DateTime.now().year, DateTime.now().month)
+        : DateTime(DateTime.now().year, DateTime.now().month + 1);
     maxMonth = tambahan.value
         ? DateTime.now().isAfter(
                 DateTime(DateTime.now().year, DateTime.now().month)
@@ -33,17 +34,61 @@ class MonthlyAddTaskController extends GetxController {
     update(['month']);
   }
 
+  Future<ApiReturnValue<bool>> submit({
+    required bool isUpdate,
+    required bool extraTask,
+    required String taskVal,
+    required DateTime date,
+    required bool isResultVal,
+    String? resultValueText,
+    int? id,
+  }) async =>
+      taskVal.isEmpty || taskVal.length < 3
+          ? ApiReturnValue(
+              value: false,
+              message: 'Kolom task harus di isi minimal 3 karakter',
+            )
+          : isResultVal && (resultValueText == '0' || resultValueText!.isEmpty)
+              ? ApiReturnValue(
+                  value: false,
+                  message: 'Jika result isi kolom nominal result',
+                )
+              : await MonthlyServices.submit(
+                  isUpdate: isUpdate,
+                  extraTask: extraTask,
+                  task: taskVal,
+                  date: date,
+                  isResult: isResultVal,
+                  resultValue: resultValueText,
+                  id: id,
+                ).then((value) => value);
+
   @override
   void onInit() {
-    title = TextEditingController();
+    DateTime now = DateTime.now();
+    title = monthly == null
+        ? TextEditingController()
+        : TextEditingController(text: monthly!.task);
     valueCon = MoneyMaskedTextController(
-        initialValue: 0,
+        initialValue: monthly == null
+            ? 0
+            : monthly!.valPlan == null
+                ? 0
+                : monthly!.valPlan!.toDouble(),
         precision: 0,
         thousandSeparator: '.',
         decimalSeparator: '');
-    minMonth = DateTime.now().add(const Duration(days: 30));
-    selectedMonth = minMonth;
+    minMonth =
+        now.isBefore(DateTime(now.year, now.month).add(const Duration(days: 5)))
+            ? now
+            : DateTime(now.year, now.month + 1);
+    selectedMonth = monthly == null ? minMonth : monthly!.monthYear!;
     maxMonth = DateTime(2025, 12);
+    isResult = monthly == null
+        ? false.obs
+        : monthly!.type == 'RESULT'
+            ? true.obs
+            : false.obs;
     super.onInit();
   }
 

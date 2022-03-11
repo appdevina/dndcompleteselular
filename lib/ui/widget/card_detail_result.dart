@@ -9,7 +9,7 @@ class CardDetailResult extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       height: 80,
-      width: MediaQuery.of(context).size.width / 4,
+      width: 120,
       child: Card(
         color: Colors.black45,
         shape: RoundedRectangleBorder(
@@ -50,7 +50,7 @@ class CardDetailResult extends StatelessWidget {
                 value,
                 textAlign: TextAlign.center,
                 style: blackFontStyle3.copyWith(
-                    fontSize: 22, color: "22577E".toColor()),
+                    fontSize: 18, color: "22577E".toColor()),
               ),
             ),
           ],

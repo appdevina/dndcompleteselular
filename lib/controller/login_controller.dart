@@ -9,20 +9,35 @@ class LoginController extends GetxController {
 
   final GlobalKey key = GlobalKey<FormState>();
 
+  Future<ApiReturnValue<bool>> signIn(String userName, String pass) async {
+    if (userName.isEmpty ||
+        pass.isEmpty ||
+        userName.isBlank! ||
+        pass.isBlank!) {
+      return ApiReturnValue(
+          value: false, message: 'Lengkapi username dan password');
+    } else {
+      ApiReturnValue<bool> signIn = await UserServices.signIn(userName, pass);
+      return signIn;
+    }
+  }
+
+  Future<ApiReturnValue<bool>> check() async => await UserServices.check();
+
   @override
   void onInit() async {
     userName = TextEditingController();
     pass = TextEditingController();
-    // await check().then((value) {
-    //   if (value) {
-    //     loadingLogin = false;
-    //     islogin = true;
-    //     update();
-    //   } else {
-    //     loadingLogin = false;
-    //     update();
-    //   }
-    // });
+    await check().then((value) {
+      if (value.value!) {
+        loadingLogin = false;
+        islogin = true;
+        update(['login']);
+      } else {
+        loadingLogin = false;
+        update(['login']);
+      }
+    });
     super.onInit();
   }
 
@@ -31,44 +46,5 @@ class LoginController extends GetxController {
     userName!.dispose();
     pass!.dispose();
     super.onClose();
-  }
-
-  Future<bool> signIn(String userName, String pass) async {
-    if (userName.isEmpty ||
-        pass.isEmpty ||
-        userName.isBlank! ||
-        pass.isBlank!) {
-      return false;
-    } else {
-      ApiReturnValue<UserModel> signIn =
-          await UserServices.signIn(userName, pass);
-      if (signIn.value != null) {
-        return true;
-      }
-      return false;
-    }
-  }
-
-  Future<bool> check() async {
-    SharedPreferences pref = await SharedPreferences.getInstance();
-    String? token = pref.getString('token');
-    if (token == null) {
-      return false;
-    } else {
-      ApiReturnValue<bool> login = await UserServices.check(token);
-      if (login.value != null) {
-        if (login.value!) {
-          return true;
-        }
-      }
-      pref.remove('username');
-      pref.remove('token');
-      return false;
-    }
-  }
-
-  void open() {
-    obsecure.toggle();
-    update(['password']);
   }
 }

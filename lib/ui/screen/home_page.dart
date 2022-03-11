@@ -14,7 +14,7 @@ class HomePage extends StatelessWidget {
             children: [
               GetBuilder<HomePageController>(
                 id: 'user',
-                builder: (_) => _header(),
+                builder: (_) => _header(context),
               ),
               _menu(context),
               Container(
@@ -31,17 +31,18 @@ class HomePage extends StatelessWidget {
                 ),
               ),
               GetBuilder<HomePageController>(
-                  id: 'daily',
-                  builder: (_) => Expanded(
-                        child: controller.loading.value
-                            ? Shimmer.fromColors(
-                                child: _listToDo(4),
-                                highlightColor: Colors.grey[300]!,
-                                baseColor: Colors.grey[100]!,
-                              )
-                            : _listToDo(controller.daily!.length,
-                                daily: controller.daily),
-                      )),
+                id: 'daily',
+                builder: (_) => Expanded(
+                  child: controller.loading.value
+                      ? Shimmer.fromColors(
+                          child: _listToDo(4),
+                          highlightColor: Colors.grey[300]!,
+                          baseColor: Colors.grey[100]!,
+                        )
+                      : _listToDo(controller.daily!.length,
+                          daily: controller.daily),
+                ),
+              ),
             ],
           ),
         ),
@@ -65,39 +66,46 @@ class HomePage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               GestureDetector(
-                onTap: () {
-                  Get.to((() => DailyTodo()), transition: Transition.cupertino);
-                },
+                onTap: () => Get.to((() => DailyTodo()),
+                    transition: Transition.cupertino),
                 child: _menuItem('daily.png', 'Daily'),
               ),
               GestureDetector(
-                onTap: () => Get.to((() => WeeklyToDo()),
-                    transition: Transition.cupertino),
+                onTap: () => controller.user.weeklyNon! ||
+                        controller.user.weeklyResult!
+                    ? Get.to((() => WeeklyToDo()),
+                        transition: Transition.cupertino)
+                    : snackbar(context, false, 'Anda tidak ada task weekly'),
                 child: _menuItem('week.png', 'Weekly'),
               ),
               GestureDetector(
-                onTap: () => Get.to(() => MonthlyToDo(),
-                    transition: Transition.cupertino),
-                child: _menuItem('monthly.png', 'Monthly'),
-              ),
+                  onTap: () => controller.user.monthlyNon! ||
+                          controller.user.monthlyResult!
+                      ? Get.to(() => MonthlyToDo(),
+                          transition: Transition.cupertino)
+                      : snackbar(context, false, 'Anda tidak ada task monthly'),
+                  child: _menuItem('monthly.png', 'Monthly')),
             ],
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               GestureDetector(
-                onTap: () =>
-                    Get.to(() => Result(), transition: Transition.cupertino),
+                onTap: () => Get.to(() => const Result(),
+                    transition: Transition.cupertino),
                 child: _menuItem('result.png', 'Result'),
               ),
               GestureDetector(
-                onTap: () =>
-                    snackbar(context, false, "Fitur belum proses develop"),
+                onTap: () => Get.to(() => const Request(),
+                    transition: Transition.cupertino),
                 child: _menuItem('request.png', 'Request'),
               ),
               GestureDetector(
-                onTap: () =>
-                    snackbar(context, false, "Fitur belum proses develop"),
+                onTap: () => controller.user.role!.id != 2
+                    ? Get.to(() => ApproveTask(),
+                        transition: Transition.cupertino)
+                    : snackbar(context, false,
+                        "Anda belum berhak untuk proses approval"),
                 child: _menuItem('approved.png', 'Approve'),
               ),
             ],
@@ -107,7 +115,7 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  _header() {
+  _header(BuildContext context) {
     return controller.loading.value
         ? Container(
             height: 110,
@@ -144,13 +152,13 @@ class HomePage extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      controller.user!.namaLengkap!,
+                      controller.user.namaLengkap!,
                       style: blackFontStyle1.copyWith(
                           fontWeight: FontWeight.bold, color: white),
                       overflow: TextOverflow.ellipsis,
                     ),
                     Text(
-                      "${controller.user!.divisi!.nama!} - ${controller.user!.area!.nama}",
+                      "${controller.user.area!.nama!} - ${controller.user.divisi!.nama} - ${controller.user.role!.nama}",
                       style: blackFontStyle3.copyWith(
                           fontWeight: FontWeight.w100, color: white),
                     ),
@@ -173,17 +181,34 @@ class HomePage extends StatelessWidget {
                         children: [
                           MyButton(
                               label: "Change Image",
-                              onTap: () {},
+                              onTap: () async => await controller
+                                  .submitImage()
+                                  .then((value) => value != null
+                                      ? controller.changeprofile(value).then(
+                                            (value) => controller
+                                                .getUserAndDaily()
+                                                .then(
+                                              (value) {
+                                                Get.back();
+                                                snackbar(context, value,
+                                                    "Berhasil merubah profile picture");
+                                              },
+                                            ),
+                                          )
+                                      : snackbar(context, false,
+                                          'Batal mengganti profile picture')),
                               height: 40,
                               width: double.infinity),
                           MyButton(
                             label: "Log Out",
-                            onTap: () {
-                              Get.back();
-                              Get.offAll(
-                                () => const Login(),
-                              );
-                            },
+                            onTap: () async =>
+                                await controller.logout().then((value) {
+                              if (value.value!) {
+                                Get.delete<HomePageController>();
+                                Get.offAll(() => const Login());
+                              }
+                              snackbar(context, value.value!, value.message!);
+                            }),
                             height: 40,
                             width: double.infinity,
                             color: Colors.red[300],
@@ -192,10 +217,17 @@ class HomePage extends StatelessWidget {
                       ),
                     ),
                   ),
-                  child: const CircleAvatar(
-                    backgroundImage: AssetImage('assets/usep.jpg'),
-                    backgroundColor: white,
-                  ),
+                  child: controller.user.profilePicture != null
+                      ? CircleAvatar(
+                          backgroundImage: NetworkImage(
+                            baseStorage + controller.user.profilePicture!,
+                          ),
+                          backgroundColor: white,
+                        )
+                      : const CircleAvatar(
+                          backgroundImage: AssetImage('assets/user.png'),
+                          backgroundColor: white,
+                        ),
                 )
               ],
             ),

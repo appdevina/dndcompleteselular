@@ -11,6 +11,7 @@ class UserModel extends Equatable {
   final bool? weeklyNon;
   final bool? monthlyResult;
   final bool? monthlyNon;
+  final String? profilePicture;
 
   const UserModel({
     this.id,
@@ -23,6 +24,7 @@ class UserModel extends Equatable {
     this.weeklyNon,
     this.monthlyResult,
     this.monthlyNon,
+    this.profilePicture,
   });
 
   @override
@@ -37,6 +39,7 @@ class UserModel extends Equatable {
         weeklyNon,
         monthlyResult,
         monthlyNon,
+        profilePicture,
       ];
 
   factory UserModel.fromJson(Map<String, dynamic> json) => UserModel(
@@ -50,18 +53,6 @@ class UserModel extends Equatable {
         weeklyNon: json['wn'] == 0 ? false : true,
         monthlyResult: json['mr'] == 0 ? false : true,
         monthlyNon: json['mn'] == 0 ? false : true,
+        profilePicture: json['profile_picture'],
       );
 }
-
-UserModel mockUser = const UserModel(
-  id: 4,
-  namaLengkap: 'USEP HERMANTO',
-  role: RoleModel(id: 2, nama: 'STAFF'),
-  area: AreaModel(id: 1, nama: 'COO'),
-  divisi: DivisiModel(id: 4, nama: 'BUSDEV'),
-  daily: true,
-  weeklyNon: true,
-  weeklyResult: false,
-  monthlyNon: false,
-  monthlyResult: false,
-);

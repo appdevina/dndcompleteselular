@@ -21,10 +21,10 @@ class DailyController extends GetxController {
   }
 
   Future<ApiReturnValue<bool>> changeStatus(int id) async {
-    HomePageController home = Get.find();
+    HomePageController home = Get.find<HomePageController>();
     ApiReturnValue<bool> result = await DailyService.change(id: id);
     getDaily(selectedDate, isloading: true);
-    home.updateBack();
+    home.getUserAndDaily();
     update(['daily']);
     return result;
   }

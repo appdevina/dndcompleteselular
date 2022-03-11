@@ -29,7 +29,7 @@ class DetailDaily extends GetView<ResultController> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          "Tanggal : ${index + 1}",
+                          "Tanggal : ${DateFormat('d MMM y').format(controller.dailys[index][0].date!)}",
                           style: blackFontStyle2,
                         ),
                         Text(
@@ -98,6 +98,12 @@ class DetailDaily extends GetView<ResultController> {
                   e.task!,
                   style: blackFontStyle1.copyWith(fontSize: 14),
                   maxLines: 1,
+                ),
+                Text(
+                  'on-time point : ${e.ontime}',
+                  style:
+                      blackFontStyle3.copyWith(fontSize: 8, color: greyColor),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ],
             ),

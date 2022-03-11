@@ -1,29 +1,29 @@
 part of 'controllers.dart';
 
 class HomePageController extends GetxController {
-  UserModel? user;
+  late UserModel user;
   List<DailyModel>? daily;
   RxBool loading = true.obs;
+  File? foto;
   StreamSubscription<ConnectivityResult>? result;
 
-  void getUserAndDaily() async {
+  Future<bool> getUserAndDaily() async {
     var result = await UserServices.getDetailUser();
     var result2 = await DailyService.getDaily(
         DateFormat('y-MM-dd').format(DateTime.now()));
-    if (result.value != null) {
-      user = result.value!;
+    if (result.value == null || result2.value == null) {
+      return false;
     }
-    if (result2.value != null) {
-      daily = result2.value!;
-    }
-    loading.toggle();
+    user = result.value!;
+    daily = result2.value!;
     update(['user', 'daily']);
+    return true;
   }
 
   void updateBack() async {
-    loading.toggle();
     getUserAndDaily();
     update(['daily']);
+    loading.toggle();
   }
 
   _updateConnectionStatus(ConnectivityResult result) {
@@ -39,9 +39,38 @@ class HomePageController extends GetxController {
     }
   }
 
+  Future<File?> submitImage() async {
+    final _picker = ImagePicker();
+
+    String _time = DateTime.now().toString();
+
+    XFile? pickedFile = await _picker.pickImage(
+      source: ImageSource.gallery,
+    );
+
+    if (pickedFile == null) {
+      Get.back();
+      return null;
+    }
+    final tempDir = await getTemporaryDirectory();
+    final path = tempDir.path;
+    final title = _time;
+    final bytes = await pickedFile.readAsBytes();
+    img.Image? image = img.decodeImage(bytes);
+    img.Image? resizeimg = img.copyResize(image!, width: 720, height: 1280);
+    foto = File('$path/$title.jpg')..writeAsBytesSync(img.encodeJpg(resizeimg));
+    return foto;
+  }
+
+  Future<ApiReturnValue<bool>> changeprofile(File image) async =>
+      await UserServices.profilepicture(image).then((value) => value);
+
+  Future<ApiReturnValue<bool>> logout() async =>
+      await UserServices.logout().then((value) => value);
+
   @override
-  void onInit() {
-    getUserAndDaily();
+  void onInit() async {
+    await getUserAndDaily().then((value) => loading.toggle());
     result =
         Connectivity().onConnectivityChanged.listen(_updateConnectionStatus);
     super.onInit();

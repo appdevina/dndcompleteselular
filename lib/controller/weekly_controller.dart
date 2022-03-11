@@ -24,6 +24,12 @@ class WeeklyController extends GetxController {
     update(['weekly']);
   }
 
+  Future<ApiReturnValue<bool>> delete(int id) async {
+    ApiReturnValue<bool> result = await WeeklyService.delete(id: id);
+    getWeekObjective(selectedYear, selectedWeek, isloading: true);
+    return result;
+  }
+
   void changeYear(int val) {
     isLoading.toggle();
     update(['weekly']);
@@ -51,8 +57,12 @@ class WeeklyController extends GetxController {
     getWeekObjective(selectedYear, selectedWeek);
   }
 
-  Color getColor(String type, WeeklyModel weekly) {
-    return weekly.value != 0.0 ? Colors.green[400]! : Colors.green[100]!;
+  Color getColor(WeeklyModel weekly) {
+    if (weekly.type == "NON") {
+      return weekly.statNon! ? Colors.green[400]! : Colors.green[100]!;
+    } else {
+      return weekly.statRes! ? Colors.green[400]! : Colors.green[100]!;
+    }
   }
 
   bool buttonYear(bool isAdd) {
@@ -101,10 +111,12 @@ class WeeklyController extends GetxController {
     }
   }
 
-  Future<ApiReturnValue<bool>> changeStatus(int id, String type,
-      {int? value}) async {
+  Future<ApiReturnValue<bool>> changeStatus({
+    required int id,
+    int? value,
+  }) async {
     ApiReturnValue<bool> result =
-        await WeeklyService.changeStatus(id: id, type: type, value: value);
+        await WeeklyService.changeStatus(id: id, value: value);
     getWeekObjective(selectedYear, selectedWeek, isloading: true);
     return result;
   }

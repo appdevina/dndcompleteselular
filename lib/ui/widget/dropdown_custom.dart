@@ -1,16 +1,11 @@
 part of 'widgets.dart';
 
-class DropDownYear extends StatelessWidget {
+class DropDownCustom extends GetView<RequestTaskController> {
   final String title;
-  final List<int> years;
-  final WeeklyAddTaskController controller;
+  final List<String> todoType;
 
-  const DropDownYear({
-    Key? key,
-    required this.title,
-    required this.years,
-    required this.controller,
-  }) : super(key: key);
+  const DropDownCustom({Key? key, required this.title, required this.todoType})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -44,28 +39,35 @@ class DropDownYear extends StatelessWidget {
             child: Row(
               children: [
                 Expanded(
-                  child: DropdownButtonFormField<int>(
-                    decoration: const InputDecoration(
+                  child: DropdownButtonFormField<String>(
+                    value: controller.selectedTodo,
+                    decoration: InputDecoration(
+                      border: UnderlineInputBorder(
+                        borderSide: BorderSide(
+                          color: "22577E".toColor(),
+                          width: 0,
+                        ),
+                      ),
                       focusedBorder: UnderlineInputBorder(
                         borderSide: BorderSide(
-                          color: white,
+                          color: "22577E".toColor(),
                           width: 0,
                         ),
                       ),
                       enabledBorder: UnderlineInputBorder(
                         borderSide: BorderSide(
-                          color: white,
+                          color: "22577E".toColor(),
                           width: 0,
                         ),
                       ),
                     ),
-                    items: years
-                        .map((e) => DropdownMenuItem<int>(
+                    items: todoType
+                        .map((e) => DropdownMenuItem<String>(
                             value: e, child: Text(e.toString())))
                         .toList(),
-                    onChanged: (int? val) {
+                    onChanged: (String? val) {
                       if (val != null) {
-                        controller.changeWeek(val);
+                        controller.changeTodo(val);
                       }
                     },
                   ),

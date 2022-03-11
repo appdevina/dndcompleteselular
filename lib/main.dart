@@ -22,7 +22,7 @@ void main() async {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends GetView<LoginController> {
   const MyApp({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
@@ -32,7 +32,13 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
           scaffoldBackgroundColor: "22577E".toColor(),
           appBarTheme: AppBarTheme(backgroundColor: "22577E".toColor())),
-      home: const Login(),
+      home: GetBuilder<LoginController>(
+          id: 'login',
+          builder: (_) => (controller.loadingLogin)
+              ? const LoadingFullScreen()
+              : (controller.islogin)
+                  ? HomePage()
+                  : const Login()),
     );
   }
 }

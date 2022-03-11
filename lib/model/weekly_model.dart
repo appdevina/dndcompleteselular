@@ -43,6 +43,20 @@ class WeeklyModel extends Equatable {
         isUpdate,
       ];
 
+  Map<String, dynamic> toJson() => {
+        'task': task,
+        'week': week,
+        'year': year,
+        'tipe': type,
+        'value_plan': valPlan,
+        'value_actual': valAct,
+        'status_non': statNon,
+        'status_result': statRes,
+        'value': value ?? 0,
+        'is_add': isAdd,
+        'is_update': isUpdate,
+      };
+
   factory WeeklyModel.fromJson(Map<String, dynamic> json) => WeeklyModel(
         id: json['id'],
         task: json['task'],
@@ -61,7 +75,11 @@ class WeeklyModel extends Equatable {
             : json['status_result'] == 0
                 ? false
                 : true,
-        value: json['value'] ?? 0.0,
+        value: json['value'] == 0
+            ? 0.0
+            : json['value'] == 1
+                ? 1.0
+                : json['value'],
         isAdd: json['is_add'] == 0 ? false : true,
         isUpdate: json['is_update'] == 0 ? false : true,
       );

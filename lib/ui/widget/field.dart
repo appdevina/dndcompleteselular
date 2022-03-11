@@ -12,6 +12,7 @@ class MyInputField extends GetView<DailyAddTaskController> {
   final bool side;
   final TextInputType typeInput;
   final bool? isvalue;
+  final TextStyle? textStyle;
   MyInputField({
     required this.title,
     required this.hint,
@@ -22,6 +23,7 @@ class MyInputField extends GetView<DailyAddTaskController> {
     this.side = false,
     this.typeInput = TextInputType.name,
     this.isvalue = false,
+    this.textStyle,
   });
 
   @override
@@ -35,7 +37,7 @@ class MyInputField extends GetView<DailyAddTaskController> {
         children: [
           Text(
             title,
-            style: blackFontStyle3.copyWith(color: white),
+            style: textStyle ?? blackFontStyle3.copyWith(color: white),
           ),
           Container(
             margin: const EdgeInsetsDirectional.only(

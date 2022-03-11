@@ -28,7 +28,7 @@ class DetailMonthly extends GetView<ResultController> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          "Month : January 2022",
+                          "Month : ${DateFormat('MMMM y').format(controller.monthlies[0].monthYear!)}",
                           style: blackFontStyle2,
                         ),
                         Text(
@@ -82,7 +82,7 @@ class DetailMonthly extends GetView<ResultController> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "WEEKLY ${e.type! == 'NON' ? "NON RESULT" : "RESULT"} ${e.isPlan! ? '' : '(Extra Task)'}",
+                  "WEEKLY ${e.type! == 'NON' ? "NON RESULT" : "RESULT"} ${!e.isAdd! ? '' : '(Extra Task)'}",
                   style:
                       blackFontStyle3.copyWith(fontSize: 12, color: greyColor),
                   overflow: TextOverflow.ellipsis,

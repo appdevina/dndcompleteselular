@@ -1,20 +1,21 @@
 part of 'screens.dart';
 
 class Result extends StatefulWidget {
-  Result({Key? key}) : super(key: key);
+  const Result({Key? key}) : super(key: key);
 
   @override
   _ResultState createState() => _ResultState();
 }
 
-class _ResultState extends State<Result> with SingleTickerProviderStateMixin {
-  TabController? _tabController;
+class _ResultState extends State<Result> {
   final controller = Get.put(ResultController());
+  int _selectedIndex = 0;
+  List<Widget> view = [const ResultBody(), const ResultTeamName()];
 
-  @override
-  void initState() {
-    _tabController = TabController(length: 3, vsync: this);
-    super.initState();
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
   }
 
   @override
@@ -45,16 +46,18 @@ class _ResultState extends State<Result> with SingleTickerProviderStateMixin {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 IconButton(
-                  onPressed: () {},
+                  onPressed: () => controller.changeWeek(isAdd: false),
                   icon: const Icon(MdiIcons.minusCircle),
                   iconSize: 18,
                 ),
-                Text(
-                  "52",
-                  style: blackFontStyle1.copyWith(color: white),
+                Obx(
+                  () => Text(
+                    controller.week.toString(),
+                    style: blackFontStyle1.copyWith(color: white),
+                  ),
                 ),
                 IconButton(
-                  onPressed: () {},
+                  onPressed: () => controller.changeWeek(isAdd: true),
                   icon: const Icon(MdiIcons.plusCircle),
                   iconSize: 18,
                 ),
@@ -63,48 +66,28 @@ class _ResultState extends State<Result> with SingleTickerProviderStateMixin {
           ),
         ],
       ),
-      body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            TabBar(
-              unselectedLabelColor: greyColor,
-              indicator: BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(
-                      width: 0.5, color: greyColor, style: BorderStyle.solid),
-                ),
-              ),
-              unselectedLabelStyle:
-                  blackFontStyle3.copyWith(color: white, fontSize: 12),
-              labelColor: white,
-              tabs: const [
-                Tab(
-                  text: 'Daily',
-                ),
-                Tab(
-                  text: 'Weekly',
-                ),
-                Tab(
-                  text: 'Monthly',
-                ),
-              ],
-              controller: _tabController,
-              indicatorSize: TabBarIndicatorSize.tab,
-            ),
-            Expanded(
-              child: TabBarView(
-                physics: const PageScrollPhysics(),
-                children: const [
-                  ResultDaily(),
-                  ResultWeekly(),
-                  ResultMonthly(),
-                ],
-                controller: _tabController,
-              ),
-            ),
-          ],
-        ),
+      body: view[_selectedIndex],
+      bottomNavigationBar: BottomNavigationBar(
+        elevation: 0,
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'Individu',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.group),
+            label: 'Teams',
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        onTap: (int index) => _onItemTapped(index),
+        selectedIconTheme: const IconThemeData(size: 14, color: white),
+        unselectedIconTheme: const IconThemeData(size: 20, color: Colors.grey),
+        selectedLabelStyle: blackFontStyle3.copyWith(color: white),
+        fixedColor: white,
+        showUnselectedLabels: false,
+        selectedFontSize: 12,
+        backgroundColor: "22577E".toColor(),
       ),
     );
   }

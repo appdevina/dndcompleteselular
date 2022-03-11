@@ -10,12 +10,7 @@ class CardDaily extends GetView<DailyController> {
       onTap: () => daily.tag == null
           ? Get.to(
               () => AddTaskDaily(),
-              arguments: {
-                'oldTask': daily.task,
-                'oldTime': daily.time,
-                'oldDate': daily.date,
-                'oldId': daily.id,
-              },
+              arguments: daily,
               transition: Transition.cupertino,
             )
           : snackbar(context, false, "Daily tag tidak bisa di rubah"),
@@ -66,6 +61,7 @@ class CardDaily extends GetView<DailyController> {
                         wordSpacing: 1,
                         fontSize: 12,
                       ),
+                      maxLines: 1,
                     ),
                   ],
                 ),

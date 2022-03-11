@@ -10,9 +10,34 @@ class ResultMonthly extends GetView<ResultController> {
           ? const Center(child: CircularProgressIndicator())
           : Column(
               children: [
-                PieCharResult(
-                    closed: controller.totalActualMonthly.toDouble(),
-                    open: controller.totalOpenMonthly.toDouble()),
+                controller.totalPlanTaskMonthly == 0
+                    ? SizedBox(
+                        width: double.infinity,
+                        height: 210,
+                        child: Center(
+                          child: Text(
+                            'NO DATA',
+                            style: blackFontStyle1.copyWith(color: white),
+                          ),
+                        ),
+                      )
+                    : Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          PieCharResult(
+                              closed: controller.totalActualMonthly.toDouble(),
+                              open: controller.totalOpenMonthly.toDouble()),
+                          MyButton(
+                            label: "Detail",
+                            onTap: () => Get.to(
+                              () => const DetailMonthly(),
+                              transition: Transition.cupertino,
+                            ),
+                            height: 40,
+                            width: 80,
+                          ),
+                        ],
+                      ),
                 Expanded(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -28,7 +53,8 @@ class ResultMonthly extends GetView<ResultController> {
                               value: '${controller.totalExtraTaskMonthly}'),
                           CardDetailResult(
                               title: "Achievement",
-                              value: '${controller.achievemntMonthly} %'),
+                              value:
+                                  '${num.parse(controller.achievemntMonthly.toStringAsFixed(1))} %'),
                         ],
                       ),
                       Row(
@@ -41,15 +67,6 @@ class ResultMonthly extends GetView<ResultController> {
                               title: "Total Point",
                               value: '${controller.totalPointMonthly}'),
                         ],
-                      ),
-                      MyButton(
-                        label: "Detail",
-                        onTap: () => Get.to(
-                          () => const DetailMonthly(),
-                          transition: Transition.cupertino,
-                        ),
-                        height: 40,
-                        width: 80,
                       ),
                     ],
                   ),

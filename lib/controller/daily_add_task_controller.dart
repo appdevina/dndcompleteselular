@@ -1,23 +1,19 @@
 part of 'controllers.dart';
 
 class DailyAddTaskController extends GetxController {
-  final String? oldTask;
-  final String? oldTime;
-  final DateTime? oldDate;
-  final int? oldId;
+  final DailyModel? daily;
+
   DailyAddTaskController({
-    this.oldTask,
-    this.oldTime,
-    this.oldDate,
-    this.oldId,
+    this.daily,
   });
-  late TextEditingController taskText;
+
   String selectedTime = DateFormat.jm().format(DateTime.now());
   DateTime? selectedDate, lastMonday;
   RxBool tambahan = false.obs;
   late DateTime today = DateTime.now();
   late List<UserModel> users;
   List<Object?> selectedPerson = [];
+  late TextEditingController taskText;
   RxBool isLoading = true.obs;
 
   void changeDate(DateTime val) {
@@ -45,20 +41,13 @@ class DailyAddTaskController extends GetxController {
     required bool isAdd,
     String? time,
     int? id,
-    List<Object?>? tags,
+    required List<Object?> tags,
   }) async {
-    if (taskText.text.length < 5 || taskText.text.isEmpty) {
+    if (task.length < 3 || task.isEmpty) {
       return ApiReturnValue(
         value: false,
-        message: "Kolom task harus di isi minimal 5 karakter",
+        message: "Kolom task harus di isi minimal 3 karakter",
       );
-    }
-    tags ??= [];
-    String newTag = '';
-    if (tags.isNotEmpty) {
-      for (var tag in tags) {
-        newTag += tag.toString();
-      }
     }
 
     ApiReturnValue<bool> result = await DailyService.submit(
@@ -67,7 +56,7 @@ class DailyAddTaskController extends GetxController {
       isAdd: isAdd,
       time: time,
       id: id,
-      tag: newTag,
+      tag: tags,
     ).then((value) {
       if (value.value!) {
         taskText.clear();
@@ -97,8 +86,11 @@ class DailyAddTaskController extends GetxController {
 
   @override
   void onInit() async {
+    taskText = daily == null
+        ? TextEditingController()
+        : TextEditingController(text: daily!.task);
     final con = Get.find<HomePageController>();
-    lastMonday = con.user!.area!.id == 2 &&
+    lastMonday = con.user.area!.id == 2 &&
             DateTime.now().isBefore(getMonday(DateTime.now())
                 .add(const Duration(days: 1, hours: 10)))
         ? getMonday(DateTime.now())
@@ -106,11 +98,10 @@ class DailyAddTaskController extends GetxController {
                 getMonday(DateTime.now()).add(const Duration(hours: 17)))
             ? getMonday(DateTime.now())
             : getNextWeek(DateTime.now());
-    selectedTime = oldTime ?? DateFormat.jm().format(DateTime.now());
-    selectedDate = oldDate ?? lastMonday;
-    taskText = oldTask == null
-        ? TextEditingController()
-        : TextEditingController(text: oldTask);
+    selectedTime =
+        daily == null ? DateFormat.jm().format(DateTime.now()) : daily!.time!;
+    selectedDate = daily == null ? lastMonday : daily!.date;
+
     await tag().then((value) {
       users = value.value!;
       isLoading.toggle();

@@ -8,10 +8,11 @@ class DailyService {
 
       String uri = baseUrl + 'daily?date=$date';
       Uri url = Uri.parse(uri);
+      SharedPreferences pref = await SharedPreferences.getInstance();
 
       var response = await client.get(url, headers: {
         'Content-Type': 'application/json',
-        'Authorization': token
+        'Authorization': 'Bearer ${pref.getString('token')}',
       });
 
       if (response.statusCode != 200) {
@@ -38,28 +39,34 @@ class DailyService {
     required bool isAdd,
     String? time,
     int? id,
-    String? tag,
+    required List<Object?> tag,
     http.Client? client,
   }) async {
     try {
       client ??= http.Client();
       String url = baseUrl + 'daily${id == null ? "" : "/edit/$id"}';
       Uri uri = Uri.parse(url);
+      List tagged = [];
+      if (tag.isNotEmpty) {
+        tagged = tag.map((e) => e).toList();
+      }
 
       Map<String, dynamic> body = {
-        'task': task.toUpperCase(),
+        'task': task,
         'time': isAdd ? null : time,
         'date': DateFormat('y-MM-dd').format(date),
         'isplan': !isAdd,
-        'tag': isAdd ? null : tag,
+        'tag': tagged,
       };
+
+      SharedPreferences pref = await SharedPreferences.getInstance();
 
       var response = await client.post(
         uri,
         body: jsonEncode(body),
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': token,
+          'Authorization': 'Bearer ${pref.getString('token')}',
         },
       );
 
@@ -85,9 +92,11 @@ class DailyService {
       String url = baseUrl + 'daily/delete/$id';
       Uri uri = Uri.parse(url);
 
+      SharedPreferences pref = await SharedPreferences.getInstance();
+
       var response = await client.get(uri, headers: {
         'Content-Type': 'application/json',
-        'Authorization': token,
+        'Authorization': 'Bearer ${pref.getString("token")}',
       });
 
       if (response.statusCode != 200) {
@@ -111,9 +120,11 @@ class DailyService {
       String url = baseUrl + 'daily/change/$id';
       Uri uri = Uri.parse(url);
 
+      SharedPreferences pref = await SharedPreferences.getInstance();
+
       var response = await client.get(uri, headers: {
         'Content-Type': 'application/json',
-        'Authorization': token,
+        'Authorization': 'Bearer ${pref.getString('token')}',
       });
 
       if (response.statusCode != 200) {

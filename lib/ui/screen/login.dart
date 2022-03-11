@@ -9,14 +9,13 @@ class Login extends GetView<LoginController> {
       body: SafeArea(
         child: Container(
           alignment: Alignment.center,
-          height: double.infinity,
+          height: MediaQuery.of(context).size.height,
           width: double.infinity,
           child: Form(
             key: controller.key,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            child: ListView(
               children: [
-                const Spacer(),
+                SizedBox(height: MediaQuery.of(context).size.height / 5),
                 _logo(),
                 SizedBox(
                   child: Column(
@@ -37,7 +36,8 @@ class Login extends GetView<LoginController> {
                           obsecure: controller.obsecure.value,
                           widget: IconButton(
                               onPressed: () {
-                                controller.open();
+                                controller.obsecure.toggle();
+                                controller.update(['password']);
                               },
                               icon: controller.obsecure.value
                                   ? const Icon(MdiIcons.eye)
@@ -48,13 +48,25 @@ class Login extends GetView<LoginController> {
                   ),
                 ),
                 const SizedBox(height: 10),
-                MyButton(
-                    label: "Login",
-                    onTap: () => Get.offAll(() => HomePage(),
-                        transition: Transition.cupertino),
-                    height: 40,
-                    width: 70),
-                const Spacer(),
+                Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 120),
+                  child: MyButton(
+                      label: "Login",
+                      onTap: () async => await controller
+                              .signIn(controller.userName!.text,
+                                  controller.pass!.text)
+                              .then((value) {
+                            if (value.value!) {
+                              Get.offAll(() => HomePage(),
+                                  transition: Transition.cupertino);
+                              snackbar(context, value.value!, value.message!);
+                            } else {
+                              snackbar(context, value.value!, value.message!);
+                            }
+                          }),
+                      height: 40,
+                      width: 70),
+                ),
               ],
             ),
           ),

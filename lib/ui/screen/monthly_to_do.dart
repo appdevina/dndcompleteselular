@@ -57,7 +57,9 @@ class MonthlyToDo extends StatelessWidget {
           iconSize: 18,
         ),
         IconButton(
-          onPressed: () {},
+          onPressed: () => controller.getMonthlyObjective(
+              controller.selectedMonthYear,
+              isloading: true),
           icon: const Icon(
             MdiIcons.refresh,
             color: Colors.white,

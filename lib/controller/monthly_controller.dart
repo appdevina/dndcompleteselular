@@ -11,22 +11,22 @@ class MonthlyController extends GetxController {
     update(['monthly']);
     selectedMonthYear = val;
     update(['month']);
-    getMonthlyObjective(selectedMonthYear.year, selectedMonthYear.month);
+    getMonthlyObjective(selectedMonthYear);
   }
 
-  void getMonthlyObjective(int year, int month) async {
+  void getMonthlyObjective(DateTime month, {bool? isloading}) async {
     ApiReturnValue<List<MonthlyModel>> result =
-        await MonthlyServices.getMonthly(year, month);
+        await MonthlyServices.getMonthly(month);
     monthly = result.value!;
-    isLoading.toggle();
+    isloading ?? isLoading.toggle();
     update(['monthly']);
   }
 
-  Color getColor(String type, MonthlyModel monthly) {
-    if (type == "NON") {
+  Color getColor(MonthlyModel monthly) {
+    if (monthly.type == "NON") {
       return monthly.statNon! ? Colors.green[400]! : Colors.green[100]!;
     } else {
-      return monthly.statRes == 0.0 ? Colors.green[100]! : Colors.green[400]!;
+      return monthly.statRes! ? Colors.green[400]! : Colors.green[100]!;
     }
   }
 
@@ -34,11 +34,19 @@ class MonthlyController extends GetxController {
         int.parse(s),
       );
 
-  Future<ApiReturnValue<bool>> changeStatus(int month, int id, String type,
-      {int? value}) async {
-    await MonthlyServices.changeStatus(month, id, type, value: value);
+  Future<ApiReturnValue<bool>> delete(int id) async {
+    ApiReturnValue<bool> result = await MonthlyServices.delete(id: id);
+    getMonthlyObjective(selectedMonthYear, isloading: true);
+    return result;
+  }
+
+  Future<ApiReturnValue<bool>> changeStatus(
+      {required int id, int? value}) async {
+    ApiReturnValue<bool> result =
+        await MonthlyServices.changeStatus(id: id, value: value);
+    getMonthlyObjective(selectedMonthYear, isloading: true);
     update(['monthly']);
-    return ApiReturnValue(value: true, message: "berhasil merubah");
+    return result;
   }
 
   @override
@@ -47,7 +55,7 @@ class MonthlyController extends GetxController {
     minMonthYear = DateTime(2022, 1);
     valueResult = MoneyMaskedTextController(
         precision: 0, thousandSeparator: '.', decimalSeparator: '');
-    getMonthlyObjective(selectedMonthYear.year, selectedMonthYear.month);
+    getMonthlyObjective(selectedMonthYear);
     super.onInit();
   }
 }
