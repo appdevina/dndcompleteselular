@@ -1,11 +1,8 @@
 part of 'widgets.dart';
 
-class CardMonthlyRequest extends GetView<RequestTaskController> {
+class CardMonthlyApprove extends GetView<ApproveRequestController> {
   final MonthlyModel monthly;
-  final bool? isCanDelete;
-  const CardMonthlyRequest(
-      {required this.monthly, this.isCanDelete = true, Key? key})
-      : super(key: key);
+  const CardMonthlyApprove({required this.monthly, Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -59,61 +56,9 @@ class CardMonthlyRequest extends GetView<RequestTaskController> {
                 ],
               ),
             ),
-            isCanDelete!
-                ? InkWell(
-                    onTap: () => showDialog<String>(
-                        context: context,
-                        builder: (context) => _dialogDelete(context)),
-                    child: Container(
-                      alignment: Alignment.center,
-                      width: 30,
-                      padding: const EdgeInsets.all(5),
-                      margin: const EdgeInsets.only(right: 10),
-                      decoration: BoxDecoration(
-                          shape: BoxShape.circle, color: Colors.red[400]),
-                      child: const Icon(
-                        Icons.delete_rounded,
-                        color: Colors.white,
-                        size: 20,
-                      ),
-                    ),
-                  )
-                : const SizedBox(),
           ],
         ),
       ),
-    );
-  }
-
-  _dialogDelete(BuildContext context) {
-    return AlertDialog(
-      title: Text(
-        "Hapus",
-        style: blackFontStyle1,
-      ),
-      content: Text(
-        'Apakah anda yakin menghapus\n"${monthly.task}"',
-        style: blackFontStyle3,
-      ),
-      actions: [
-        TextButton(
-            onPressed: () {
-              controller.monthlyChange
-                  .removeWhere((element) => element == monthly);
-              controller.update(['tag']);
-              Get.back();
-            },
-            child: Text(
-              "YES",
-              style: blackFontStyle3.copyWith(color: Colors.green[400]),
-            )),
-        TextButton(
-            onPressed: () => Get.back(),
-            child: Text(
-              "NO",
-              style: blackFontStyle3.copyWith(color: Colors.red[400]),
-            )),
-      ],
     );
   }
 }

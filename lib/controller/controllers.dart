@@ -24,3 +24,4 @@ part 'home_page_controller.dart';
 part 'result_controller.dart';
 part 'request_task_controller.dart';
 part 'approve_request_controller.dart';
+part 'result_team_controller.dart';

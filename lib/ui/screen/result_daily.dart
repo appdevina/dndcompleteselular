@@ -9,6 +9,7 @@ class ResultDaily extends GetView<ResultController> {
       () => controller.loading.value
           ? const Center(child: CircularProgressIndicator())
           : Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 controller.totalPlanTaskDaily == 0
                     ? SizedBox(

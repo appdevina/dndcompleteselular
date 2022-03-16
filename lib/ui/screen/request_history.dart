@@ -14,12 +14,14 @@ class RequestHistory extends GetView<RequestTaskController> {
           : Container(
               padding: const EdgeInsets.all(10),
               height: MediaQuery.of(context).size.height,
-              child: ListView.builder(
-                itemBuilder: ((context, index) =>
-                    ListHistoryRequest(request: controller.requests[index])),
-                itemCount: controller.requests.length,
-              ),
-            ),
+              child: GetBuilder<RequestTaskController>(
+                id: 'result',
+                builder: (_) => ListView.builder(
+                  itemBuilder: ((context, index) =>
+                      ListHistoryRequest(request: controller.requests[index])),
+                  itemCount: controller.requests.length,
+                ),
+              )),
     );
   }
 }

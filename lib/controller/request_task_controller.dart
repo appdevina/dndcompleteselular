@@ -8,13 +8,15 @@ class RequestTaskController extends GetxController {
   List<DailyModel> dailyChange = [];
   List<WeeklyModel> weeklyChange = [];
   List<MonthlyModel> monthlyChange = [];
-  late List<RequestModel> requests;
+  List<RequestModel> requests = [];
   late UserModel user;
   late int week;
   String? selectedTodo;
   List<Object?> selectedTask = [];
   int maxWeek = 52;
   int minWeek = 1;
+  RxBool isShowExt = false.obs;
+  RxBool isShowRep = false.obs;
 
   int numOfWeeks(DateTime now) {
     int numberWeek = int.parse(DateFormat("D").format(now));
@@ -24,8 +26,26 @@ class RequestTaskController extends GetxController {
   void getHistory() async {
     await RequestService.fetch().then((value) => requests = value.value!);
     update([
-      'request',
+      'result',
     ]);
+  }
+
+  String getDateRequest({required RequestModel requestModel}) {
+    late String result;
+    switch (requestModel.jenisToDo) {
+      case 'Daily':
+        result = DateFormat('dd MMMM y')
+            .format(requestModel.dailyExisting![0].date!);
+        break;
+      case 'Weekly':
+        result = requestModel.weeklyExisting![0].week!.toString();
+        break;
+      default:
+        result = DateFormat('MMMM y')
+            .format(requestModel.monthlyExisting![0].monthYear!);
+    }
+
+    return result;
   }
 
   Future<bool> addTaskChange(
@@ -126,26 +146,52 @@ class RequestTaskController extends GetxController {
     update(['spec']);
   }
 
+  Future<ApiReturnValue<bool>> cancel({required int id}) async =>
+      await RequestService.cancel(id: id).then(((value) => value));
+
   Future<ApiReturnValue<bool>> submit({
     required String? type,
     required List<Object?> existingTaskId,
     List<DailyModel>? dailyReplace,
     List<WeeklyModel>? weeklyReplace,
     List<MonthlyModel>? monthlyReplace,
-  }) async =>
-      (((type == 'Daily' && dailyReplace!.isEmpty) ||
-                  (type == 'Weekly' && weeklyReplace!.isEmpty) ||
-                  (type == 'Monthly' && monthlyReplace!.isEmpty)) ||
-              existingTaskId.isEmpty)
-          ? ApiReturnValue(
+  }) async {
+    switch (type) {
+      case 'Daily':
+        if (dailyReplace!.isEmpty || existingTaskId.isEmpty) {
+          return ApiReturnValue(
               value: false,
-              message: 'Task existing dan Task change harus di isi')
-          : await RequestService.submit(
-              type: type,
-              exsitingTaskId: existingTaskId,
-              dailyReplace: dailyReplace,
-              weeklyReplace: weeklyReplace,
-              monthlyReplace: monthlyReplace);
+              message: 'Task existing dan Task replace harus di isi');
+        }
+        break;
+      case 'Weekly':
+        if (weeklyReplace!.isEmpty ||
+            existingTaskId.isEmpty ||
+            weeklyReplace.length != existingTaskId.length) {
+          return ApiReturnValue(
+              value: false,
+              message: 'Task existing dan Task replace harus sesuai jumlahnya');
+        }
+        break;
+      default:
+        if (monthlyReplace!.isEmpty ||
+            existingTaskId.isEmpty ||
+            monthlyReplace.length != existingTaskId.length) {
+          return ApiReturnValue(
+              value: false,
+              message: 'Task existing dan Task replace harus sesuai jumlahnya');
+        }
+    }
+
+    ApiReturnValue<bool> result = await RequestService.submit(
+        type: type,
+        exsitingTaskId: existingTaskId,
+        dailyReplace: dailyReplace,
+        weeklyReplace: weeklyReplace,
+        monthlyReplace: monthlyReplace);
+
+    return result;
+  }
 
   @override
   void onInit() {
@@ -154,6 +200,7 @@ class RequestTaskController extends GetxController {
     day = DateTime.now();
     month = DateTime(day.year, day.month);
     week = numOfWeeks(day);
+    minWeek = week;
     getHistory();
     super.onInit();
   }

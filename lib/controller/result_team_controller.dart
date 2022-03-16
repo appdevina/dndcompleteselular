@@ -1,6 +1,8 @@
 part of 'controllers.dart';
 
-class ResultController extends GetxController {
+class ResultTeamController extends GetxController {
+  final UserModel user;
+  ResultTeamController({required this.user});
   List<List<DailyModel>> dailys = [];
   List<WeeklyModel> weeklies = [];
   List<MonthlyModel> monthlies = [];
@@ -51,16 +53,17 @@ class ResultController extends GetxController {
         : week.value != 1
             ? week.value--
             : null;
-    await getAllResult(week: week.value, year: now.year);
+    await getResult(id: user.id!, week: week.value, year: now.year);
   }
 
-  Future<bool> getAllResult({required int week, required int year}) async {
+  Future<bool> getResult(
+      {required int id, required int week, required int year}) async {
     dailys.clear();
     weeklies.clear();
     monthlies.clear();
     if (weeklies.isEmpty || dailys.isEmpty) {
       //Variable Daily
-      dailys = [];
+      dailys.clear();
       totalPointOnTime = 0;
       totalPlanTaskDaily = 0;
       totalDaysData = 0;
@@ -71,7 +74,7 @@ class ResultController extends GetxController {
       totalOpenDaily = 0;
 
       //Variable Weekly
-      weeklies = [];
+      weeklies.clear();
       planTaskWeekly = 0;
       actualTaskWeekly = 0;
       extraTaskWeekly = 0;
@@ -81,7 +84,7 @@ class ResultController extends GetxController {
 
       if (monthlies.isEmpty) {
         //Variable Monthly
-        monthlies = [];
+        monthlies.clear();
         totalPlanTaskMonthly = 0;
         totalExtraTaskMonthly = 0;
         totalActualMonthly = 0;
@@ -91,7 +94,8 @@ class ResultController extends GetxController {
         totalKpi.value = 0;
       }
     }
-    ApiReturnValue? value = await ResultService.result(week: week, year: year);
+    ApiReturnValue? value =
+        await ResultService.resultTeam(id: id, week: week, year: year);
 
     if (value != null) {
       for (var item in value.value['daily']) {
@@ -207,17 +211,11 @@ class ResultController extends GetxController {
     return ((numberWeek - now.weekday + 10) / 7).floor();
   }
 
-  Future getTeam() async =>
-      await UserServices.getTeam().then((value) => team = value.value!);
-
   @override
   void onInit() async {
-    await getAllResult(year: now.year, week: numOfWeeks(now))
+    await getResult(id: user.id!, year: now.year, week: numOfWeeks(now))
         .then((_) => loading.toggle());
     week.value = numOfWeeks(now);
-    await getTeam().then((value) {
-      update(['team']);
-    });
     super.onInit();
   }
 }

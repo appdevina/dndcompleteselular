@@ -1,13 +1,13 @@
 part of 'widgets.dart';
 
-class ListHistoryRequest extends GetView<RequestTaskController> {
+class ListHistoryApprove extends GetView<ApproveRequestController> {
   final RequestModel request;
-  const ListHistoryRequest({required this.request, Key? key}) : super(key: key);
+  const ListHistoryApprove({required this.request, Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => Get.to(() => RequestHistoryDetail(request: request),
+      onTap: () => Get.to(() => ApproveHistoryDetail(request: request),
           transition: Transition.cupertino),
       child: Card(
         shape: RoundedRectangleBorder(
@@ -41,7 +41,7 @@ class ListHistoryRequest extends GetView<RequestTaskController> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     Text(
-                      "Request Date : ${DateFormat('dd MMM y').format(request.createdAt!)} || Status : ${request.status!} ",
+                      "Request Date : ${DateFormat('dd MMM y').format(request.createdAt!)} || Request : ${request.jenisToDo}",
                       style: blackFontStyle2.copyWith(
                           wordSpacing: 1,
                           fontSize: 8,
@@ -50,7 +50,7 @@ class ListHistoryRequest extends GetView<RequestTaskController> {
                       overflow: TextOverflow.ellipsis,
                     ),
                     Text(
-                      "Request Task : ${request.jenisToDo!}",
+                      "${request.user!.namaLengkap}",
                       style: blackFontStyle2.copyWith(
                         wordSpacing: 1,
                         fontSize: 12,

@@ -1,7 +1,7 @@
 part of 'screens.dart';
 
-class ResultMonthly extends GetView<ResultController> {
-  const ResultMonthly({Key? key}) : super(key: key);
+class ResultTeamMonthly extends GetView<ResultTeamController> {
+  const ResultTeamMonthly({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +31,7 @@ class ResultMonthly extends GetView<ResultController> {
                           MyButton(
                             label: "Detail",
                             onTap: () => Get.to(
-                              () => const DetailMonthly(),
+                              () => const DetailMonthlyTeam(),
                               transition: Transition.cupertino,
                             ),
                             height: 40,

@@ -7,14 +7,25 @@ class ApproveTask extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: _appBar(),
-      body: Center(
-        child: Text(
-          'Belum ada request',
-          style: blackFontStyle3.copyWith(color: white),
-        ),
-      ),
-    );
+        appBar: _appBar(),
+        body: GetBuilder<ApproveRequestController>(
+          id: 'req',
+          builder: (_) => controller.request.isEmpty
+              ? Center(
+                  child: Text(
+                    'Belum ada request',
+                    style: blackFontStyle3.copyWith(color: white),
+                  ),
+                )
+              : Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ListView(
+                    children: controller.request
+                        .map((e) => ListHistoryApprove(request: e))
+                        .toList(),
+                  ),
+                ),
+        ));
   }
 
   _appBar() {

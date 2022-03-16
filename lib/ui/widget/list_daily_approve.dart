@@ -1,11 +1,8 @@
 part of 'widgets.dart';
 
-class CardDailyRequest extends GetView<RequestTaskController> {
+class CardDailyApprove extends GetView<ApproveRequestController> {
   final DailyModel daily;
-  final bool? isCanDelete;
-  const CardDailyRequest(
-      {required this.daily, this.isCanDelete = true, Key? key})
-      : super(key: key);
+  const CardDailyApprove({required this.daily, Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -61,60 +58,9 @@ class CardDailyRequest extends GetView<RequestTaskController> {
                 ],
               ),
             ),
-            isCanDelete!
-                ? InkWell(
-                    onTap: () => showDialog<String>(
-                        context: context,
-                        builder: (context) => _dialogDelete(context)),
-                    child: Container(
-                      alignment: Alignment.center,
-                      width: 30,
-                      padding: const EdgeInsets.all(5),
-                      margin: const EdgeInsets.only(right: 10),
-                      decoration: BoxDecoration(
-                          shape: BoxShape.circle, color: Colors.red[400]),
-                      child: const Icon(
-                        Icons.delete_rounded,
-                        color: Colors.white,
-                        size: 20,
-                      ),
-                    ),
-                  )
-                : const SizedBox(),
           ],
         ),
       ),
-    );
-  }
-
-  _dialogDelete(BuildContext context) {
-    return AlertDialog(
-      title: Text(
-        "Hapus",
-        style: blackFontStyle1,
-      ),
-      content: Text(
-        'Apakah anda yakin menghapus\n"${daily.task}"',
-        style: blackFontStyle3,
-      ),
-      actions: [
-        TextButton(
-            onPressed: () {
-              controller.dailyChange.removeWhere((element) => element == daily);
-              controller.update(['tag']);
-              Get.back();
-            },
-            child: Text(
-              "YES",
-              style: blackFontStyle3.copyWith(color: Colors.green[400]),
-            )),
-        TextButton(
-            onPressed: () => Get.back(),
-            child: Text(
-              "NO",
-              style: blackFontStyle3.copyWith(color: Colors.red[400]),
-            )),
-      ],
     );
   }
 }

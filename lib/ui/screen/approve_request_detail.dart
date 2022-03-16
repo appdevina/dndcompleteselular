@@ -1,8 +1,8 @@
 part of 'screens.dart';
 
-class RequestHistoryDetail extends GetView<RequestTaskController> {
+class ApproveHistoryDetail extends GetView<ApproveRequestController> {
   final RequestModel request;
-  const RequestHistoryDetail({required this.request, Key? key})
+  const ApproveHistoryDetail({required this.request, Key? key})
       : super(key: key);
 
   @override
@@ -38,6 +38,11 @@ class RequestHistoryDetail extends GetView<RequestTaskController> {
                 ),
               ),
               _itemdetail(
+                label: 'Request by',
+                detail: request.user!.namaLengkap!,
+                show: false,
+              ),
+              _itemdetail(
                 label: 'Request Name',
                 detail: "Request ${request.jenisToDo}",
                 show: false,
@@ -69,7 +74,7 @@ class RequestHistoryDetail extends GetView<RequestTaskController> {
                           _taskRequest(isRequest: false, requestModel: request))
                   : const SizedBox()),
               _itemdetail(
-                label: 'Canceled at',
+                label: 'Canceled',
                 detail: (request.status! == 'CANCELED') ? 'YES' : '-',
                 show: false,
               ),
@@ -79,13 +84,8 @@ class RequestHistoryDetail extends GetView<RequestTaskController> {
                 show: false,
               ),
               _itemdetail(
-                label: 'Line Approve',
-                detail: request.approvalName!.namaLengkap!,
-                show: false,
-              ),
-              _itemdetail(
-                label: request.status == 'REJECTED'
-                    ? 'Rejected By'
+                label: (request.status == 'REJECTED')
+                    ? 'Rejected by'
                     : 'Approved by',
                 detail: request.approvedName != null
                     ? request.approvedName!.namaLengkap!
@@ -103,57 +103,28 @@ class RequestHistoryDetail extends GetView<RequestTaskController> {
               ),
               (request.status == 'PENDING')
                   ? ElevatedButton(
+                      onPressed: () => showDialog<String>(
+                          context: context,
+                          builder: (context) =>
+                              _dialogDelete(context, request, true)),
+                      child: Text('Approve',
+                          style: blackFontStyle3.copyWith(color: white)))
+                  : const SizedBox(),
+              (request.status == 'PENDING')
+                  ? ElevatedButton(
                       style: ButtonStyle(
                         backgroundColor: MaterialStateProperty.all<Color>(
                             "13285e".toColor()),
                       ),
                       onPressed: () => showDialog<String>(
                           context: context,
-                          builder: (context) => _dialogDelete(
-                                context,
-                                request,
-                              )),
-                      child: Text('Cancel',
+                          builder: (context) =>
+                              _dialogDelete(context, request, false)),
+                      child: Text('Reject',
                           style: blackFontStyle3.copyWith(color: white)))
                   : const SizedBox(),
             ],
           )),
-    );
-  }
-
-  _dialogDelete(
-    BuildContext context,
-    RequestModel requestModel,
-  ) {
-    return AlertDialog(
-      title: Text(
-        'Cancel',
-        style: blackFontStyle1,
-      ),
-      content: Text(
-        'Apakah anda yakin membatalkan pengajuan ini ?',
-        style: blackFontStyle3,
-      ),
-      actions: [
-        TextButton(
-            onPressed: () async =>
-                await controller.cancel(id: requestModel.id!).then((value) {
-                  snackbar(context, value.value!, value.message!);
-                  Get.back();
-                  Get.back();
-                  controller.getHistory();
-                }),
-            child: Text(
-              "YES",
-              style: blackFontStyle3.copyWith(color: Colors.green[400]),
-            )),
-        TextButton(
-            onPressed: () => Get.back(),
-            child: Text(
-              "NO",
-              style: blackFontStyle3.copyWith(color: Colors.red[400]),
-            )),
-      ],
     );
   }
 
@@ -164,45 +135,39 @@ class RequestHistoryDetail extends GetView<RequestTaskController> {
       case 'Daily':
         isRequest
             ? value = requestModel.dailyExisting!
-                .map((e) => CardDailyRequest(
+                .map((e) => CardDailyApprove(
                       daily: e,
-                      isCanDelete: false,
                     ))
                 .toList()
             : value = requestModel.dailyReplace!
-                .map((e) => CardDailyRequest(
+                .map((e) => CardDailyApprove(
                       daily: e,
-                      isCanDelete: false,
                     ))
                 .toList();
         break;
       case 'Weekly':
         isRequest
             ? value = requestModel.weeklyExisting!
-                .map((e) => CardWeeklyRequest(
+                .map((e) => CardWeeklyApprove(
                       weekly: e,
-                      isCanDelete: false,
                     ))
                 .toList()
             : value = requestModel.weeklyReplace!
-                .map((e) => CardWeeklyRequest(
+                .map((e) => CardWeeklyApprove(
                       weekly: e,
-                      isCanDelete: false,
                     ))
                 .toList();
         break;
       default:
         isRequest
             ? value = requestModel.monthlyExisting!
-                .map((e) => CardMonthlyRequest(
+                .map((e) => CardMonthlyApprove(
                       monthly: e,
-                      isCanDelete: false,
                     ))
                 .toList()
             : value = requestModel.monthlyReplace!
-                .map((e) => CardMonthlyRequest(
+                .map((e) => CardMonthlyApprove(
                       monthly: e,
-                      isCanDelete: false,
                     ))
                 .toList();
     }
@@ -298,5 +263,57 @@ class RequestHistoryDetail extends GetView<RequestTaskController> {
         ),
       ],
     );
+  }
+
+  _dialogDelete(
+      BuildContext context, RequestModel requestModel, bool isApprove) {
+    return AlertDialog(
+      title: Text(
+        isApprove ? 'Approved' : 'Rejected',
+        style: blackFontStyle1,
+      ),
+      content: Text(
+        isApprove
+            ? textDialog(requestModel)
+            : 'Apakah anda yakin menolak pengajuan ini ?',
+        style: blackFontStyle3,
+      ),
+      actions: [
+        TextButton(
+            onPressed: () async => isApprove
+                ? await controller.approve(id: requestModel.id!).then((value) {
+                    snackbar(context, value.value!, value.message!);
+                    Get.back();
+                    Get.back();
+                    controller.getRequest();
+                  })
+                : await controller.reject(id: requestModel.id!).then((value) {
+                    snackbar(context, value.value!, value.message!);
+                    Get.back();
+                    Get.back();
+                    controller.getRequest();
+                  }),
+            child: Text(
+              "YES",
+              style: blackFontStyle3.copyWith(color: Colors.green[400]),
+            )),
+        TextButton(
+            onPressed: () => Get.back(),
+            child: Text(
+              "NO",
+              style: blackFontStyle3.copyWith(color: Colors.red[400]),
+            )),
+      ],
+    );
+  }
+
+  String textDialog(RequestModel req) {
+    DateTime now = DateTime.now();
+    if (req.jenisToDo == 'Daily' &&
+        req.dailyExisting![0].date!
+            .isBefore(DateTime(now.year, now.month, now.day))) {
+      return 'Jika anda menyetujui pengajuan ini maka todolist akan dianggap close !!!';
+    }
+    return "Apakah sudah yakin menyetujui pengajuan ini ?";
   }
 }

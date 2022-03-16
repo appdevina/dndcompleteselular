@@ -197,7 +197,7 @@ class RequestTask extends GetView<RequestTaskController> {
         onPressed: () async => await showMonthPicker(
           context: context,
           initialDate: controller.month,
-          firstDate: DateTime(2022, 1),
+          firstDate: DateTime(DateTime.now().year, DateTime.now().month),
           lastDate: DateTime(2025, 12),
         ).then((value) => value != null ? controller.changeMonth(value) : null),
         icon: const Icon(
@@ -228,7 +228,7 @@ class RequestTask extends GetView<RequestTaskController> {
   _getDateUser(BuildContext context) async {
     DateTime? _pickerDate = await showDatePicker(
       context: context,
-      firstDate: DateTime(2022, 1),
+      firstDate: DateTime.now().subtract(const Duration(days: 1)),
       initialDate: controller.day,
       lastDate: DateTime(2025, 12),
     );

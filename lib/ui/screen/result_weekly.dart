@@ -9,6 +9,7 @@ class ResultWeekly extends GetView<ResultController> {
       () => controller.loading.value
           ? const Center(child: CircularProgressIndicator())
           : Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 controller.planTaskWeekly == 0
                     ? SizedBox(
@@ -38,35 +39,30 @@ class ResultWeekly extends GetView<ResultController> {
                           ),
                         ],
                       ),
-                Column(
+                Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        CardDetailResult(
-                            title: "Plan Task",
-                            value: '${controller.planTaskWeekly}'),
-                        CardDetailResult(
-                            title: "Extra Task",
-                            value: '${controller.extraTaskWeekly}'),
-                        CardDetailResult(
-                            title: "Achievement",
-                            value:
-                                '${num.parse(controller.achievementWeekly.toStringAsFixed(1))}%'),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        CardDetailResult(
-                            title: "Actual Task",
-                            value: '${controller.actualTaskWeekly}'),
-                        CardDetailResult(
-                            title: "Total Point",
-                            value: '${controller.totalPointWeekly}'),
-                      ],
-                    ),
+                    CardDetailResult(
+                        title: "Plan Task",
+                        value: '${controller.planTaskWeekly}'),
+                    CardDetailResult(
+                        title: "Extra Task",
+                        value: '${controller.extraTaskWeekly}'),
+                    CardDetailResult(
+                        title: "Achievement",
+                        value:
+                            '${num.parse(controller.achievementWeekly.toStringAsFixed(1))}%'),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    CardDetailResult(
+                        title: "Actual Task",
+                        value: '${controller.actualTaskWeekly}'),
+                    CardDetailResult(
+                        title: "Total Point",
+                        value: '${controller.totalPointWeekly}'),
                   ],
                 ),
               ],
