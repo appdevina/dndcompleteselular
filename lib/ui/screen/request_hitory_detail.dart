@@ -163,48 +163,46 @@ class RequestHistoryDetail extends GetView<RequestTaskController> {
     switch (requestModel.jenisToDo) {
       case 'Daily':
         isRequest
-            ? value = requestModel.dailyExisting!
-                .map((e) => CardDailyRequest(
-                      daily: e,
-                      isCanDelete: false,
-                    ))
-                .toList()
-            : value = requestModel.dailyReplace!
-                .map((e) => CardDailyRequest(
-                      daily: e,
-                      isCanDelete: false,
-                    ))
-                .toList();
+            ? requestModel.dailyExisting!.asMap().forEach(
+                  (key, e) => value.add(
+                    CardDailyRequest(daily: e, isCanDelete: false, index: key),
+                  ),
+                )
+            : requestModel.dailyReplace!.asMap().forEach(
+                  (key, e) => value.add(
+                    CardDailyRequest(daily: e, isCanDelete: false, index: key),
+                  ),
+                );
         break;
       case 'Weekly':
         isRequest
-            ? value = requestModel.weeklyExisting!
-                .map((e) => CardWeeklyRequest(
-                      weekly: e,
-                      isCanDelete: false,
-                    ))
-                .toList()
-            : value = requestModel.weeklyReplace!
-                .map((e) => CardWeeklyRequest(
-                      weekly: e,
-                      isCanDelete: false,
-                    ))
-                .toList();
+            ? requestModel.weeklyExisting!.asMap().forEach(
+                  (key, e) => value.add(
+                    CardWeeklyRequest(
+                        weekly: e, isCanDelete: false, index: key),
+                  ),
+                )
+            : requestModel.weeklyReplace!.asMap().forEach(
+                  (key, e) => value.add(
+                    CardWeeklyRequest(
+                        weekly: e, isCanDelete: false, index: key),
+                  ),
+                );
         break;
       default:
         isRequest
-            ? value = requestModel.monthlyExisting!
-                .map((e) => CardMonthlyRequest(
-                      monthly: e,
-                      isCanDelete: false,
-                    ))
-                .toList()
-            : value = requestModel.monthlyReplace!
-                .map((e) => CardMonthlyRequest(
-                      monthly: e,
-                      isCanDelete: false,
-                    ))
-                .toList();
+            ? requestModel.monthlyExisting!.asMap().forEach(
+                  (key, e) => value.add(
+                    CardMonthlyRequest(
+                        monthly: e, isCanDelete: false, index: key),
+                  ),
+                )
+            : requestModel.monthlyReplace!.asMap().forEach(
+                  (key, e) => value.add(
+                    CardMonthlyRequest(
+                        monthly: e, isCanDelete: false, index: key),
+                  ),
+                );
     }
     return value;
   }

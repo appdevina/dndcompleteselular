@@ -134,42 +134,42 @@ class ApproveHistoryDetail extends GetView<ApproveRequestController> {
     switch (requestModel.jenisToDo) {
       case 'Daily':
         isRequest
-            ? value = requestModel.dailyExisting!
-                .map((e) => CardDailyApprove(
-                      daily: e,
-                    ))
-                .toList()
-            : value = requestModel.dailyReplace!
-                .map((e) => CardDailyApprove(
-                      daily: e,
-                    ))
-                .toList();
+            ? requestModel.dailyExisting!.asMap().forEach(
+                  (key, e) => value.add(
+                    CardDailyApprove(daily: e, index: key),
+                  ),
+                )
+            : requestModel.dailyReplace!.asMap().forEach(
+                  (key, e) => value.add(
+                    CardDailyApprove(daily: e, index: key),
+                  ),
+                );
         break;
       case 'Weekly':
         isRequest
-            ? value = requestModel.weeklyExisting!
-                .map((e) => CardWeeklyApprove(
-                      weekly: e,
-                    ))
-                .toList()
-            : value = requestModel.weeklyReplace!
-                .map((e) => CardWeeklyApprove(
-                      weekly: e,
-                    ))
-                .toList();
+            ? requestModel.weeklyExisting!.asMap().forEach(
+                  (key, e) => value.add(
+                    CardWeeklyApprove(weekly: e, index: key),
+                  ),
+                )
+            : requestModel.weeklyReplace!.asMap().forEach(
+                  (key, e) => value.add(
+                    CardWeeklyApprove(weekly: e, index: key),
+                  ),
+                );
         break;
       default:
         isRequest
-            ? value = requestModel.monthlyExisting!
-                .map((e) => CardMonthlyApprove(
-                      monthly: e,
-                    ))
-                .toList()
-            : value = requestModel.monthlyReplace!
-                .map((e) => CardMonthlyApprove(
-                      monthly: e,
-                    ))
-                .toList();
+            ? requestModel.monthlyExisting!.asMap().forEach(
+                  (key, e) => value.add(
+                    CardMonthlyApprove(monthly: e, index: key),
+                  ),
+                )
+            : requestModel.monthlyReplace!.asMap().forEach(
+                  (key, e) => value.add(
+                    CardMonthlyApprove(monthly: e, index: key),
+                  ),
+                );
     }
     return value;
   }

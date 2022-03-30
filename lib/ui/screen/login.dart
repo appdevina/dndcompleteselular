@@ -15,7 +15,6 @@ class Login extends GetView<LoginController> {
             key: controller.key,
             child: ListView(
               children: [
-                SizedBox(height: MediaQuery.of(context).size.height / 5),
                 _logo(),
                 SizedBox(
                   child: Column(
@@ -76,17 +75,12 @@ class Login extends GetView<LoginController> {
   }
 
   _logo() {
-    return Column(
-      children: [
-        const CircleAvatar(
-          backgroundImage: AssetImage('assets/user.png'),
-          backgroundColor: white,
-        ),
-        Text(
-          'To Do List Mobile',
-          style: blackFontStyle3.copyWith(color: white, fontSize: 20),
-        )
-      ],
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 50),
+      height: 200,
+      width: 200,
+      decoration: const BoxDecoration(
+          image: DecorationImage(image: AssetImage('assets/dndwhite.png'))),
     );
   }
 }

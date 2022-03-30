@@ -11,13 +11,16 @@ class WeeklyAddTaskController extends GetxController {
   late MoneyMaskedTextController resultValue;
   int maxWeek = 52;
   int? userId;
+  List<WeeklyModel> weeklys = [];
 
   void changeWeek(int val) {
     selectedWeek = val;
+    getWeekObjective(selectedYear, selectedWeek);
   }
 
   void changeYear(int val) {
     selectedYear = val;
+    getWeekObjective(selectedYear, selectedWeek);
   }
 
   void changeTambahan() {
@@ -131,6 +134,13 @@ class WeeklyAddTaskController extends GetxController {
     return ((numberWeek - now.weekday + 10) / 7).floor();
   }
 
+  void getWeekObjective(int year, int week, {bool? isloading}) async {
+    ApiReturnValue<List<WeeklyModel>> result =
+        await WeeklyService.getWeekly(week: week, year: year);
+    weeklys = result.value!;
+    update(['weekly']);
+  }
+
   getDate(DateTime d) => DateTime(d.year, d.month, d.day);
 
   getMonday(DateTime d) => getDate(d.subtract(Duration(days: d.weekday - 1)));
@@ -173,15 +183,16 @@ class WeeklyAddTaskController extends GetxController {
         : weekly!.type == 'RESULT'
             ? true.obs
             : false.obs;
+    getWeekObjective(selectedYear, selectedWeek);
     super.onInit();
   }
 
-  @override
-  void onClose() {
-    task.dispose();
-    resultValue.dispose();
-    week.dispose();
-    year.dispose();
-    super.onClose();
-  }
+  // @override
+  // void onClose() {
+  //   task.dispose();
+  //   resultValue.dispose();
+  //   week.dispose();
+  //   year.dispose();
+  //   super.onClose();
+  // }
 }

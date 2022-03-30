@@ -15,10 +15,12 @@ class DailyAddTaskController extends GetxController {
   List<Object?> selectedPerson = [];
   late TextEditingController taskText;
   RxBool isLoading = true.obs;
+  List<DailyModel> dailys = [];
 
   void changeDate(DateTime val) {
     selectedDate = val;
-    update(['date']);
+    getDaily(selectedDate!);
+    update(['date', 'daily']);
   }
 
   void changeTime(String val) {
@@ -78,6 +80,12 @@ class DailyAddTaskController extends GetxController {
     return result;
   }
 
+  void getDaily(DateTime time, {bool? isloading}) async {
+    await DailyService.getDaily(DateFormat('y-MM-dd').format(time))
+        .then((value) => dailys = value.value!);
+    update(['daily']);
+  }
+
   getDate(DateTime d) => DateTime(d.year, d.month, d.day);
 
   getMonday(DateTime d) => getDate(d.subtract(Duration(days: d.weekday - 1)));
@@ -107,6 +115,8 @@ class DailyAddTaskController extends GetxController {
       isLoading.toggle();
       update(['tag']);
     });
+
+    getDaily(selectedDate!);
     super.onInit();
   }
 

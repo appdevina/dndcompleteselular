@@ -25,37 +25,51 @@ class CardDailyHome extends GetView<HomePageController> {
               margin: const EdgeInsets.symmetric(horizontal: 10),
               height: 30,
               width: 30,
-              decoration: const BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage(
-                    'assets/task.png',
-                  ),
-                  fit: BoxFit.fill,
-                ),
+              child: Text(
+                "${index + 1}",
+                textAlign: TextAlign.center,
+                style: blackFontStyle1,
               ),
             ),
             Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    daily.time ?? 'Extra Task',
-                    style: blackFontStyle2.copyWith(
-                        wordSpacing: 1,
-                        fontSize: 10,
-                        color: greyColor,
-                        fontWeight: FontWeight.w600),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  Text(
-                    daily.task!.toUpperCase(),
-                    style: blackFontStyle2.copyWith(
-                      wordSpacing: 1,
-                      fontSize: 12,
+              child: Container(
+                padding: const EdgeInsets.only(right: 10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      daily.time ?? 'Extra Task',
+                      style: blackFontStyle2.copyWith(
+                          wordSpacing: 1,
+                          fontSize: 10,
+                          color: greyColor,
+                          fontWeight: FontWeight.w600),
+                      overflow: TextOverflow.ellipsis,
                     ),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
+                    Tooltip(
+                      message: daily.task!.toUpperCase(),
+                      showDuration: const Duration(milliseconds: 500),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 15, vertical: 5),
+                      verticalOffset: -60,
+                      textStyle: blackFontStyle3.copyWith(
+                        color: white,
+                      ),
+                      decoration: BoxDecoration(
+                          color: "22577E".toColor(),
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: white)),
+                      child: Text(
+                        daily.task!.toUpperCase(),
+                        style: blackFontStyle2.copyWith(
+                          wordSpacing: 1,
+                          fontSize: 12,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
             daily.status!

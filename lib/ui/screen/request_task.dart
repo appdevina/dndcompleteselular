@@ -152,7 +152,9 @@ class RequestTask extends GetView<RequestTaskController> {
                             ? ListView.builder(
                                 itemBuilder: ((context, index) =>
                                     CardDailyRequest(
-                                        daily: controller.dailyChange[index])),
+                                      daily: controller.dailyChange[index],
+                                      index: index,
+                                    )),
                                 itemCount: controller.dailyChange.length,
                               )
                             : controller.weeklyChange.isNotEmpty &&
@@ -160,6 +162,7 @@ class RequestTask extends GetView<RequestTaskController> {
                                 ? ListView.builder(
                                     itemBuilder: ((context, index) =>
                                         CardWeeklyRequest(
+                                            index: index,
                                             weekly: controller
                                                 .weeklyChange[index])),
                                     itemCount: controller.weeklyChange.length,
@@ -169,6 +172,7 @@ class RequestTask extends GetView<RequestTaskController> {
                                     ? ListView.builder(
                                         itemBuilder: ((context, index) =>
                                             CardMonthlyRequest(
+                                                index: index,
                                                 monthly: controller
                                                     .monthlyChange[index])),
                                         itemCount:

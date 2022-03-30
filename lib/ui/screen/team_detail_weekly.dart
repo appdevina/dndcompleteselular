@@ -78,28 +78,46 @@ class DetailWeeklyTeam extends GetView<ResultTeamController> {
       child: Row(
         children: [
           Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "WEEKLY ${e.type! == 'NON' ? "NON RESULT" : "RESULT"} ${!e.isAdd! ? '' : '(Extra Task)'}",
-                  style:
-                      blackFontStyle3.copyWith(fontSize: 12, color: greyColor),
-                  overflow: TextOverflow.ellipsis,
-                ),
-                SelectableText(
-                  e.task!,
-                  style: blackFontStyle1.copyWith(fontSize: 14),
-                  maxLines: 1,
-                ),
-                e.type! == 'RESULT'
-                    ? Text(
-                        "Plan : ${controller.formatNumber('${e.valPlan}')} <> Actual : ${controller.formatNumber(e.valAct!.floor().toInt().toString())}",
-                        style: blackFontStyle1.copyWith(fontSize: 10),
-                        overflow: TextOverflow.ellipsis,
-                      )
-                    : const SizedBox(),
-              ],
+            child: Container(
+              margin: const EdgeInsets.only(right: 10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "WEEKLY ${e.type! == 'NON' ? "NON RESULT" : "RESULT"} ${!e.isAdd! ? '' : '(Extra Task)'}",
+                    style: blackFontStyle3.copyWith(
+                        fontSize: 12, color: greyColor),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  Tooltip(
+                    message: e.task!,
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                    showDuration: const Duration(milliseconds: 500),
+                    verticalOffset: -60,
+                    textStyle: blackFontStyle3.copyWith(
+                      color: white,
+                    ),
+                    decoration: BoxDecoration(
+                        color: "22577E".toColor(),
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: white)),
+                    child: Text(
+                      e.task!,
+                      style: blackFontStyle1.copyWith(fontSize: 14),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  e.type! == 'RESULT'
+                      ? Text(
+                          "Plan : ${controller.formatNumber('${e.valPlan}')} <> Actual : ${controller.formatNumber(e.valAct!.floor().toInt().toString())}",
+                          style: blackFontStyle1.copyWith(fontSize: 10),
+                          overflow: TextOverflow.ellipsis,
+                        )
+                      : const SizedBox(),
+                ],
+              ),
             ),
           ),
           Container(

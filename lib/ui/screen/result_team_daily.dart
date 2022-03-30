@@ -50,8 +50,9 @@ class ResultTeamDaily extends GetView<ResultTeamController> {
                         value: '${controller.totalExtraTaskDaily}'),
                     CardDetailResult(
                         title: "Achievement",
-                        value:
-                            '${num.parse(controller.achievemntDaily.toStringAsFixed(1))}%'),
+                        value: NumberFormat("###.#", "en_US")
+                                .format(controller.achievemntDaily) +
+                            "%"),
                   ],
                 ),
                 Row(
@@ -65,7 +66,8 @@ class ResultTeamDaily extends GetView<ResultTeamController> {
                         value: '${controller.totalDaysData} / 6'),
                     CardDetailResult(
                         title: "Total Point",
-                        value: '${controller.totalPointDaily}'),
+                        value: NumberFormat("###.#", "en_US")
+                            .format(controller.totalPointDaily)),
                   ],
                 ),
               ],

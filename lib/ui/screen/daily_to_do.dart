@@ -105,6 +105,7 @@ class DailyTodo extends StatelessWidget {
               itemBuilder: (context, index) => daily != null
                   ? CardDaily(
                       daily: controller.daily![index],
+                      index: index,
                     )
                   : Card(
                       shape: RoundedRectangleBorder(

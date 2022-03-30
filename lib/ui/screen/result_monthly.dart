@@ -44,14 +44,19 @@ class ResultMonthly extends GetView<ResultController> {
                   children: [
                     CardDetailResult(
                         title: "Plan Task",
+                        titleTooltip: 'total plan task monthly',
                         value: '${controller.totalPlanTaskMonthly}'),
                     CardDetailResult(
                         title: "Extra Task",
+                        titleTooltip: 'total extra task monthly',
                         value: '${controller.totalExtraTaskMonthly}'),
                     CardDetailResult(
                         title: "Achievement",
-                        value:
-                            '${num.parse(controller.achievemntMonthly.toStringAsFixed(1))} %'),
+                        titleTooltip:
+                            '(actual task + extra task / total task x 100)%',
+                        value: NumberFormat("###.#", "en_US")
+                                .format(controller.achievemntMonthly) +
+                            "%"),
                   ],
                 ),
                 Row(
@@ -59,10 +64,13 @@ class ResultMonthly extends GetView<ResultController> {
                   children: [
                     CardDetailResult(
                         title: "Actual",
+                        titleTooltip: 'total task weekly closed',
                         value: '${controller.totalActualMonthly}'),
                     CardDetailResult(
                         title: "Total Point",
-                        value: '${controller.totalPointMonthly}'),
+                        titleTooltip: 'bobot 20 / achievement',
+                        value: NumberFormat("###.#", "en_US")
+                            .format(controller.totalPointMonthly)),
                   ],
                 ),
               ],

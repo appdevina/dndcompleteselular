@@ -3,8 +3,12 @@ part of 'widgets.dart';
 class CardWeeklyRequest extends GetView<RequestTaskController> {
   final WeeklyModel weekly;
   final bool? isCanDelete;
+  final int index;
   const CardWeeklyRequest(
-      {required this.weekly, this.isCanDelete = true, Key? key})
+      {required this.weekly,
+      required this.index,
+      this.isCanDelete = true,
+      Key? key})
       : super(key: key);
 
   @override
@@ -26,13 +30,10 @@ class CardWeeklyRequest extends GetView<RequestTaskController> {
               margin: const EdgeInsets.symmetric(horizontal: 10),
               height: 30,
               width: 30,
-              decoration: const BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage(
-                    'assets/task.png',
-                  ),
-                  fit: BoxFit.fill,
-                ),
+              child: Text(
+                "${index + 1}",
+                textAlign: TextAlign.center,
+                style: blackFontStyle1,
               ),
             ),
             Expanded(
@@ -48,12 +49,24 @@ class CardWeeklyRequest extends GetView<RequestTaskController> {
                         fontWeight: FontWeight.w600),
                     overflow: TextOverflow.ellipsis,
                   ),
-                  SelectableText(
-                    "${weekly.task!.toUpperCase()} ${weekly.type != "NON" ? controller.formatNumber(weekly.valPlan!.toString()) : ""}",
-                    maxLines: 1,
-                    style: blackFontStyle2.copyWith(
-                      wordSpacing: 1,
-                      fontSize: 12,
+                  Tooltip(
+                    message: weekly.task!.toUpperCase(),
+                    showDuration: const Duration(milliseconds: 500),
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                    verticalOffset: -80,
+                    textStyle: blackFontStyle3.copyWith(color: white),
+                    decoration: BoxDecoration(
+                        color: "22577E".toColor(),
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: white)),
+                    child: Text(
+                      "${weekly.task!.toUpperCase()} ${weekly.type != "NON" ? controller.formatNumber(weekly.valPlan!.toString()) : ""}",
+                      maxLines: 1,
+                      style: blackFontStyle2.copyWith(
+                          wordSpacing: 1,
+                          fontSize: 12,
+                          overflow: TextOverflow.ellipsis),
                     ),
                   ),
                 ],

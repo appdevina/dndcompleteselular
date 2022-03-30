@@ -44,28 +44,39 @@ class ResultDaily extends GetView<ResultController> {
                   children: [
                     CardDetailResult(
                         title: "Plan Task",
+                        titleTooltip: 'total task daily\nsatu minggu',
                         value: '${controller.totalPlanTaskDaily}'),
                     CardDetailResult(
                         title: "Extra Task",
+                        titleTooltip: 'total extra task daily\nsatu minggu',
                         value: '${controller.totalExtraTaskDaily}'),
                     CardDetailResult(
                         title: "Achievement",
-                        value:
-                            '${num.parse(controller.achievemntDaily.toStringAsFixed(1))}%'),
+                        titleTooltip:
+                            '(actual task + extra task / total task x 100)%',
+                        value: NumberFormat("###.#", "en_US")
+                                .format(controller.achievemntDaily) +
+                            "%"),
                   ],
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     CardDetailResult(
+                        titleTooltip:
+                            'total task closed plan\ndaily satu minggu',
                         title: "Actual Task",
                         value: '${controller.totalActualDaily}'),
                     CardDetailResult(
+                        titleTooltip: 'total daily submit / hari kerja',
                         title: "Day / Total Day",
                         value: '${controller.totalDaysData} / 6'),
                     CardDetailResult(
-                        title: "Total Point",
-                        value: '${controller.totalPointDaily}'),
+                      title: "Total Point",
+                      titleTooltip: 'bobot 60 / achievement',
+                      value: NumberFormat("###.#", "en_US")
+                          .format(controller.totalPointDaily),
+                    ),
                   ],
                 ),
               ],

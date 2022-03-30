@@ -44,14 +44,19 @@ class ResultWeekly extends GetView<ResultController> {
                   children: [
                     CardDetailResult(
                         title: "Plan Task",
+                        titleTooltip: 'total plan task weekly',
                         value: '${controller.planTaskWeekly}'),
                     CardDetailResult(
                         title: "Extra Task",
+                        titleTooltip: 'total extra task weekly',
                         value: '${controller.extraTaskWeekly}'),
                     CardDetailResult(
                         title: "Achievement",
-                        value:
-                            '${num.parse(controller.achievementWeekly.toStringAsFixed(1))}%'),
+                        titleTooltip:
+                            '(actual task + extra task / total task x 100)%',
+                        value: NumberFormat("###.#", "en_US")
+                                .format(controller.achievementWeekly) +
+                            "%"),
                   ],
                 ),
                 Row(
@@ -59,10 +64,13 @@ class ResultWeekly extends GetView<ResultController> {
                   children: [
                     CardDetailResult(
                         title: "Actual Task",
+                        titleTooltip: 'total task weekly closed',
                         value: '${controller.actualTaskWeekly}'),
                     CardDetailResult(
                         title: "Total Point",
-                        value: '${controller.totalPointWeekly}'),
+                        titleTooltip: 'bobot 40 / achievement',
+                        value: NumberFormat("###.#", "en_US")
+                            .format(controller.totalPointWeekly)),
                   ],
                 ),
               ],

@@ -20,7 +20,7 @@ class ResultTeamController extends GetxController {
   int totalActualDaily = 0;
   double achievemntDaily = 0;
   int bobotDaily = 40;
-  int totalPointDaily = 0;
+  double totalPointDaily = 0;
   int totalOpenDaily = 0;
 
   //Variable Weekly
@@ -29,7 +29,7 @@ class ResultTeamController extends GetxController {
   int extraTaskWeekly = 0;
   int bobotWeekly = 40;
   double achievementWeekly = 0;
-  int totalPointWeekly = 0;
+  double totalPointWeekly = 0;
   int totalOpenWeekly = 0;
 
   //Variable Monthly
@@ -38,10 +38,10 @@ class ResultTeamController extends GetxController {
   int totalActualMonthly = 0;
   double achievemntMonthly = 0;
   int bobotMonthly = 20;
-  int totalPointMonthly = 0;
+  double totalPointMonthly = 0;
   int totalOpenMonthly = 0;
 
-  RxInt totalKpi = 0.obs;
+  RxDouble totalKpi = 0.0.obs;
   RxInt week = 1.obs;
   RxBool loading = true.obs;
 
@@ -112,10 +112,10 @@ class ResultTeamController extends GetxController {
       }
     }
 
-    if (dailys.isNotEmpty || weeklies.isNotEmpty) {
+    if (dailys.isNotEmpty) {
       totalDaysData = dailys.length;
       //MAPPING DATA DAILY
-      if (totalDaysData.isGreaterThan(0) && weeklies.isNotEmpty) {
+      if (totalDaysData.isGreaterThan(0)) {
         for (List<DailyModel> dailyList in dailys) {
           totalPlanTaskDaily +=
               dailyList.where((e) => e.isPlan!).toList().length;
@@ -142,61 +142,55 @@ class ResultTeamController extends GetxController {
                     100);
         var pointontime = (totalDaysData / 6) *
             (totalPointOnTime / (totalPlanTaskDaily + totalExtraTaskDaily)) *
-            bobotOntime.ceil();
+            bobotOntime;
 
-        totalPointDaily =
-            (achievemntDaily / 100 * bobotDaily).toInt() > bobotDaily
-                ? bobotDaily
-                : ((achievemntDaily / 100 * bobotDaily)).ceil();
-        totalPointDaily += pointontime.ceil();
-
-        //MAPPING DATA WEEKLY
-        planTaskWeekly =
-            weeklies.where((element) => !element.isAdd!).toList().length;
-
-        actualTaskWeekly =
-            weeklies.where((element) => element.value != 0.0).toList().length;
-        totalOpenWeekly =
-            weeklies.where((element) => element.value == 0.0).toList().length;
-        extraTaskWeekly =
-            weeklies.where((element) => element.isAdd!).toList().length;
-        for (WeeklyModel task in weeklies) {
-          achievementWeekly += task.value!;
-        }
-        achievementWeekly =
-            (achievementWeekly / weeklies.length * 100).ceilToDouble();
-        totalPointWeekly = (achievementWeekly / 100 * bobotWeekly).ceil();
-
-        if (monthlies.isNotEmpty) {
-          //MAPPING DATA MONTHLY
-          if (monthlies.isNotEmpty) {
-            totalPlanTaskMonthly =
-                monthlies.where((element) => !element.isAdd!).toList().length;
-            totalActualMonthly = monthlies
-                .where((element) => element.value != 0.0)
-                .toList()
-                .length;
-            totalOpenMonthly = monthlies
-                .where((element) => element.value == 0.0)
-                .toList()
-                .length;
-            totalExtraTaskMonthly =
-                monthlies.where((element) => element.isAdd!).toList().length;
-            for (MonthlyModel task in monthlies) {
-              achievemntMonthly += task.value!;
-            }
-            achievemntMonthly =
-                (achievemntMonthly / monthlies.length * 100).ceilToDouble();
-            totalPointMonthly = (achievemntMonthly / 100 * bobotMonthly).ceil();
-          }
-        }
-        totalKpi.value = monthlies.isNotEmpty
-            ? (((totalPointDaily + totalPointWeekly) * 80 / 100) +
-                    totalPointMonthly)
-                .ceil()
-            : totalPointDaily + totalPointWeekly;
+        totalPointDaily = (achievemntDaily / 100 * bobotDaily) > bobotDaily
+            ? bobotDaily.toDouble()
+            : ((achievemntDaily / 100 * bobotDaily)).toDouble();
+        totalPointDaily += pointontime;
       }
     }
+
+    if (weeklies.isNotEmpty) {
+      //MAPPING DATA WEEKLY
+      planTaskWeekly =
+          weeklies.where((element) => !element.isAdd!).toList().length;
+
+      actualTaskWeekly =
+          weeklies.where((element) => element.value != 0.0).toList().length;
+      totalOpenWeekly =
+          weeklies.where((element) => element.value == 0.0).toList().length;
+      extraTaskWeekly =
+          weeklies.where((element) => element.isAdd!).toList().length;
+      for (WeeklyModel task in weeklies) {
+        achievementWeekly += task.value!;
+      }
+      achievementWeekly = (achievementWeekly / weeklies.length * 100);
+      totalPointWeekly = (achievementWeekly / 100 * bobotWeekly);
+    }
+
+    if (monthlies.isNotEmpty) {
+      //MAPPING DATA MONTHLY
+      if (monthlies.isNotEmpty) {
+        totalPlanTaskMonthly =
+            monthlies.where((element) => !element.isAdd!).toList().length;
+        totalActualMonthly =
+            monthlies.where((element) => element.value != 0.0).toList().length;
+        totalOpenMonthly =
+            monthlies.where((element) => element.value == 0.0).toList().length;
+        totalExtraTaskMonthly =
+            monthlies.where((element) => element.isAdd!).toList().length;
+        for (MonthlyModel task in monthlies) {
+          achievemntMonthly += task.value!;
+        }
+        achievemntMonthly = (achievemntMonthly / monthlies.length * 100);
+        totalPointMonthly = (achievemntMonthly / 100 * bobotMonthly);
+      }
+    }
+    totalKpi.value = monthlies.isNotEmpty
+        ? (((totalPointDaily + totalPointWeekly) * 80 / 100) +
+            totalPointMonthly)
+        : (totalPointDaily + totalPointWeekly);
 
     update(['result']);
     return true;

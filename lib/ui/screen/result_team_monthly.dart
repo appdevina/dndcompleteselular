@@ -50,8 +50,8 @@ class ResultTeamMonthly extends GetView<ResultTeamController> {
                         value: '${controller.totalExtraTaskMonthly}'),
                     CardDetailResult(
                         title: "Achievement",
-                        value:
-                            '${num.parse(controller.achievemntMonthly.toStringAsFixed(1))} %'),
+                        value: NumberFormat("###.#", "en_US")
+                            .format(controller.achievemntMonthly)),
                   ],
                 ),
                 Row(
@@ -62,7 +62,8 @@ class ResultTeamMonthly extends GetView<ResultTeamController> {
                         value: '${controller.totalActualMonthly}'),
                     CardDetailResult(
                         title: "Total Point",
-                        value: '${controller.totalPointMonthly}'),
+                        value: NumberFormat("###.#", "en_US")
+                            .format(controller.totalPointMonthly)),
                   ],
                 ),
               ],

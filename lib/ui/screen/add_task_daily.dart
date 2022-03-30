@@ -147,12 +147,32 @@ class AddTaskDaily extends StatelessWidget {
                         }
                         return _;
                       });
+                      controller.getDaily(controller.selectedDate!);
                     }
                   },
                 )
               ],
             ),
           ),
+          Container(
+            height: 300,
+            width: double.infinity,
+            decoration: BoxDecoration(
+                border: Border.all(color: white),
+                borderRadius: const BorderRadius.all(Radius.circular(10))),
+            margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+            child: GetBuilder<DailyAddTaskController>(
+                id: 'daily',
+                builder: (_) => ListView.builder(
+                      itemBuilder: ((context, index) => CardDailyRequest(
+                            daily: controller.dailys[index],
+                            isCanDelete: false,
+                            index: index,
+                          )),
+                      itemCount: controller.dailys.length,
+                    )),
+          )
         ],
       ),
     );
@@ -273,7 +293,12 @@ class AddTaskDaily extends StatelessWidget {
         hourLabelText: "Jam",
         minuteLabelText: "Menit",
         context: context,
-        initialTime: TimeOfDay.now(),
+        initialTime: TimeOfDay(
+            hour: controller.selectedTime
+                .replaceRange(
+                    controller.selectedTime.contains('M') ? 1 : 2, null, '')
+                .toInt()!,
+            minute: 00),
         initialEntryMode: TimePickerEntryMode.input);
   }
 
@@ -292,7 +317,13 @@ class AddTaskDaily extends StatelessWidget {
             : controller.lastMonday!,
         lastDate: tambahan
             ? DateTime.now().add(const Duration(days: 1))
-            : controller.lastMonday!.add(const Duration(days: 6)));
+            : controller.lastMonday!.add(
+                const Duration(days: 6),
+              ),
+        builder: (context, child) => Theme(
+              data: ThemeData.dark(),
+              child: child!,
+            ));
 
     if (_pickerDate != null) {
       controller.changeDate(_pickerDate);

@@ -50,8 +50,8 @@ class ResultTeamWeekly extends GetView<ResultTeamController> {
                         value: '${controller.extraTaskWeekly}'),
                     CardDetailResult(
                         title: "Achievement",
-                        value:
-                            '${num.parse(controller.achievementWeekly.toStringAsFixed(1))}%'),
+                        value: NumberFormat("###.#", "en_US")
+                            .format(controller.achievementWeekly)),
                   ],
                 ),
                 Row(
@@ -62,7 +62,8 @@ class ResultTeamWeekly extends GetView<ResultTeamController> {
                         value: '${controller.actualTaskWeekly}'),
                     CardDetailResult(
                         title: "Total Point",
-                        value: '${controller.totalPointWeekly}'),
+                        value: NumberFormat("###.#", "en_US")
+                            .format(controller.totalPointWeekly)),
                   ],
                 ),
               ],

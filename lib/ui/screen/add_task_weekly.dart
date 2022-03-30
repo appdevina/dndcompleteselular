@@ -161,6 +161,8 @@ class AddTaskWeekly extends StatelessWidget {
                               con.selectedYear, con.selectedWeek,
                               isloading: true);
                         }
+                        controller.getWeekObjective(
+                            controller.selectedYear, controller.selectedWeek);
                         snackbar(context, value.value!, value.message!);
                       });
                     } else {
@@ -190,6 +192,24 @@ class AddTaskWeekly extends StatelessWidget {
                   height: 50,
                   width: 100),
             ),
+            Expanded(
+                child: Container(
+              margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+              decoration: BoxDecoration(
+                  border: Border.all(color: white),
+                  borderRadius: const BorderRadius.all(Radius.circular(10))),
+              child: GetBuilder<WeeklyAddTaskController>(
+                  id: 'weekly',
+                  builder: (_) => ListView.builder(
+                        itemBuilder: ((context, index) => CardWeeklyRequest(
+                              index: index,
+                              weekly: controller.weeklys[index],
+                              isCanDelete: false,
+                            )),
+                        itemCount: controller.weeklys.length,
+                      )),
+            ))
           ],
         ),
       ),
