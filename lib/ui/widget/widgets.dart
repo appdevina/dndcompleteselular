@@ -29,3 +29,6 @@ part 'list_daily_approve.dart';
 part 'list_weekly_approve.dart';
 part 'list_monthly_approve.dart';
 part 'list_result_team.dart';
+part 'card_daily_add.dart';
+part 'card_weekly_add.dart';
+part 'card_monthly_add.dart';

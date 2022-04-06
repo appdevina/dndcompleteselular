@@ -54,6 +54,15 @@ class WeeklyToDo extends StatelessWidget {
       actions: [
         IconButton(
           onPressed: () =>
+              Get.to(() => CopyWeekly(), transition: Transition.cupertino),
+          icon: const Icon(
+            MdiIcons.contentCopy,
+            color: white,
+          ),
+          iconSize: 16,
+        ),
+        IconButton(
+          onPressed: () =>
               Get.to(() => AddTaskWeekly(), transition: Transition.cupertino),
           icon: const Icon(
             MdiIcons.plus,

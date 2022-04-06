@@ -77,10 +77,9 @@ class AddTaskDaily extends StatelessWidget {
               Expanded(
                 child: GetBuilder<DailyAddTaskController>(
                   id: 'time',
-                  builder: (_) =>
-                      controller.tambahan.value || controller.daily != null
-                          ? const SizedBox()
-                          : _timeField(context),
+                  builder: (_) => controller.tambahan.value
+                      ? const SizedBox()
+                      : _timeField(context),
                 ),
               ),
             ],
@@ -89,8 +88,11 @@ class AddTaskDaily extends StatelessWidget {
               ? const SizedBox()
               : GetBuilder<DailyAddTaskController>(
                   id: 'tag',
-                  builder: (_) =>
-                      controller.isLoading.value ? const SizedBox() : _tag(),
+                  builder: (_) => controller.isLoading.value
+                      ? const SizedBox()
+                      : controller.daily != null
+                          ? const SizedBox()
+                          : _tag(),
                 ),
           Container(
             padding: const EdgeInsets.only(right: 10),
@@ -98,59 +100,69 @@ class AddTaskDaily extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                MyButton(
-                  height: 50,
-                  width: 100,
-                  label: "+ Add",
-                  onTap: () async {
-                    FocusScope.of(context).requestFocus(FocusNode());
-                    if (date != null) {
-                      final con = Get.find<RequestTaskController>();
-                      DailyModel daily = DailyModel(
-                        task: controller.taskText.text,
-                        date: date,
-                        time: controller.selectedTime,
-                        status: false,
-                        ontime: 0,
-                        isPlan: true,
-                        isUpdate: true,
-                      );
-                      con.addTaskChange(dailyModel: daily).then((value) {
-                        snackbar(context, value, 'Berhasil menambahkan');
-                        Get.back();
-                      });
-                    } else {
-                      await controller
-                          .submit(
-                        task: controller.taskText.text,
-                        isAdd: controller.tambahan.value,
-                        date: controller.selectedDate!,
-                        time: controller.selectedTime,
-                        id: controller.daily == null
-                            ? null
-                            : controller.daily!.id,
-                        tags: controller.selectedPerson,
-                      )
-                          .then((_) {
-                        if (!_.value!) {
-                          snackbar(context, _.value!, _.message!);
-                        } else {
-                          if (controller.daily != null) {
-                            Get.back();
-                          }
-                          snackbar(context, _.value!, _.message!);
-                        }
-                        DailyController daily = Get.find<DailyController>();
-                        if (controller.selectedDate == daily.selectedDate ||
-                            controller.daily != null) {
-                          daily.getDaily(daily.selectedDate, isloading: true);
-                        }
-                        return _;
-                      });
-                      controller.getDaily(controller.selectedDate!);
-                    }
-                  },
-                )
+                Obx(() => MyButton(
+                      height: 50,
+                      width: 100,
+                      label: "+ Add",
+                      onTap: controller.button.value
+                          ? () async {
+                              FocusScope.of(context).requestFocus(FocusNode());
+                              if (date != null) {
+                                final con = Get.find<RequestTaskController>();
+                                DailyModel daily = DailyModel(
+                                  task: controller.taskText.text,
+                                  date: date,
+                                  time: controller.selectedTime,
+                                  status: false,
+                                  ontime: 0,
+                                  isPlan: true,
+                                  isUpdate: true,
+                                );
+                                con
+                                    .addTaskChange(dailyModel: daily)
+                                    .then((value) {
+                                  snackbar(
+                                      context, value, 'Berhasil menambahkan');
+                                  Get.back();
+                                });
+                              } else {
+                                controller.button.toggle();
+                                await controller
+                                    .submit(
+                                  task: controller.taskText.text,
+                                  isAdd: controller.tambahan.value,
+                                  date: controller.selectedDate!,
+                                  time: controller.selectedTime,
+                                  id: controller.daily == null
+                                      ? null
+                                      : controller.daily!.id,
+                                  tags: controller.selectedPerson,
+                                )
+                                    .then((_) {
+                                  controller.button.toggle();
+                                  if (!_.value!) {
+                                    snackbar(context, _.value!, _.message!);
+                                  } else {
+                                    if (controller.daily != null) {
+                                      Get.back();
+                                    }
+                                    snackbar(context, _.value!, _.message!);
+                                  }
+                                  DailyController daily =
+                                      Get.find<DailyController>();
+                                  if (controller.selectedDate ==
+                                          daily.selectedDate ||
+                                      controller.daily != null) {
+                                    daily.getDaily(daily.selectedDate,
+                                        isloading: true);
+                                  }
+                                  return _;
+                                });
+                                controller.getDaily(controller.selectedDate!);
+                              }
+                            }
+                          : () {},
+                    ))
               ],
             ),
           ),
@@ -165,9 +177,8 @@ class AddTaskDaily extends StatelessWidget {
             child: GetBuilder<DailyAddTaskController>(
                 id: 'daily',
                 builder: (_) => ListView.builder(
-                      itemBuilder: ((context, index) => CardDailyRequest(
+                      itemBuilder: ((context, index) => CardDailyAdd(
                             daily: controller.dailys[index],
-                            isCanDelete: false,
                             index: index,
                           )),
                       itemCount: controller.dailys.length,

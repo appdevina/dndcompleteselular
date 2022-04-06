@@ -167,7 +167,7 @@ class HomePage extends StatelessWidget {
                 GestureDetector(
                   onTap: () => Get.bottomSheet(
                     Container(
-                      height: 100,
+                      height: 150,
                       width: double.infinity,
                       padding: const EdgeInsets.all(10),
                       decoration: const BoxDecoration(
@@ -179,6 +179,16 @@ class HomePage extends StatelessWidget {
                       ),
                       child: ListView(
                         children: [
+                          MyButton(
+                            label: "View Image",
+                            onTap: () => controller.user.profilePicture == null
+                                ? null
+                                : Get.to(() => DetailFoto(
+                                    foto: controller.user.profilePicture!)),
+                            height: 40,
+                            width: double.infinity,
+                            color: const Color.fromARGB(255, 54, 160, 72),
+                          ),
                           MyButton(
                               label: "Change Image",
                               onTap: () async => await controller

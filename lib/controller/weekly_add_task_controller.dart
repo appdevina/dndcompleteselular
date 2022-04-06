@@ -12,11 +12,16 @@ class WeeklyAddTaskController extends GetxController {
   int maxWeek = 52;
   int? userId;
   List<WeeklyModel> weeklys = [];
+  RxBool button = true.obs;
 
   void changeWeek(int val) {
     selectedWeek = val;
     getWeekObjective(selectedYear, selectedWeek);
   }
+
+  String formatNumber(String s) => NumberFormat.decimalPattern('ID').format(
+        int.parse(s),
+      );
 
   void changeYear(int val) {
     selectedYear = val;
@@ -31,13 +36,13 @@ class WeeklyAddTaskController extends GetxController {
             : userId == 2 &&
                     DateTime.now().isBefore(getMonday(DateTime.now())
                         .add(const Duration(days: 1, hours: 10)))
-                ? numOfWeeks(DateTime.now())
+                ? numOfWeeks(DateTime.now()) - 1
                 : DateTime.now().isBefore(getMonday(DateTime.now())
                         .add(const Duration(hours: 17)))
-                    ? numOfWeeks(DateTime.now())
-                    : numOfWeeks(DateTime.now()) + 1
+                    ? numOfWeeks(DateTime.now()) - 1
+                    : numOfWeeks(DateTime.now())
         : numOfWeeks(DateTime.now()) + 1;
-    maxWeek = tambahan.value ? numOfWeeks(DateTime.now()) : 52;
+    maxWeek = tambahan.value ? numOfWeeks(DateTime.now()) + 1 : 52;
     selectedWeek = minWeek;
     week.text = minWeek.toString();
     update(['week']);
@@ -186,13 +191,4 @@ class WeeklyAddTaskController extends GetxController {
     getWeekObjective(selectedYear, selectedWeek);
     super.onInit();
   }
-
-  // @override
-  // void onClose() {
-  //   task.dispose();
-  //   resultValue.dispose();
-  //   week.dispose();
-  //   year.dispose();
-  //   super.onClose();
-  // }
 }

@@ -127,22 +127,24 @@ class ResultController extends GetxController {
           }
         }
         achievemntDaily = (totalDaysData / 6) *
-                    (((totalActualDaily + totalExtraTaskDaily) /
-                            totalPlanTaskDaily) *
-                        100) >
+                    ((totalActualDaily + totalExtraTaskDaily) /
+                        totalPlanTaskDaily) *
+                    100 >
                 100
             ? 100
             : (totalDaysData / 6) *
-                (((totalActualDaily + totalExtraTaskDaily) /
-                        totalPlanTaskDaily) *
-                    100);
+                ((totalActualDaily + totalExtraTaskDaily) /
+                    totalPlanTaskDaily) *
+                100;
         var pointontime = (totalDaysData / 6) *
             (totalPointOnTime / (totalPlanTaskDaily + totalExtraTaskDaily)) *
             bobotOntime;
-
+        print(totalPlanTaskDaily);
+        print(totalActualDaily);
+        print(pointontime);
         totalPointDaily = (achievemntDaily / 100 * bobotDaily) > bobotDaily
             ? bobotDaily.toDouble()
-            : ((achievemntDaily / 100 * bobotDaily)).toDouble();
+            : ((achievemntDaily / 100 * bobotDaily));
         totalPointDaily += pointontime;
       }
     }

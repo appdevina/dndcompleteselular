@@ -153,4 +153,41 @@ class MonthlyServices {
       return ApiReturnValue(value: false, message: e.toString());
     }
   }
+
+  static Future<ApiReturnValue<bool>> copy({
+    required DateTime from,
+    required DateTime to,
+    http.Client? client,
+  }) async {
+    try {
+      client ??= http.Client();
+      String url = baseUrl + 'monthly/copy';
+      Uri uri = Uri.parse(url);
+      SharedPreferences pref = await SharedPreferences.getInstance();
+
+      var response = await client.post(
+        uri,
+        body: jsonEncode({
+          'frommonth': DateFormat('y-MM-dd').format(from),
+          'tomonth': DateFormat('y-MM-dd').format(to),
+        }),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${pref.getString('token')}',
+        },
+      );
+      if (response.statusCode != 200) {
+        var data = jsonDecode(response.body);
+        String message = data['meta']['message'];
+        return ApiReturnValue(value: false, message: message);
+      }
+
+      var data = jsonDecode(response.body);
+      String message = data['meta']['message'];
+
+      return ApiReturnValue(value: true, message: message);
+    } catch (e) {
+      return ApiReturnValue(value: false, message: e.toString());
+    }
+  }
 }

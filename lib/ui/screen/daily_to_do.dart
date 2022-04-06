@@ -55,6 +55,15 @@ class DailyTodo extends StatelessWidget {
       actions: [
         IconButton(
           onPressed: () =>
+              Get.to(() => CopyDaily(), transition: Transition.cupertino),
+          icon: const Icon(
+            MdiIcons.contentCopy,
+            color: white,
+          ),
+          iconSize: 16,
+        ),
+        IconButton(
+          onPressed: () =>
               Get.to(() => AddTaskDaily(), transition: Transition.cupertino),
           icon: const Icon(
             MdiIcons.plus,
@@ -86,7 +95,7 @@ class DailyTodo extends StatelessWidget {
       activeDayColor: Colors.black,
       activeBackgroundDayColor: white,
       dotsColor: const Color(0xFF333A47),
-      locale: 'en_ISO',
+      locale: 'id',
     );
   }
 

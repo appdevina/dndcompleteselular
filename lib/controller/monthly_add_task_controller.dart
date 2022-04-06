@@ -9,11 +9,17 @@ class MonthlyAddTaskController extends GetxController {
   late DateTime selectedMonth, minMonth, maxMonth;
   RxBool isResult = false.obs;
   RxBool tambahan = false.obs;
+  RxBool button = true.obs;
+  List<MonthlyModel> monthlys = [];
 
   void changeMonth(DateTime val) {
     selectedMonth = val;
     update(['month']);
   }
+
+  String formatNumber(String s) => NumberFormat.decimalPattern('ID').format(
+        int.parse(s),
+      );
 
   void changeTambahan() {
     tambahan.toggle();
@@ -33,6 +39,10 @@ class MonthlyAddTaskController extends GetxController {
     selectedMonth = minMonth;
     update(['month']);
   }
+
+  Future<ApiReturnValue<List<MonthlyModel>>> getMonthlyObjective(
+          DateTime month) async =>
+      await MonthlyServices.getMonthly(month);
 
   Future<ApiReturnValue<bool>> submit({
     required bool isUpdate,
@@ -61,10 +71,15 @@ class MonthlyAddTaskController extends GetxController {
                   isResult: isResultVal,
                   resultValue: resultValueText,
                   id: id,
-                ).then((value) => value);
+                ).then((value) async {
+                  await getMonthlyObjective(selectedMonth)
+                      .then((value) => monthlys = value.value!);
+                  update(['monthly']);
+                  return value;
+                });
 
   @override
-  void onInit() {
+  void onInit() async {
     DateTime now = DateTime.now();
     title = monthly == null
         ? TextEditingController()
@@ -89,6 +104,9 @@ class MonthlyAddTaskController extends GetxController {
         : monthly!.type == 'RESULT'
             ? true.obs
             : false.obs;
+    await getMonthlyObjective(selectedMonth)
+        .then((value) => monthlys = value.value!);
+    update(['monthly']);
     super.onInit();
   }
 

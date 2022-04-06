@@ -129,68 +129,86 @@ class AddTaskWeekly extends StatelessWidget {
             Container(
               alignment: Alignment.centerRight,
               margin: const EdgeInsets.only(right: 10, top: 10),
-              child: MyButton(
-                  label: "Submit",
-                  onTap: () async {
-                    if (week == null) {
-                      FocusScope.of(context).requestFocus(FocusNode());
-                      await controller
-                          .submit(
-                              isUpdate:
-                                  controller.weekly == null ? false : true,
-                              id: controller.weekly == null
-                                  ? null
-                                  : controller.weekly!.id,
-                              extraTask: controller.tambahan.value,
-                              taskVal: controller.task.text,
-                              week: controller.selectedWeek,
-                              year: controller.selectedYear,
-                              isResultVal: controller.isResult.value,
-                              resultValueText: controller.isResult.value
-                                  ? controller.resultValue.value.text
-                                      .replaceAll('.', '')
-                                  : null)
-                          .then((value) {
-                        if (controller.weekly != null) {
-                          Get.back();
-                        }
-                        final con = Get.find<WeeklyController>();
-                        if (controller.selectedWeek == con.selectedWeek &&
-                            controller.selectedYear == con.selectedYear) {
-                          con.getWeekObjective(
-                              con.selectedYear, con.selectedWeek,
-                              isloading: true);
-                        }
-                        controller.getWeekObjective(
-                            controller.selectedYear, controller.selectedWeek);
-                        snackbar(context, value.value!, value.message!);
-                      });
-                    } else {
-                      final con = Get.find<RequestTaskController>();
-                      WeeklyModel weekly = WeeklyModel(
-                        task: controller.task.text,
-                        type: controller.isResult.value ? 'RESULT' : 'NON',
-                        week: week,
-                        year: year,
-                        statNon: controller.isResult.value ? null : false,
-                        statRes: controller.isResult.value ? false : null,
-                        valPlan: controller.isResult.value
-                            ? controller.resultValue.value.text
-                                .replaceAll('.', '')
-                                .toInt()
-                            : null,
-                        valAct: controller.isResult.value ? 0 : null,
-                        isAdd: false,
-                        isUpdate: true,
-                      );
-                      con.addTaskChange(weeklyModel: weekly).then((value) {
-                        snackbar(context, value, 'Berhasil menambahkan');
-                        Get.back();
-                      });
-                    }
-                  },
-                  height: 50,
-                  width: 100),
+              child: Obx(
+                () => MyButton(
+                    label: "Submit",
+                    onTap: controller.button.value
+                        ? () async {
+                            if (week == null) {
+                              controller.button.toggle();
+                              FocusScope.of(context).requestFocus(FocusNode());
+                              await controller
+                                  .submit(
+                                      isUpdate: controller.weekly == null
+                                          ? false
+                                          : true,
+                                      id: controller.weekly == null
+                                          ? null
+                                          : controller.weekly!.id,
+                                      extraTask: controller.tambahan.value,
+                                      taskVal: controller.task.text,
+                                      week: controller.selectedWeek,
+                                      year: controller.selectedYear,
+                                      isResultVal: controller.isResult.value,
+                                      resultValueText: controller.isResult.value
+                                          ? controller.resultValue.value.text
+                                              .replaceAll('.', '')
+                                          : null)
+                                  .then((value) {
+                                controller.button.toggle();
+
+                                if (controller.weekly != null) {
+                                  Get.back();
+                                }
+                                final con = Get.find<WeeklyController>();
+                                if (controller.selectedWeek ==
+                                        con.selectedWeek &&
+                                    controller.selectedYear ==
+                                        con.selectedYear) {
+                                  con.getWeekObjective(
+                                      con.selectedYear, con.selectedWeek,
+                                      isloading: true);
+                                }
+                                controller.getWeekObjective(
+                                    controller.selectedYear,
+                                    controller.selectedWeek);
+                                snackbar(context, value.value!, value.message!);
+                              });
+                            } else {
+                              final con = Get.find<RequestTaskController>();
+                              WeeklyModel weekly = WeeklyModel(
+                                task: controller.task.text,
+                                type: controller.isResult.value
+                                    ? 'RESULT'
+                                    : 'NON',
+                                week: week,
+                                year: year,
+                                statNon:
+                                    controller.isResult.value ? null : false,
+                                statRes:
+                                    controller.isResult.value ? false : null,
+                                valPlan: controller.isResult.value
+                                    ? controller.resultValue.value.text
+                                        .replaceAll('.', '')
+                                        .toInt()
+                                    : null,
+                                valAct: controller.isResult.value ? 0 : null,
+                                isAdd: false,
+                                isUpdate: true,
+                              );
+                              con
+                                  .addTaskChange(weeklyModel: weekly)
+                                  .then((value) {
+                                snackbar(
+                                    context, value, 'Berhasil menambahkan');
+                                Get.back();
+                              });
+                            }
+                          }
+                        : () => null,
+                    height: 50,
+                    width: 100),
+              ),
             ),
             Expanded(
                 child: Container(
@@ -202,10 +220,9 @@ class AddTaskWeekly extends StatelessWidget {
               child: GetBuilder<WeeklyAddTaskController>(
                   id: 'weekly',
                   builder: (_) => ListView.builder(
-                        itemBuilder: ((context, index) => CardWeeklyRequest(
+                        itemBuilder: ((context, index) => CardWeeklyAdd(
                               index: index,
                               weekly: controller.weeklys[index],
-                              isCanDelete: false,
                             )),
                         itemCount: controller.weeklys.length,
                       )),

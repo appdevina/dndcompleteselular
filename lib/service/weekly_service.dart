@@ -175,4 +175,45 @@ class WeeklyService {
       return ApiReturnValue(value: 'error');
     }
   }
+
+  static Future<ApiReturnValue<bool>> copy(
+      {required int fromWeek,
+      required int fromYear,
+      required int toWeek,
+      required int toYear,
+      http.Client? client}) async {
+    try {
+      client ??= http.Client();
+      String url = baseUrl + 'weekly/copy';
+      Uri uri = Uri.parse(url);
+      SharedPreferences pref = await SharedPreferences.getInstance();
+
+      var response = await client.post(
+        uri,
+        body: jsonEncode({
+          'fromweek': fromWeek,
+          'fromyear': fromYear,
+          'toweek': toWeek,
+          'toyear': toYear,
+        }),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${pref.getString('token')}',
+        },
+      );
+
+      if (response.statusCode != 200) {
+        var data = jsonDecode(response.body);
+        String message = data['meta']['message'];
+        return ApiReturnValue(value: false, message: message);
+      }
+
+      var data = jsonDecode(response.body);
+      String message = data['meta']['message'];
+
+      return ApiReturnValue(value: true, message: message);
+    } catch (e) {
+      return ApiReturnValue(value: false, message: e.toString());
+    }
+  }
 }

@@ -16,6 +16,7 @@ class DailyAddTaskController extends GetxController {
   late TextEditingController taskText;
   RxBool isLoading = true.obs;
   List<DailyModel> dailys = [];
+  RxBool button = true.obs;
 
   void changeDate(DateTime val) {
     selectedDate = val;

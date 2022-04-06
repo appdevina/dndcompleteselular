@@ -49,6 +49,15 @@ class MonthlyToDo extends StatelessWidget {
       actions: [
         IconButton(
           onPressed: () =>
+              Get.to(() => CopyMonthly(), transition: Transition.cupertino),
+          icon: const Icon(
+            MdiIcons.contentCopy,
+            color: white,
+          ),
+          iconSize: 16,
+        ),
+        IconButton(
+          onPressed: () =>
               Get.to(() => AddTaskMonthly(), transition: Transition.cupertino),
           icon: const Icon(
             MdiIcons.plus,

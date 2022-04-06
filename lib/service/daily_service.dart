@@ -140,4 +140,73 @@ class DailyService {
       return ApiReturnValue(value: false, message: e.toString());
     }
   }
+
+  static Future<ApiReturnValue<List<List<DailyModel>>>> fetchweek(
+      {required int week, required int year, http.Client? client}) async {
+    try {
+      client ??= http.Client();
+      String url = baseUrl + 'daily/fetchweek?week=$week&year=$year';
+      Uri uri = Uri.parse(url);
+      SharedPreferences pref = await SharedPreferences.getInstance();
+
+      var response = await client.get(uri, headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ${pref.getString('token')}',
+      });
+
+      if (response.statusCode != 200) {
+        var data = jsonDecode(response.body);
+        String message = data['meta']['message'];
+        return ApiReturnValue(value: null, message: message);
+      }
+
+      var data = jsonDecode(response.body);
+      String message = data['meta']['message'];
+      List<List<DailyModel>> value = (data['data'] as Iterable)
+          .map((e) =>
+              (e as Iterable).map((e) => DailyModel.fromJson(e)).toList())
+          .toList();
+      return ApiReturnValue(value: value, message: message);
+    } catch (e) {
+      return ApiReturnValue(value: [], message: e.toString());
+    }
+  }
+
+  static Future<ApiReturnValue<bool>> copy(
+      {required int week,
+      required int year,
+      required int addweek,
+      http.Client? client}) async {
+    try {
+      client ??= http.Client();
+      String url = baseUrl + 'daily/copy';
+      Uri uri = Uri.parse(url);
+      SharedPreferences pref = await SharedPreferences.getInstance();
+
+      var response = await client.post(uri,
+          body: jsonEncode(
+            {
+              "week": week,
+              "year": year,
+              "addweek": addweek,
+            },
+          ),
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ${pref.getString('token')}',
+          });
+
+      if (response.statusCode != 200) {
+        var data = jsonDecode(response.body);
+        String message = data['meta']['message'];
+        return ApiReturnValue(value: null, message: message);
+      }
+
+      var data = jsonDecode(response.body);
+      String message = data['meta']['message'];
+      return ApiReturnValue(value: true, message: message);
+    } catch (e) {
+      return ApiReturnValue(value: false, message: e.toString());
+    }
+  }
 }

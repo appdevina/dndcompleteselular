@@ -130,67 +130,98 @@ class AddTaskMonthly extends StatelessWidget {
             Container(
               alignment: Alignment.centerRight,
               margin: const EdgeInsets.only(right: 10, top: 10),
-              child: MyButton(
-                  label: "Submit",
-                  onTap: () async {
-                    if (month == null) {
-                      FocusScope.of(context).requestFocus(FocusNode());
-                      await controller
-                          .submit(
-                              isUpdate:
-                                  controller.monthly == null ? false : true,
-                              id: controller.monthly == null
-                                  ? null
-                                  : controller.monthly!.id,
-                              extraTask: controller.tambahan.value,
-                              taskVal: controller.title.text,
-                              date: controller.selectedMonth,
-                              isResultVal: controller.isResult.value,
-                              resultValueText: controller.isResult.value
-                                  ? controller.valueCon.value.text
-                                      .replaceAll('.', '')
-                                  : null)
-                          .then((value) {
-                        if (controller.monthly != null) {
-                          Get.back();
-                        }
-                        if (value.value!) {
-                          final con = Get.find<MonthlyController>();
-                          controller.title.clear();
-                          controller.tambahan.value = false;
-                          controller.isResult.value = false;
-                          controller.valueCon.clear();
-                          con.getMonthlyObjective(con.selectedMonthYear,
-                              isloading: true);
-                        }
-                        snackbar(context, value.value!, value.message!);
-                      });
-                    } else {
-                      final con = Get.find<RequestTaskController>();
-                      MonthlyModel monthly = MonthlyModel(
-                        task: controller.title.text,
-                        monthYear: month,
-                        type: controller.isResult.value ? 'RESULT' : 'NON',
-                        valPlan: controller.isResult.value
-                            ? controller.valueCon.value.text
-                                .replaceAll('.', '')
-                                .toInt()
-                            : null,
-                        statNon: controller.isResult.value ? null : false,
-                        statRes: controller.isResult.value ? false : null,
-                        valAct: controller.isResult.value ? 0 : null,
-                        isUpdate: true,
-                        isAdd: false,
-                      );
-                      con.addTaskChange(monthlyModel: monthly).then((value) {
-                        snackbar(context, value, 'Berhasil menambahkan');
-                        Get.back();
-                      });
-                    }
-                  },
-                  height: 50,
-                  width: 100),
+              child: Obx(
+                () => MyButton(
+                    label: "Submit",
+                    onTap: controller.button.value
+                        ? () async {
+                            if (month == null) {
+                              controller.button.toggle();
+                              FocusScope.of(context).requestFocus(FocusNode());
+                              await controller
+                                  .submit(
+                                      isUpdate: controller.monthly == null
+                                          ? false
+                                          : true,
+                                      id: controller.monthly == null
+                                          ? null
+                                          : controller.monthly!.id,
+                                      extraTask: controller.tambahan.value,
+                                      taskVal: controller.title.text,
+                                      date: controller.selectedMonth,
+                                      isResultVal: controller.isResult.value,
+                                      resultValueText: controller.isResult.value
+                                          ? controller.valueCon.value.text
+                                              .replaceAll('.', '')
+                                          : null)
+                                  .then((value) {
+                                controller.button.toggle();
+                                if (controller.monthly != null) {
+                                  Get.back();
+                                }
+                                if (value.value!) {
+                                  final con = Get.find<MonthlyController>();
+                                  controller.title.clear();
+                                  controller.tambahan.value = false;
+                                  controller.isResult.value = false;
+                                  controller.valueCon.clear();
+                                  con.getMonthlyObjective(con.selectedMonthYear,
+                                      isloading: true);
+                                }
+                                snackbar(context, value.value!, value.message!);
+                              });
+                            } else {
+                              final con = Get.find<RequestTaskController>();
+                              MonthlyModel monthly = MonthlyModel(
+                                task: controller.title.text,
+                                monthYear: month,
+                                type: controller.isResult.value
+                                    ? 'RESULT'
+                                    : 'NON',
+                                valPlan: controller.isResult.value
+                                    ? controller.valueCon.value.text
+                                        .replaceAll('.', '')
+                                        .toInt()
+                                    : null,
+                                statNon:
+                                    controller.isResult.value ? null : false,
+                                statRes:
+                                    controller.isResult.value ? false : null,
+                                valAct: controller.isResult.value ? 0 : null,
+                                isUpdate: true,
+                                isAdd: false,
+                              );
+                              con
+                                  .addTaskChange(monthlyModel: monthly)
+                                  .then((value) {
+                                snackbar(
+                                    context, value, 'Berhasil menambahkan');
+                                Get.back();
+                              });
+                            }
+                          }
+                        : () => null,
+                    height: 50,
+                    width: 100),
+              ),
             ),
+            Expanded(
+                child: Container(
+              margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+              decoration: BoxDecoration(
+                  border: Border.all(color: white),
+                  borderRadius: const BorderRadius.all(Radius.circular(10))),
+              child: GetBuilder<MonthlyAddTaskController>(
+                  id: 'monthly',
+                  builder: (_) => ListView.builder(
+                        itemBuilder: ((context, index) => CardMonthlyAdd(
+                              index: index,
+                              monthly: controller.monthlys[index],
+                            )),
+                        itemCount: controller.monthlys.length,
+                      )),
+            ))
           ],
         ),
       ),

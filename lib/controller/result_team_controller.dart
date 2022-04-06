@@ -63,7 +63,7 @@ class ResultTeamController extends GetxController {
     monthlies.clear();
     if (weeklies.isEmpty || dailys.isEmpty) {
       //Variable Daily
-      dailys.clear();
+      dailys = [];
       totalPointOnTime = 0;
       totalPlanTaskDaily = 0;
       totalDaysData = 0;
@@ -74,7 +74,7 @@ class ResultTeamController extends GetxController {
       totalOpenDaily = 0;
 
       //Variable Weekly
-      weeklies.clear();
+      weeklies = [];
       planTaskWeekly = 0;
       actualTaskWeekly = 0;
       extraTaskWeekly = 0;
@@ -84,7 +84,7 @@ class ResultTeamController extends GetxController {
 
       if (monthlies.isEmpty) {
         //Variable Monthly
-        monthlies.clear();
+        monthlies = [];
         totalPlanTaskMonthly = 0;
         totalExtraTaskMonthly = 0;
         totalActualMonthly = 0;
@@ -94,8 +94,7 @@ class ResultTeamController extends GetxController {
         totalKpi.value = 0;
       }
     }
-    ApiReturnValue? value =
-        await ResultService.resultTeam(id: id, week: week, year: year);
+    ApiReturnValue? value = await ResultService.result(week: week, year: year);
 
     if (value != null) {
       for (var item in value.value['daily']) {
@@ -131,28 +130,30 @@ class ResultTeamController extends GetxController {
           }
         }
         achievemntDaily = (totalDaysData / 6) *
-                    (((totalActualDaily + totalExtraTaskDaily) /
-                            totalPlanTaskDaily) *
-                        100) >
+                    ((totalActualDaily + totalExtraTaskDaily) /
+                        totalPlanTaskDaily) *
+                    100 >
                 100
             ? 100
             : (totalDaysData / 6) *
-                (((totalActualDaily + totalExtraTaskDaily) /
-                        totalPlanTaskDaily) *
-                    100);
+                ((totalActualDaily + totalExtraTaskDaily) /
+                    totalPlanTaskDaily) *
+                100;
         var pointontime = (totalDaysData / 6) *
             (totalPointOnTime / (totalPlanTaskDaily + totalExtraTaskDaily)) *
             bobotOntime;
-
+        print(totalPlanTaskDaily);
+        print(totalActualDaily);
+        print(pointontime);
         totalPointDaily = (achievemntDaily / 100 * bobotDaily) > bobotDaily
             ? bobotDaily.toDouble()
-            : ((achievemntDaily / 100 * bobotDaily)).toDouble();
+            : ((achievemntDaily / 100 * bobotDaily));
         totalPointDaily += pointontime;
       }
     }
 
     if (weeklies.isNotEmpty) {
-      //MAPPING DATA WEEKLY
+//MAPPING DATA WEEKLY
       planTaskWeekly =
           weeklies.where((element) => !element.isAdd!).toList().length;
 
