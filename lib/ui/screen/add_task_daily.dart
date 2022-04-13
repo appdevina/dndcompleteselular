@@ -103,7 +103,7 @@ class AddTaskDaily extends StatelessWidget {
                 Obx(() => MyButton(
                       height: 50,
                       width: 100,
-                      label: "+ Add",
+                      label: controller.daily != null ? "Update" : "+ Add",
                       onTap: controller.button.value
                           ? () async {
                               FocusScope.of(context).requestFocus(FocusNode());
@@ -166,24 +166,29 @@ class AddTaskDaily extends StatelessWidget {
               ],
             ),
           ),
-          Container(
-            height: 300,
-            width: double.infinity,
-            decoration: BoxDecoration(
-                border: Border.all(color: white),
-                borderRadius: const BorderRadius.all(Radius.circular(10))),
-            margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-            child: GetBuilder<DailyAddTaskController>(
-                id: 'daily',
-                builder: (_) => ListView.builder(
-                      itemBuilder: ((context, index) => CardDailyAdd(
-                            daily: controller.dailys[index],
-                            index: index,
+          controller.daily != null || date != null
+              ? const SizedBox()
+              : Container(
+                  height: 300,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                      border: Border.all(color: white),
+                      borderRadius:
+                          const BorderRadius.all(Radius.circular(10))),
+                  margin:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                  child: GetBuilder<DailyAddTaskController>(
+                      id: 'daily',
+                      builder: (_) => ListView.builder(
+                            itemBuilder: ((context, index) => CardDailyAdd(
+                                  daily: controller.dailys[index],
+                                  index: index,
+                                )),
+                            itemCount: controller.dailys.length,
                           )),
-                      itemCount: controller.dailys.length,
-                    )),
-          )
+                ),
         ],
       ),
     );

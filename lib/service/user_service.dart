@@ -14,6 +14,7 @@ class UserServices {
 
       var response = await client.get(uri, headers: {
         'Content-Type': 'application/json',
+        'Accept': 'application/json',
         'Authorization': 'Bearer ${pref.getString('token')}'
       });
 
@@ -88,6 +89,7 @@ class UserServices {
 
       var response = await client.get(uri, headers: {
         'Content-Type': 'application/json',
+        'Accept': 'application/json',
         'Authorization': 'Bearer ${pref.getString('token')}'
       });
 
@@ -116,6 +118,7 @@ class UserServices {
       SharedPreferences pref = await SharedPreferences.getInstance();
       var response = await client.get(uri, headers: {
         'Content-Type': 'application/json',
+        'Accept': 'application/json',
         'Authorization': 'Bearer ${pref.getString('token')}',
       });
       if (response.statusCode != 200) {
@@ -197,6 +200,7 @@ class UserServices {
       SharedPreferences pref = await SharedPreferences.getInstance();
       var response = await client.get(uri, headers: {
         'Content-Type': 'application/json',
+        'Accept': 'application/json',
         'Authorization': 'Bearer ${pref.getString('token')}',
       });
       if (response.statusCode != 200) {

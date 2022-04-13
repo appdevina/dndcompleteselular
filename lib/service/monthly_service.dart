@@ -14,6 +14,7 @@ class MonthlyServices {
         uri,
         headers: {
           'Content-Type': 'application/json',
+          'Accept': 'application/json',
           'Authorization': 'Bearer ${pref.getString('token')}',
         },
       );
@@ -136,6 +137,7 @@ class MonthlyServices {
         uri,
         headers: {
           'Content-Type': 'application/json',
+          'Accept': 'application/json',
           'Authorization': 'Bearer ${pref.getString('token')}',
         },
       );

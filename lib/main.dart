@@ -34,9 +34,9 @@ class MyApp extends GetView<LoginController> {
           appBarTheme: AppBarTheme(backgroundColor: "22577E".toColor())),
       home: GetBuilder<LoginController>(
           id: 'login',
-          builder: (_) => (controller.loadingLogin)
+          builder: (_) => (_.loadingLogin)
               ? const LoadingFullScreen()
-              : (controller.islogin)
+              : (_.islogin)
                   ? HomePage()
                   : const Login()),
     );

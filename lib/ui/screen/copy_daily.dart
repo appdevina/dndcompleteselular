@@ -71,13 +71,15 @@ class CopyDaily extends StatelessWidget {
                         yearto: controller.toYear.value,
                         weekto: controller.toWeek.value)
                     .then((value) {
-                  if (value.value!) {
-                    snackbar(context, value.value!, value.message!);
-                    Get.back();
-                    Get.back();
-                  } else {
-                    snackbar(context, value.value!, value.message!);
-                    Get.back();
+                  if (value.value != null) {
+                    if (value.value!) {
+                      snackbar(context, value.value!, value.message!);
+                      Get.back();
+                      Get.back();
+                    } else {
+                      snackbar(context, value.value!, value.message!);
+                      Get.back();
+                    }
                   }
                 }),
             child: Text(

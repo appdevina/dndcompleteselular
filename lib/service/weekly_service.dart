@@ -13,6 +13,7 @@ class WeeklyService {
         uri,
         headers: {
           'Content-Type': 'application/json',
+          'Accept': 'application/json',
           'Authorization': 'Bearer ${pref.getString('token')}',
         },
       );
@@ -135,6 +136,7 @@ class WeeklyService {
         uri,
         headers: {
           'Content-Type': 'application/json',
+          'Accept': 'application/json',
           'Authorization': 'Bearer ${pref.getString('token')}',
         },
       );

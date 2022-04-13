@@ -4,7 +4,6 @@ class LoginController extends GetxController {
   TextEditingController? userName, pass;
   bool islogin = false;
   bool loadingLogin = true;
-  Rx<bool> loading = false.obs;
   Rx<bool> obsecure = true.obs;
 
   final GlobalKey key = GlobalKey<FormState>();

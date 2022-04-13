@@ -139,9 +139,6 @@ class ResultController extends GetxController {
         var pointontime = (totalDaysData / 6) *
             (totalPointOnTime / (totalPlanTaskDaily + totalExtraTaskDaily)) *
             bobotOntime;
-        print(totalPlanTaskDaily);
-        print(totalActualDaily);
-        print(pointontime);
         totalPointDaily = (achievemntDaily / 100 * bobotDaily) > bobotDaily
             ? bobotDaily.toDouble()
             : ((achievemntDaily / 100 * bobotDaily));

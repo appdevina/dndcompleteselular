@@ -12,6 +12,7 @@ class DailyService {
 
       var response = await client.get(url, headers: {
         'Content-Type': 'application/json',
+        'Accept': 'application/json',
         'Authorization': 'Bearer ${pref.getString('token')}',
       });
 
@@ -96,6 +97,7 @@ class DailyService {
 
       var response = await client.get(uri, headers: {
         'Content-Type': 'application/json',
+        'Accept': 'application/json',
         'Authorization': 'Bearer ${pref.getString("token")}',
       });
 
@@ -124,6 +126,7 @@ class DailyService {
 
       var response = await client.get(uri, headers: {
         'Content-Type': 'application/json',
+        'Accept': 'application/json',
         'Authorization': 'Bearer ${pref.getString('token')}',
       });
 
@@ -151,6 +154,7 @@ class DailyService {
 
       var response = await client.get(uri, headers: {
         'Content-Type': 'application/json',
+        'Accept': 'application/json',
         'Authorization': 'Bearer ${pref.getString('token')}',
       });
 
@@ -198,6 +202,7 @@ class DailyService {
 
       if (response.statusCode != 200) {
         var data = jsonDecode(response.body);
+        print(data);
         String message = data['meta']['message'];
         return ApiReturnValue(value: null, message: message);
       }

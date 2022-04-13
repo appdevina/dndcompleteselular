@@ -11,6 +11,7 @@ class RequestService {
 
       var response = await client.get(uri, headers: {
         'Content-Type': 'application/json',
+        'Accept': 'application/json',
         'Authorization': 'Bearer ${pref.getString('token')}',
       });
 
@@ -111,6 +112,7 @@ class RequestService {
 
       var response = await client.get(uri, headers: {
         'Content-Type': 'application/json',
+        'Accept': 'application/json',
         'Authorization': 'Bearer ${pref.getString('token')}',
       });
 

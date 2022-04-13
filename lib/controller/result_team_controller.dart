@@ -94,8 +94,8 @@ class ResultTeamController extends GetxController {
         totalKpi.value = 0;
       }
     }
-    ApiReturnValue? value = await ResultService.result(week: week, year: year);
-
+    ApiReturnValue? value =
+        await ResultService.resultTeam(id: id, week: week, year: year);
     if (value != null) {
       for (var item in value.value['daily']) {
         dailys.add(
@@ -142,9 +142,6 @@ class ResultTeamController extends GetxController {
         var pointontime = (totalDaysData / 6) *
             (totalPointOnTime / (totalPlanTaskDaily + totalExtraTaskDaily)) *
             bobotOntime;
-        print(totalPlanTaskDaily);
-        print(totalActualDaily);
-        print(pointontime);
         totalPointDaily = (achievemntDaily / 100 * bobotDaily) > bobotDaily
             ? bobotDaily.toDouble()
             : ((achievemntDaily / 100 * bobotDaily));

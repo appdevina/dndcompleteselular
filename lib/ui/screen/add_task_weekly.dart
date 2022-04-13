@@ -131,7 +131,7 @@ class AddTaskWeekly extends StatelessWidget {
               margin: const EdgeInsets.only(right: 10, top: 10),
               child: Obx(
                 () => MyButton(
-                    label: "Submit",
+                    label: controller.weekly != null ? "Update" : "+ Add",
                     onTap: controller.button.value
                         ? () async {
                             if (week == null) {
@@ -210,23 +210,28 @@ class AddTaskWeekly extends StatelessWidget {
                     width: 100),
               ),
             ),
-            Expanded(
-                child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-              decoration: BoxDecoration(
-                  border: Border.all(color: white),
-                  borderRadius: const BorderRadius.all(Radius.circular(10))),
-              child: GetBuilder<WeeklyAddTaskController>(
-                  id: 'weekly',
-                  builder: (_) => ListView.builder(
-                        itemBuilder: ((context, index) => CardWeeklyAdd(
-                              index: index,
-                              weekly: controller.weeklys[index],
+            controller.weekly != null || week != null
+                ? const SizedBox()
+                : Expanded(
+                    child: Container(
+                    margin: const EdgeInsets.symmetric(
+                        horizontal: 10, vertical: 20),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 10, vertical: 10),
+                    decoration: BoxDecoration(
+                        border: Border.all(color: white),
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(10))),
+                    child: GetBuilder<WeeklyAddTaskController>(
+                        id: 'weekly',
+                        builder: (_) => ListView.builder(
+                              itemBuilder: ((context, index) => CardWeeklyAdd(
+                                    index: index,
+                                    weekly: controller.weeklys[index],
+                                  )),
+                              itemCount: controller.weeklys.length,
                             )),
-                        itemCount: controller.weeklys.length,
-                      )),
-            ))
+                  )),
           ],
         ),
       ),
@@ -247,7 +252,7 @@ class AddTaskWeekly extends StatelessWidget {
       elevation: 0,
       centerTitle: true,
       title: Text(
-        'Add Weekly ${week == null ? "Objective" : "Change"}',
+        '${controller.weekly == null ? "Add" : "Edit"} Weekly ${week == null ? "Objective" : "Change"}',
         style: blackFontStyle3.copyWith(color: white),
       ),
     );

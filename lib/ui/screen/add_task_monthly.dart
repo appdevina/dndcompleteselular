@@ -132,7 +132,7 @@ class AddTaskMonthly extends StatelessWidget {
               margin: const EdgeInsets.only(right: 10, top: 10),
               child: Obx(
                 () => MyButton(
-                    label: "Submit",
+                    label: controller.monthly != null ? "Update" : "+ Add",
                     onTap: controller.button.value
                         ? () async {
                             if (month == null) {
@@ -205,23 +205,28 @@ class AddTaskMonthly extends StatelessWidget {
                     width: 100),
               ),
             ),
-            Expanded(
-                child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-              decoration: BoxDecoration(
-                  border: Border.all(color: white),
-                  borderRadius: const BorderRadius.all(Radius.circular(10))),
-              child: GetBuilder<MonthlyAddTaskController>(
-                  id: 'monthly',
-                  builder: (_) => ListView.builder(
-                        itemBuilder: ((context, index) => CardMonthlyAdd(
-                              index: index,
-                              monthly: controller.monthlys[index],
+            controller.monthly != null || month != null
+                ? const SizedBox()
+                : Expanded(
+                    child: Container(
+                    margin: const EdgeInsets.symmetric(
+                        horizontal: 10, vertical: 20),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 10, vertical: 10),
+                    decoration: BoxDecoration(
+                        border: Border.all(color: white),
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(10))),
+                    child: GetBuilder<MonthlyAddTaskController>(
+                        id: 'monthly',
+                        builder: (_) => ListView.builder(
+                              itemBuilder: ((context, index) => CardMonthlyAdd(
+                                    index: index,
+                                    monthly: controller.monthlys[index],
+                                  )),
+                              itemCount: controller.monthlys.length,
                             )),
-                        itemCount: controller.monthlys.length,
-                      )),
-            ))
+                  ))
           ],
         ),
       ),
