@@ -247,7 +247,7 @@ class AddTaskMonthly extends StatelessWidget {
       elevation: 0,
       centerTitle: true,
       title: Text(
-        'Add Monthly ${month == null ? "Objective" : "Change"}',
+        '${controller.monthly != null ? "Edit" : "Add"} Monthly ${month == null ? "Objective" : "Change"}',
         style: blackFontStyle3.copyWith(color: white),
       ),
     );
