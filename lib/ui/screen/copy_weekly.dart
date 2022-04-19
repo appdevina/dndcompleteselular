@@ -41,7 +41,7 @@ class CopyWeekly extends StatelessWidget {
               margin: EdgeInsets.only(
                   left: MediaQuery.of(context).size.width / 2, top: 10),
               child: MyButton(
-                  label: "Copy Daily",
+                  label: "Copy Weekly",
                   onTap: () => showDialog<String>(
                       context: context,
                       builder: (context) => _dialogDelete(context)),

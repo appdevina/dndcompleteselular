@@ -77,7 +77,7 @@ class CopyMonthly extends StatelessWidget {
         elevation: 0,
         centerTitle: true,
         title: Text(
-          'Copy monthly one month',
+          'Copy monthly',
           style: blackFontStyle3.copyWith(
             color: white,
           ),

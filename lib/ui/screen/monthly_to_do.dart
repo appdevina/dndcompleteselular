@@ -43,7 +43,7 @@ class MonthlyToDo extends StatelessWidget {
       elevation: 0,
       centerTitle: true,
       title: Text(
-        'Monthly To Do',
+        'Monthly Objective',
         style: blackFontStyle3.copyWith(color: white),
       ),
       actions: [
