@@ -39,7 +39,7 @@ class _ResultTeamBody extends State<ResultTeamBody>
         elevation: 0,
         title: Obx(
           () => Text(
-            "Point KPI : ${NumberFormat("###.#", "en_US").format(controller.totalKpi.value)}",
+            "Point Week ${controller.week.value} : ${NumberFormat("###.#", "en_US").format(controller.totalKpi.value)}",
             style: blackFontStyle3.copyWith(color: white),
           ),
         ),

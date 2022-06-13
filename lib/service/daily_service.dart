@@ -202,9 +202,8 @@ class DailyService {
 
       if (response.statusCode != 200) {
         var data = jsonDecode(response.body);
-        print(data);
         String message = data['meta']['message'];
-        return ApiReturnValue(value: null, message: message);
+        return ApiReturnValue(value: false, message: message);
       }
 
       var data = jsonDecode(response.body);

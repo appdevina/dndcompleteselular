@@ -114,19 +114,20 @@ class RequestTaskController extends GetxController {
 
   void getDaily(DateTime time) async {
     await DailyService.getDaily(DateFormat('y-MM-dd').format(time)).then(
-        (value) => daily = value.value!.where((e) => !e.isUpdate!).toList());
+        (value) => daily =
+            value.value!.where((e) => !e.isUpdate! && e.isPlan!).toList());
     update(['tag']);
   }
 
   void getWeekly(int year, int week) async {
-    await WeeklyService.getWeekly(week: week, year: year).then(
-        (value) => weekly = value.value!.where((e) => !e.isUpdate!).toList());
+    await WeeklyService.getWeekly(week: week, year: year).then((value) =>
+        weekly = value.value!.where((e) => !e.isUpdate! && !e.isAdd!).toList());
     update(['tag']);
   }
 
   void getMonthly(DateTime month) async {
-    await MonthlyServices.getMonthly(month).then(
-        (value) => monthly = value.value!.where((e) => !e.isUpdate!).toList());
+    await MonthlyServices.getMonthly(month).then((value) => monthly =
+        value.value!.where((e) => !e.isUpdate! && !e.isAdd!).toList());
     update(['tag']);
   }
 

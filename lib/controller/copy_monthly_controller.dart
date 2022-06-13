@@ -16,16 +16,6 @@ class CopyMonthlyController extends GetxController {
           DateTime month) async =>
       await MonthlyServices.getMonthly(month);
 
-  DateTime getMaxMonthFrom(DateTime now) =>
-      now.isBefore(DateTime(now.year, now.month).add(const Duration(days: 5)))
-          ? DateTime(now.year, now.month - 1)
-          : DateTime(now.year, now.month);
-
-  DateTime getMaxMonthTo(DateTime now) =>
-      now.isBefore(DateTime(now.year, now.month).add(const Duration(days: 5)))
-          ? DateTime(now.year, now.month)
-          : DateTime(now.year, now.month + 1);
-
   String formatNumber(String s) => NumberFormat.decimalPattern('ID').format(
         int.parse(s),
       );
@@ -52,12 +42,12 @@ class CopyMonthlyController extends GetxController {
 
   @override
   void onInit() async {
-    DateTime now = DateTime.now();
-    maxMonthFrom = getMaxMonthFrom(now);
-    monthFrom = maxMonthFrom;
-    minMonthFrom = DateTime(2022);
-    minMonthTo = getMaxMonthTo(now);
-    monthTo = minMonthTo;
+    DateTime now = DateTime.now().subtract(const Duration(days: 30));
+    maxMonthFrom = DateTime(2025, 12);
+    monthFrom = DateTime(now.year, now.month);
+    minMonthFrom = DateTime(2022, 4);
+    minMonthTo = DateTime(2022, 4);
+    monthTo = DateTime(DateTime.now().year, DateTime.now().month);
     maxMonthTo = DateTime(2025);
     await getMonthlyObjective(monthFrom)
         .then((value) => monthlys = value.value!);

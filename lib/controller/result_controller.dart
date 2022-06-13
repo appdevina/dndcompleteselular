@@ -126,6 +126,7 @@ class ResultController extends GetxController {
             totalPointOnTime += point!;
           }
         }
+
         achievemntDaily = (totalDaysData / 6) *
                     ((totalActualDaily + totalExtraTaskDaily) /
                         totalPlanTaskDaily) *
@@ -137,8 +138,13 @@ class ResultController extends GetxController {
                     totalPlanTaskDaily) *
                 100;
         var pointontime = (totalDaysData / 6) *
-            (totalPointOnTime / (totalPlanTaskDaily + totalExtraTaskDaily)) *
-            bobotOntime;
+                    (totalPointOnTime / (totalPlanTaskDaily)) *
+                    bobotOntime >
+                20
+            ? 20
+            : (totalDaysData / 6) *
+                (totalPointOnTime / (totalPlanTaskDaily)) *
+                bobotOntime;
         totalPointDaily = (achievemntDaily / 100 * bobotDaily) > bobotDaily
             ? bobotDaily.toDouble()
             : ((achievemntDaily / 100 * bobotDaily));
@@ -147,7 +153,7 @@ class ResultController extends GetxController {
     }
 
     if (weeklies.isNotEmpty) {
-//MAPPING DATA WEEKLY
+      //MAPPING DATA WEEKLY
       planTaskWeekly =
           weeklies.where((element) => !element.isAdd!).toList().length;
 
@@ -182,10 +188,11 @@ class ResultController extends GetxController {
         totalPointMonthly = (achievemntMonthly / 100 * bobotMonthly);
       }
     }
-    totalKpi.value = monthlies.isNotEmpty
-        ? (((totalPointDaily + totalPointWeekly) * 80 / 100) +
-            totalPointMonthly)
-        : (totalPointDaily + totalPointWeekly);
+    totalKpi.value = totalPointDaily + totalPointWeekly;
+    // monthlies.isNotEmpty
+    //     ? (((totalPointDaily + totalPointWeekly) * 80 / 100) +
+    //         totalPointMonthly)
+    //     : (totalPointDaily + totalPointWeekly);
 
     update(['result']);
     return true;
@@ -205,6 +212,11 @@ class ResultController extends GetxController {
 
   @override
   void onInit() async {
+    HomePageController homePageController = Get.find<HomePageController>();
+    if (!homePageController.user.weeklyNon! &&
+        !homePageController.user.weeklyResult!) {
+      bobotDaily = 80;
+    }
     await getAllResult(year: now.year, week: numOfWeeks(now))
         .then((_) => loading.toggle());
     week.value = numOfWeeks(now);

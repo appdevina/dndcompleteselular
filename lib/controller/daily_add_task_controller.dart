@@ -8,7 +8,7 @@ class DailyAddTaskController extends GetxController {
   });
 
   String selectedTime = DateFormat.jm().format(DateTime.now());
-  DateTime? selectedDate, lastMonday;
+  DateTime? selectedDate;
   RxBool tambahan = false.obs;
   late DateTime today = DateTime.now();
   late List<UserModel> users;
@@ -31,7 +31,6 @@ class DailyAddTaskController extends GetxController {
 
   void changeTambahan() {
     tambahan.toggle();
-    selectedDate = tambahan.value ? DateTime.now() : lastMonday;
     if (!tambahan.value) {
       selectedTime = DateFormat.jm().format(DateTime.now());
     }
@@ -89,27 +88,14 @@ class DailyAddTaskController extends GetxController {
 
   getDate(DateTime d) => DateTime(d.year, d.month, d.day);
 
-  getMonday(DateTime d) => getDate(d.subtract(Duration(days: d.weekday - 1)));
-
-  getNextWeek(DateTime d) => getDate(getMonday(d).add(const Duration(days: 7)));
-
   @override
   void onInit() async {
     taskText = daily == null
         ? TextEditingController()
         : TextEditingController(text: daily!.task);
-    final con = Get.find<HomePageController>();
-    lastMonday = con.user.area!.id == 2 &&
-            DateTime.now().isBefore(getMonday(DateTime.now())
-                .add(const Duration(days: 1, hours: 10)))
-        ? getMonday(DateTime.now())
-        : DateTime.now().isBefore(
-                getMonday(DateTime.now()).add(const Duration(hours: 17)))
-            ? getMonday(DateTime.now())
-            : getNextWeek(DateTime.now());
     selectedTime =
         daily == null ? DateFormat.jm().format(DateTime.now()) : daily!.time!;
-    selectedDate = daily == null ? lastMonday : daily!.date;
+    selectedDate = daily == null ? getDate(DateTime.now()) : daily!.date;
 
     await tag().then((value) {
       users = value.value!;

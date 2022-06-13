@@ -121,7 +121,6 @@ class CopyDailyController extends GetxController {
         } else {
           toYear.value--;
           if (toYear.value == fromYear.value) {
-            minWeekTo = getMinWeek(areaId, DateTime.now());
             toWeek.value = minWeekTo;
           }
           await getDate(toWeek.value, toYear.value)
@@ -162,47 +161,25 @@ class CopyDailyController extends GetxController {
 
   getMonday(DateTime d) => toDate(d.subtract(Duration(days: d.weekday - 1)));
 
-  int getMinWeek(int areaId, DateTime now) => numOfWeeks(now) == 1
-      ? 1
-      : areaId == 2 &&
-              DateTime.now().isBefore(getMonday(DateTime.now())
-                  .add(const Duration(days: 1, hours: 10)))
-          ? numOfWeeks(now)
-          : DateTime.now().isBefore(
-                  getMonday(DateTime.now()).add(const Duration(hours: 17)))
-              ? numOfWeeks(now)
-              : numOfWeeks(now) + 1;
-
-  int getMaxWeek(int areaId, DateTime now) => areaId == 2 &&
-          DateTime.now().isBefore(
-              getMonday(DateTime.now()).add(const Duration(days: 1, hours: 10)))
-      ? numOfWeeks(now) - 1
-      : DateTime.now().isBefore(
-              getMonday(DateTime.now()).add(const Duration(hours: 17)))
-          ? numOfWeeks(now) - 1
-          : numOfWeeks(now);
-
   @override
   void onInit() async {
     DateTime now = DateTime.now();
-    HomePageController homePageController = Get.find<HomePageController>();
-    areaId = homePageController.user.area!.id!;
 
     //INITIALIZEN FROM
     minWeekFrom = 1;
-    maxWeekFrom = getMaxWeek(areaId, now);
+    maxWeekFrom = 52;
     minYearFrom = 2022;
     maxYearFrom = 2025;
     //INITIALIZE TO
-    minWeekTo = getMinWeek(areaId, now);
+    minWeekTo = 1;
     maxWeekTo = 52;
     minYearTo = 2022;
     maxYearTo = 2025;
 
     //DISPLAY NUMBER WEEK AND YEAR
-    fromWeek = numOfWeeks(now).obs;
+    fromWeek = (numOfWeeks(now) - 1).obs;
     fromYear = (now.year).obs;
-    toWeek = (numOfWeeks(now) + 1).obs;
+    toWeek = numOfWeeks(now).obs;
     toYear = (now.year).obs;
     from = '-'.obs;
     to = '-'.obs;

@@ -13,5 +13,5 @@ part 'user_service.dart';
 part 'result_services.dart';
 part 'request_service.dart';
 
-String baseUrl = "http://csa1.completeselular.com:3388/api/";
-String baseStorage = "http://csa1.completeselular.com:3388/storage/";
+String baseUrl = "http://dnd.completeselular.com/api/";
+String baseStorage = "http://dnd.completeselular.com/storage/";

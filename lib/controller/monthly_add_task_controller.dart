@@ -28,7 +28,7 @@ class MonthlyAddTaskController extends GetxController {
                 DateTime(DateTime.now().year, DateTime.now().month)
                     .add(const Duration(days: 5)))
         ? DateTime(DateTime.now().year, DateTime.now().month)
-        : DateTime(DateTime.now().year, DateTime.now().month + 1);
+        : DateTime(2022, 4);
     maxMonth = tambahan.value
         ? DateTime.now().isAfter(
                 DateTime(DateTime.now().year, DateTime.now().month)
@@ -93,11 +93,9 @@ class MonthlyAddTaskController extends GetxController {
         precision: 0,
         thousandSeparator: '.',
         decimalSeparator: '');
-    minMonth =
-        now.isBefore(DateTime(now.year, now.month).add(const Duration(days: 5)))
-            ? now
-            : DateTime(now.year, now.month + 1);
-    selectedMonth = monthly == null ? minMonth : monthly!.monthYear!;
+    minMonth = DateTime(2022, 4);
+    selectedMonth =
+        monthly == null ? DateTime(now.year, now.month) : monthly!.monthYear!;
     maxMonth = DateTime(2025, 12);
     isResult = monthly == null
         ? false.obs

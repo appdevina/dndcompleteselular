@@ -30,20 +30,6 @@ class WeeklyAddTaskController extends GetxController {
 
   void changeTambahan() {
     tambahan.toggle();
-    minWeek = tambahan.value
-        ? numOfWeeks(DateTime.now()) == 1
-            ? 1
-            : userId == 2 &&
-                    DateTime.now().isBefore(getMonday(DateTime.now())
-                        .add(const Duration(days: 1, hours: 10)))
-                ? numOfWeeks(DateTime.now()) - 1
-                : DateTime.now().isBefore(getMonday(DateTime.now())
-                        .add(const Duration(hours: 17)))
-                    ? numOfWeeks(DateTime.now()) - 1
-                    : numOfWeeks(DateTime.now())
-        : numOfWeeks(DateTime.now()) + 1;
-    maxWeek = tambahan.value ? numOfWeeks(DateTime.now()) + 1 : 52;
-    selectedWeek = minWeek;
     week.text = minWeek.toString();
     update(['week']);
   }
@@ -109,7 +95,8 @@ class WeeklyAddTaskController extends GetxController {
       return ApiReturnValue(
           value: false, message: 'Kolom task harus di isi minimal 3 karakter');
     }
-    if (isResultVal && resultValueText == '0') {
+    if ((isResultVal && resultValueText == '0') ||
+        (isResultVal && resultValueText == null)) {
       return ApiReturnValue(
           value: false, message: 'Jika result isi kolom nominal result');
     }
@@ -146,16 +133,8 @@ class WeeklyAddTaskController extends GetxController {
     update(['weekly']);
   }
 
-  getDate(DateTime d) => DateTime(d.year, d.month, d.day);
-
-  getMonday(DateTime d) => getDate(d.subtract(Duration(days: d.weekday - 1)));
-
-  getNextWeek(DateTime d) => getDate(getMonday(d).add(const Duration(days: 7)));
-
   @override
   void onInit() {
-    final homeCon = Get.find<HomePageController>();
-    userId = homeCon.user.area!.id;
     task = weekly == null
         ? TextEditingController()
         : TextEditingController(text: weekly!.task);
@@ -168,20 +147,11 @@ class WeeklyAddTaskController extends GetxController {
         precision: 0,
         thousandSeparator: '.',
         decimalSeparator: '');
-    selectedWeek = weekly == null
-        ? userId == 2 &&
-                DateTime.now().isBefore(getMonday(DateTime.now())
-                    .add(const Duration(days: 1, hours: 10)))
-            ? numOfWeeks(DateTime.now())
-            : DateTime.now().isBefore(
-                    getMonday(DateTime.now()).add(const Duration(hours: 17)))
-                ? numOfWeeks(DateTime.now())
-                : numOfWeeks(DateTime.now()) + 1
-        : weekly!.week!;
+    selectedWeek = weekly == null ? numOfWeeks(DateTime.now()) : weekly!.week!;
     selectedYear = weekly == null ? DateTime.now().year : weekly!.year!;
     week = TextEditingController(text: selectedWeek.toString());
     year = TextEditingController(text: selectedYear.toString());
-    minWeek = weekly == null ? selectedWeek : weekly!.week!;
+    minWeek = weekly == null ? 1 : weekly!.week!;
     minyear = weekly == null ? DateTime(2022).year : weekly!.year!;
     isResult = weekly == null
         ? false.obs

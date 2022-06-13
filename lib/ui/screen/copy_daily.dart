@@ -73,13 +73,13 @@ class CopyDaily extends StatelessWidget {
                     .then((value) {
                   if (value.value != null) {
                     if (value.value!) {
-                      snackbar(context, value.value!, value.message!);
                       Get.back();
                       Get.back();
                     } else {
-                      snackbar(context, value.value!, value.message!);
                       Get.back();
                     }
+                    print(value.message);
+                    snackbar(context, value.value!, value.message!);
                   }
                 }),
             child: Text(

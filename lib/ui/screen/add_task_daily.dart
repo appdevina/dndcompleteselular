@@ -281,7 +281,7 @@ class AddTaskDaily extends StatelessWidget {
               ? DateFormat.yMMMd().format(DateTime.now())
               : DateFormat.yMMMd().format(controller.selectedDate!)
           : (controller.selectedDate == null)
-              ? DateFormat.yMMMd().format(controller.lastMonday!)
+              ? DateFormat.yMMMd().format(DateTime.now())
               : DateFormat.yMMMd().format(controller.selectedDate!),
       widget: IconButton(
         onPressed: () {
@@ -321,21 +321,15 @@ class AddTaskDaily extends StatelessWidget {
   _getDateUser(BuildContext context, bool tambahan) async {
     DateTime? _pickerDate = await showDatePicker(
         context: context,
-        initialDate: tambahan
-            ? DateTime.now()
-            : DateTime.now().isAfter(controller.lastMonday!)
-                ? DateTime.now()
-                : controller.lastMonday!,
+        initialDate: DateTime.now(),
         firstDate: tambahan
             ? DateTime(DateTime.now().year, DateTime.now().month,
                     DateTime.now().day)
                 .subtract(const Duration(days: 1))
-            : controller.lastMonday!,
+            : DateTime(2022, 4, 25),
         lastDate: tambahan
             ? DateTime.now().add(const Duration(days: 1))
-            : controller.lastMonday!.add(
-                const Duration(days: 6),
-              ),
+            : DateTime(2025, 12, 31),
         builder: (context, child) => Theme(
               data: ThemeData.dark(),
               child: child!,

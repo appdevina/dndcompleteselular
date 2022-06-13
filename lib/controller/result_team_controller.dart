@@ -139,9 +139,12 @@ class ResultTeamController extends GetxController {
                 ((totalActualDaily + totalExtraTaskDaily) /
                     totalPlanTaskDaily) *
                 100;
-        var pointontime = (totalDaysData / 6) *
-            (totalPointOnTime / (totalPlanTaskDaily + totalExtraTaskDaily)) *
-            bobotOntime;
+        var pointontime =
+            (totalDaysData / 6) * (totalPointOnTime / (totalPlanTaskDaily)) > 1
+                ? bobotOntime
+                : (totalDaysData / 6) *
+                    (totalPointOnTime / (totalPlanTaskDaily)) *
+                    bobotOntime;
         totalPointDaily = (achievemntDaily / 100 * bobotDaily) > bobotDaily
             ? bobotDaily.toDouble()
             : ((achievemntDaily / 100 * bobotDaily));
@@ -185,10 +188,11 @@ class ResultTeamController extends GetxController {
         totalPointMonthly = (achievemntMonthly / 100 * bobotMonthly);
       }
     }
-    totalKpi.value = monthlies.isNotEmpty
-        ? (((totalPointDaily + totalPointWeekly) * 80 / 100) +
-            totalPointMonthly)
-        : (totalPointDaily + totalPointWeekly);
+    totalKpi.value = totalPointDaily + totalPointWeekly;
+    // monthlies.isNotEmpty
+    //     ? (((totalPointDaily + totalPointWeekly) * 80 / 100) +
+    //         totalPointMonthly)
+    //     : (totalPointDaily + totalPointWeekly);
 
     update(['result']);
     return true;
@@ -205,6 +209,9 @@ class ResultTeamController extends GetxController {
 
   @override
   void onInit() async {
+    if (!user.weeklyNon! && !user.weeklyResult!) {
+      bobotDaily = 80;
+    }
     await getResult(id: user.id!, year: now.year, week: numOfWeeks(now))
         .then((_) => loading.toggle());
     week.value = numOfWeeks(now);
