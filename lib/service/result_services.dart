@@ -40,7 +40,6 @@ class ResultService {
       String url = baseUrl + 'result/$id/?week=$week&year=$year';
       Uri uri = Uri.parse(url);
       SharedPreferences pref = await SharedPreferences.getInstance();
-      print(url);
 
       var response = await client.get(uri, headers: {
         'Content-Type': 'application/json',
