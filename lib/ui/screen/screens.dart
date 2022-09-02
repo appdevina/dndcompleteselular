@@ -10,7 +10,7 @@ import 'package:todolist_complete/ui/widget/widgets.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:calendar_timeline/calendar_timeline.dart';
 import 'package:supercharged/supercharged.dart';
-import 'package:month_picker_dialog/month_picker_dialog.dart';
+import 'package:month_picker_dialog_2/month_picker_dialog.dart';
 import 'package:multi_select_flutter/multi_select_flutter.dart';
 import '../../service/services.dart';
 
