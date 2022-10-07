@@ -64,28 +64,27 @@ class CopyDaily extends StatelessWidget {
       ),
       actions: [
         TextButton(
-            onPressed: () async => await controller
-                    .copy(
-                        yearfrom: controller.fromYear.value,
-                        weekfrom: controller.fromWeek.value,
-                        yearto: controller.toYear.value,
-                        weekto: controller.toWeek.value)
-                    .then((value) {
-                  if (value.value != null) {
-                    if (value.value!) {
-                      Get.back();
-                      Get.back();
-                    } else {
-                      Get.back();
-                    }
-                    print(value.message);
-                    snackbar(context, value.value!, value.message!);
-                  }
-                }),
             child: Text(
               "YES",
               style: blackFontStyle3.copyWith(color: Colors.green[400]),
-            )),
+            ),
+            onPressed: () async {
+              Get.back();
+              EasyLoading.show(status: 'Copying...');
+              await controller
+                  .copy(
+                      yearfrom: controller.fromYear.value,
+                      weekfrom: controller.fromWeek.value,
+                      yearto: controller.toYear.value,
+                      weekto: controller.toWeek.value)
+                  .then((value) {
+                EasyLoading.removeAllCallbacks();
+                EasyLoading.dismiss();
+                print(value.message);
+                EasyLoading.showSuccess('Berhasil copy!');
+                Get.back();
+              });
+            }),
         TextButton(
             onPressed: () => Get.back(),
             child: Text(
