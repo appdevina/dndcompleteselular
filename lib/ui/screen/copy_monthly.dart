@@ -132,22 +132,22 @@ class CopyMonthly extends StatelessWidget {
       ),
       actions: [
         TextButton(
-            onPressed: () async => await controller
-                    .copy(from: controller.monthFrom, to: controller.monthTo)
-                    .then((value) {
-                  if (value.value!) {
-                    snackbar(context, value.value!, value.message!);
-                    Get.back();
-                    Get.back();
-                  } else {
-                    snackbar(context, value.value!, value.message!);
-                    Get.back();
-                  }
-                }),
             child: Text(
               "YES",
               style: blackFontStyle3.copyWith(color: Colors.green[400]),
-            )),
+            ),
+            onPressed: () async {
+              Get.back();
+              EasyLoading.show(status: 'Copying...');
+              await controller
+                  .copy(from: controller.monthFrom, to: controller.monthTo)
+                  .then((value) {
+                EasyLoading.removeAllCallbacks();
+                EasyLoading.dismiss();
+                EasyLoading.showSuccess('Berhasil copy!');
+                Get.back();
+              });
+            }),
         TextButton(
             onPressed: () => Get.back(),
             child: Text(
