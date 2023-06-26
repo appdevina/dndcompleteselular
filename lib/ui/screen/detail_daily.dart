@@ -33,7 +33,7 @@ class DetailDaily extends GetView<ResultController> {
                           style: blackFontStyle2,
                         ),
                         Text(
-                          "${controller.dailys[index].where((element) => element.status!).toList().length} / ${controller.dailys[index].where((element) => element.isPlan!).toList().length}",
+                          "${controller.dailys[index].where((element) => element.valueResult != 0.0).toList().length} / ${controller.dailys[index].where((element) => element.isPlan!).toList().length}",
                           style: blackFontStyle3,
                         )
                       ],
@@ -130,14 +130,17 @@ class DetailDaily extends GetView<ResultController> {
             alignment: Alignment.center,
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(15),
-                color: e.status! ? Colors.green[100] : Colors.red[100]),
+                color:
+                    e.valueResult != 0.0 ? Colors.green[100] : Colors.red[100]),
             width: 60,
             height: 20,
             child: Text(
-              e.status! ? "Closed" : 'Open',
+              e.valueResult != 0.0 ? "Closed" : 'Open',
               style: blackFontStyle3.copyWith(
                   fontSize: 10,
-                  color: e.status! ? Colors.green[500] : Colors.red[500]),
+                  color: e.valueResult != 0.0
+                      ? Colors.green[500]
+                      : Colors.red[500]),
               textAlign: TextAlign.center,
             ),
           ),

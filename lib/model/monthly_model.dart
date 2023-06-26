@@ -12,6 +12,8 @@ class MonthlyModel extends Equatable {
   final double? value;
   final bool? isAdd;
   final bool? isUpdate;
+  final UserModel? tag;
+  final UserModel? send;
 
   const MonthlyModel({
     this.id,
@@ -25,6 +27,8 @@ class MonthlyModel extends Equatable {
     this.value,
     this.isUpdate,
     this.isAdd,
+    this.tag,
+    this.send,
   });
 
   @override
@@ -40,6 +44,8 @@ class MonthlyModel extends Equatable {
         value,
         isAdd,
         isUpdate,
+        tag,
+        send,
       ];
 
   Map<String, dynamic> toJson() => {
@@ -79,5 +85,7 @@ class MonthlyModel extends Equatable {
                 : json['value'],
         isAdd: json['is_add'] == 0 ? false : true,
         isUpdate: json['is_update'] == 0 ? false : true,
+        tag: json['tag'] == null ? null : UserModel.fromJson(json['tag']),
+        send: json['add'] == null ? null : UserModel.fromJson(json['add']),
       );
 }

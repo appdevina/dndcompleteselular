@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:extended_masked_text/extended_masked_text.dart';
+import 'package:flutter_masked_text2/flutter_masked_text2.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';

@@ -9,8 +9,13 @@ class CardMonthly extends GetView<MonthlyController> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => Get.to(() => AddTaskMonthly(),
-          transition: Transition.cupertino, arguments: monthly),
+      onTap: () => monthly.tag != null || monthly.send != null
+          ? snackbar(context, false, "Weekly tag/send tidak bisa di rubah")
+          : Get.to(
+              () => AddTaskMonthly(),
+              transition: Transition.cupertino,
+              arguments: monthly,
+            ),
       child: Card(
         shape: RoundedRectangleBorder(
           side: BorderSide(width: 0.2, color: greyColor),
@@ -41,7 +46,7 @@ class CardMonthly extends GetView<MonthlyController> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "MONTHLY ${monthly.type! == 'NON' ? "NON RESULT" : "RESULT"} ${!monthly.isAdd! ? '' : '(Extra Task)'}",
+                        "${monthly.isAdd == true ? 'Extra Task' : 'Monthly'} ${monthly.tag != null ? ' - TAG BY : ${monthly.tag!.namaLengkap}' : (monthly.send != null ? ' - SEND BY : ${monthly.send!.namaLengkap}' : '')} ${monthly.type! == 'NON' ? ' - NON' : ' - RESULT'} ",
                         style: blackFontStyle2.copyWith(
                             wordSpacing: 1,
                             fontSize: 10,
@@ -209,7 +214,7 @@ class CardMonthly extends GetView<MonthlyController> {
                           controller.valueResult.text.replaceAll('.', '')),
                     )
                     .then((_) => snackbar(context, _.value!, _.message!));
-                controller.valueResult.clear();
+                controller.valueResult.text = '0';
                 controller.update(['inputvalue']);
               },
               height: 40,

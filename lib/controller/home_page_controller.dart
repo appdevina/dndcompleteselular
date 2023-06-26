@@ -7,6 +7,16 @@ class HomePageController extends GetxController {
   File? foto;
   StreamSubscription<ConnectivityResult>? result;
 
+  Future<UserModel?> getUser() async {
+    var result = await UserServices.getDetailUser();
+
+    if (result.value == null) {
+      throw Exception('Failed to fetch user data');
+    }
+    user = result.value!;
+    return user;
+  }
+
   Future<bool> getUserAndDaily() async {
     var result = await UserServices.getDetailUser();
     var result2 = await DailyService.getDaily(
@@ -73,6 +83,8 @@ class HomePageController extends GetxController {
     await getUserAndDaily().then((value) => loading.toggle());
     result =
         Connectivity().onConnectivityChanged.listen(_updateConnectionStatus);
+
+    await getUser();
     super.onInit();
   }
 }

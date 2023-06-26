@@ -11,6 +11,12 @@ class MonthlyAddTaskController extends GetxController {
   RxBool tambahan = false.obs;
   RxBool button = true.obs;
   List<MonthlyModel> monthlys = [];
+  final homePageController = Get.find<HomePageController>();
+  RxBool isLoading = true.obs;
+  late List<UserModel> users;
+  List<UserModel> tempUsers = [];
+  List<UserModel> selectedPerson = [];
+  List<UserModel> selectedSendPerson = [];
 
   void changeMonth(DateTime val) {
     selectedMonth = val;
@@ -28,7 +34,7 @@ class MonthlyAddTaskController extends GetxController {
                 DateTime(DateTime.now().year, DateTime.now().month)
                     .add(const Duration(days: 5)))
         ? DateTime(DateTime.now().year, DateTime.now().month)
-        : DateTime(2022, 4);
+        : DateTime(DateTime.now().year, DateTime.now().month - 1);
     maxMonth = tambahan.value
         ? DateTime.now().isAfter(
                 DateTime(DateTime.now().year, DateTime.now().month)
@@ -44,51 +50,81 @@ class MonthlyAddTaskController extends GetxController {
           DateTime month) async =>
       await MonthlyServices.getMonthly(month);
 
-  Future<ApiReturnValue<bool>> submit({
-    required bool isUpdate,
-    required bool extraTask,
-    required String taskVal,
-    required DateTime date,
-    required bool isResultVal,
-    String? resultValueText,
-    int? id,
-  }) async =>
-      taskVal.isEmpty || taskVal.length < 3
-          ? ApiReturnValue(
-              value: false,
-              message: 'Kolom task harus di isi minimal 3 karakter',
-            )
-          : isResultVal && (resultValueText == '0' || resultValueText!.isEmpty)
-              ? ApiReturnValue(
-                  value: false,
-                  message: 'Jika result isi kolom nominal result',
-                )
-              : await MonthlyServices.submit(
-                  isUpdate: isUpdate,
-                  extraTask: extraTask,
-                  task: taskVal,
-                  date: date,
-                  isResult: isResultVal,
-                  resultValue: resultValueText,
-                  id: id,
-                ).then((value) async {
-                  await getMonthlyObjective(selectedMonth)
-                      .then((value) => monthlys = value.value!);
-                  update(['monthly']);
-                  return value;
-                });
+  Future<ApiReturnValue<bool>> submit() async {
+    if (title.text.isEmpty || title.text.length < 3) {
+      ApiReturnValue(
+        value: false,
+        message: 'Kolom task harus di isi minimal 3 karakter',
+      );
+    }
+    if (isResult.value && (valueCon.text == '0' || valueCon.text.isEmpty)) {
+      ApiReturnValue(
+        value: false,
+        message: 'Jika result isi kolom nominal result',
+      );
+    }
+
+    final monthly = MonthlyRequestModel(
+      task: title.text,
+      monthYear: selectedMonth,
+      type: isResult.value ? 'RESULT' : 'NON',
+      valPlan: int.tryParse(valueCon.text.replaceAll('.', '')),
+      isAdd: tambahan.value,
+      isUpdate: false,
+      id: this.monthly?.id,
+      tag: selectedPerson,
+      send: selectedSendPerson,
+    );
+
+    final response = await MonthlyServices.submit(monthlyRequestModel: monthly);
+
+    if (!response.value!) {
+      return ApiReturnValue(value: false, message: response.message);
+    }
+
+    title.clear();
+    valueCon.text = '0';
+    tambahan.value = false;
+    isResult.value = false;
+    selectedPerson.clear();
+    selectedSendPerson.clear();
+    tempUsers = users.where((element) => element.monthlyNon!).toList();
+    update(['tag', 'pic']);
+    await getMonthlyObjective(selectedMonth)
+        .then((value) => monthlys = value.value!);
+    update(['monthly']);
+
+    return ApiReturnValue(value: true, message: response.message);
+  }
+
+  Future<ApiReturnValue<List<UserModel>>> tag() async {
+    ApiReturnValue<List<UserModel>> result = await UserServices.tag();
+
+    return result;
+  }
+
+  void monthlyResult() {
+    isResult.toggle();
+    if (isResult.value) {
+      tempUsers = users.where((element) => element.monthlyResult!).toList();
+    } else {
+      tempUsers = users.where((element) => element.monthlyNon!).toList();
+    }
+    update(['tag', 'pic']);
+  }
 
   @override
   void onInit() async {
+    super.onInit();
     DateTime now = DateTime.now();
     title = monthly == null
         ? TextEditingController()
         : TextEditingController(text: monthly!.task);
     valueCon = MoneyMaskedTextController(
         initialValue: monthly == null
-            ? 0
+            ? 0.0
             : monthly!.valPlan == null
-                ? 0
+                ? 0.0
                 : monthly!.valPlan!.toDouble(),
         precision: 0,
         thousandSeparator: '.',
@@ -102,10 +138,17 @@ class MonthlyAddTaskController extends GetxController {
         : monthly!.type == 'RESULT'
             ? true.obs
             : false.obs;
+
+    await tag().then((value) {
+      users = value.value!;
+      tempUsers = users.where((element) => element.monthlyNon!).toList();
+      isLoading.toggle();
+      update(['tag', 'pic']);
+    });
+
     await getMonthlyObjective(selectedMonth)
         .then((value) => monthlys = value.value!);
     update(['monthly']);
-    super.onInit();
   }
 
   @override

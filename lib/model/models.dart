@@ -10,3 +10,6 @@ part 'divisi_model.dart';
 part 'user_model.dart';
 part 'role_model.dart';
 part 'request_model.dart';
+part 'daily_request_model.dart';
+part 'weekly_request_model.dart';
+part 'monthly_request_model.dart';

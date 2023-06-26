@@ -13,6 +13,8 @@ class WeeklyModel extends Equatable {
   final double? value;
   final bool? isAdd;
   final bool? isUpdate;
+  final UserModel? tag;
+  final UserModel? send;
 
   const WeeklyModel({
     this.id,
@@ -27,6 +29,8 @@ class WeeklyModel extends Equatable {
     this.value,
     this.isUpdate,
     this.isAdd,
+    this.tag,
+    this.send,
   });
 
   @override
@@ -41,6 +45,8 @@ class WeeklyModel extends Equatable {
         statRes,
         value,
         isUpdate,
+        tag,
+        send,
       ];
 
   Map<String, dynamic> toJson() => {
@@ -82,5 +88,7 @@ class WeeklyModel extends Equatable {
                 : json['value'],
         isAdd: json['is_add'] == 0 ? false : true,
         isUpdate: json['is_update'] == 0 ? false : true,
+        tag: json['tag'] == null ? null : UserModel.fromJson(json['tag']),
+        send: json['add'] == null ? null : UserModel.fromJson(json['add']),
       );
 }

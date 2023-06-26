@@ -2,12 +2,13 @@ part of 'screens.dart';
 
 class MonthlyToDo extends StatelessWidget {
   final controller = Get.put(MonthlyController());
+  final homeController = Get.find<HomePageController>();
   MonthlyToDo({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: _appBar(),
+      appBar: _appBar(context),
       body: Column(
         children: [
           _pickMonth(context),
@@ -29,7 +30,7 @@ class MonthlyToDo extends StatelessWidget {
     );
   }
 
-  _appBar() {
+  _appBar(BuildContext context) {
     return AppBar(
       leading: IconButton(
         onPressed: () {
@@ -57,8 +58,66 @@ class MonthlyToDo extends StatelessWidget {
           iconSize: 16,
         ),
         IconButton(
-          onPressed: () =>
-              Get.to(() => AddTaskMonthly(), transition: Transition.cupertino),
+          onPressed: () {
+            if (homeController.user.role?.nama != 'STAFF') {
+              Get.bottomSheet(
+                Container(
+                  height: MediaQuery.of(context).size.height * 0.25,
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(defaultMargin),
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(10),
+                        topRight: Radius.circular(10)),
+                  ),
+                  child: Column(
+                    children: [
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            Get.back();
+                            Get.to(
+                              () => AddTaskMonthly(),
+                            );
+                          },
+                          child: const Text('My Monthly'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: "22577E".toColor(),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            if (Get.isBottomSheetOpen ?? false) {
+                              Get.back();
+                            }
+                            Get.to(
+                              () => AddTaskMonthly(
+                                isToUser: true,
+                              ),
+                            );
+                          },
+                          child: const Text('To Monthly User'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: "22577E".toColor(),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+              return;
+            }
+            Get.to(() => AddTaskMonthly(), transition: Transition.cupertino);
+          },
           icon: const Icon(
             MdiIcons.plus,
             color: white,

@@ -2,6 +2,7 @@ part of 'controllers.dart';
 
 class DailyAddTaskController extends GetxController {
   final DailyModel? daily;
+  final homePageController = Get.find<HomePageController>();
 
   DailyAddTaskController({
     this.daily,
@@ -12,11 +13,14 @@ class DailyAddTaskController extends GetxController {
   RxBool tambahan = false.obs;
   late DateTime today = DateTime.now();
   late List<UserModel> users;
-  List<Object?> selectedPerson = [];
-  late TextEditingController taskText;
+  late TextEditingController taskText, valuePlan;
   RxBool isLoading = true.obs;
   List<DailyModel> dailys = [];
   RxBool button = true.obs;
+  RxBool isResult = false.obs;
+  List<UserModel> tempUsers = [];
+  List<UserModel> selectedPerson = [];
+  List<UserModel> selectedSendPerson = [];
 
   void changeDate(DateTime val) {
     selectedDate = val;
@@ -37,41 +41,55 @@ class DailyAddTaskController extends GetxController {
     update(['date', 'time', 'tag']);
   }
 
-  Future<ApiReturnValue<bool>> submit({
-    required String task,
-    required DateTime date,
-    required bool isAdd,
-    String? time,
-    int? id,
-    required List<Object?> tags,
-  }) async {
-    if (task.length < 3 || task.isEmpty) {
+  void dailyResult() {
+    isResult.toggle();
+    if (isResult.value) {
+      tempUsers = users.where((element) => element.dailyResult!).toList();
+    } else {
+      tempUsers = users;
+    }
+    update(['tag', 'pic']);
+  }
+
+  Future<ApiReturnValue<bool>> submit() async {
+    if (taskText.text.length < 3 || taskText.text.isEmpty) {
       return ApiReturnValue(
         value: false,
         message: "Kolom task harus di isi minimal 3 karakter",
       );
     }
 
-    ApiReturnValue<bool> result = await DailyService.submit(
-      task: task,
-      date: date,
-      isAdd: isAdd,
-      time: time,
-      id: id,
-      tag: tags,
-    ).then((value) {
-      if (value.value!) {
-        taskText.clear();
-        selectedPerson.clear();
-        update(['date', 'time', 'tag']);
-        if (isAdd) {
-          changeTambahan();
-        }
-      }
-      return value;
-    });
+    final daily = DailyRequestModel(
+      task: taskText.text,
+      date: selectedDate ?? DateTime.now(),
+      isPlan: !tambahan.value,
+      tag: selectedPerson,
+      send: selectedSendPerson,
+      tipe: isResult.value ? 'RESULT' : 'NON',
+      id: this.daily?.id,
+      time: tambahan.value ? null : selectedTime,
+      valuePlan: int.tryParse(valuePlan.text),
+    );
 
-    return result;
+    final response = await DailyService.submit(dailyRequestModel: daily);
+
+    if (!response.value!) {
+      return ApiReturnValue(value: false, message: response.message);
+    }
+
+    tambahan.value = false;
+    taskText.clear();
+    selectedDate = selectedDate ?? DateTime.now();
+    selectedTime = selectedTime;
+    isResult.value = false;
+    valuePlan.clear();
+    selectedPerson.clear();
+    selectedSendPerson.clear();
+    tempUsers = users;
+
+    update(['tag', 'pic']);
+
+    return ApiReturnValue(value: true, message: response.message);
   }
 
   Future<ApiReturnValue<List<UserModel>>> tag() async {
@@ -93,14 +111,31 @@ class DailyAddTaskController extends GetxController {
     taskText = daily == null
         ? TextEditingController()
         : TextEditingController(text: daily!.task);
-    selectedTime =
-        daily == null ? DateFormat.jm().format(DateTime.now()) : daily!.time!;
+
+    //INISIALISASI RESULT VALUE_PLAN
+    valuePlan = daily == null
+        ? TextEditingController()
+        : TextEditingController(text: daily!.valuePlan.toString());
+
+    selectedTime = daily == null
+        ? DateFormat.jm().format(DateTime.now())
+        : (daily!.time == null
+            ? DateFormat.jm().format(DateTime.now())
+            : daily!.time!);
     selectedDate = daily == null ? getDate(DateTime.now()) : daily!.date;
+
+    //INISIALISASI IS RESULT
+    isResult = daily == null
+        ? false.obs
+        : daily!.tipe == 'RESULT'
+            ? true.obs
+            : false.obs;
 
     await tag().then((value) {
       users = value.value!;
+      tempUsers = users;
       isLoading.toggle();
-      update(['tag']);
+      update(['tag', 'pic']);
     });
 
     getDaily(selectedDate!);
@@ -108,7 +143,8 @@ class DailyAddTaskController extends GetxController {
   }
 
   @override
-  void onClose() {
+  void onClose() async {
+    await homePageController.getUser();
     taskText.dispose();
     super.onClose();
   }

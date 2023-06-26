@@ -1,7 +1,7 @@
 name: todolist_complete
-description: A new Flutter project.
-publish_to: 'none'
-version: 1.0.0+1
+description: Do and Done
+publish_to: "none"
+version: 2.0.0+2
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
@@ -10,7 +10,7 @@ dependencies:
   connectivity: ^3.0.6
   cupertino_icons: ^1.0.2
   equatable: ^2.0.3
-  extended_masked_text: ^2.3.1
+  flutter_masked_text2: ^0.9.1
   fl_chart: ^0.41.0
   flutter:
     sdk: flutter

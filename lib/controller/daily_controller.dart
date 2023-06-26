@@ -5,6 +5,7 @@ class DailyController extends GetxController {
   DateTime selectedDate = DateTime.now();
   DateTime now = DateTime.now();
   RxBool loading = true.obs;
+  late MoneyMaskedTextController valueResult;
 
   void changeDate(DateTime val) {
     update(['daily']);
@@ -20,9 +21,14 @@ class DailyController extends GetxController {
     update(['daily']);
   }
 
-  Future<ApiReturnValue<bool>> changeStatus(int id) async {
+  Future<ApiReturnValue<bool>> changeStatus({
+    required int id,
+    int? value,
+  }) async {
+    //ini variabel home buat apa? di weekly controller ga ada home
     HomePageController home = Get.find<HomePageController>();
-    ApiReturnValue<bool> result = await DailyService.change(id: id);
+    ApiReturnValue<bool> result =
+        await DailyService.change(id: id, value: value);
     getDaily(selectedDate, isloading: true);
     home.getUserAndDaily();
     update(['daily']);
@@ -38,7 +44,11 @@ class DailyController extends GetxController {
   }
 
   Color getColor(DailyModel daily) {
-    return daily.status! ? Colors.green[400]! : Colors.green[100]!;
+    if (daily.tipe == "NON") {
+      return daily.status! ? Colors.green[400]! : Colors.green[100]!;
+    } else {
+      return daily.statusResult! ? Colors.green[400]! : Colors.green[100]!;
+    }
   }
 
   getDate(DateTime d) => DateTime(d.year, d.month, d.day);
@@ -47,8 +57,17 @@ class DailyController extends GetxController {
 
   getNextWeek(DateTime d) => getDate(getMonday(d).add(const Duration(days: 7)));
 
+  String formatNumber(String s) => NumberFormat.decimalPattern('ID').format(
+        int.parse(s),
+      );
+
   @override
   void onInit() {
+    valueResult = MoneyMaskedTextController(
+      precision: 0,
+      thousandSeparator: '.',
+      decimalSeparator: '',
+    );
     getDaily(selectedDate);
     super.onInit();
   }

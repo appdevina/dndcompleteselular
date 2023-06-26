@@ -1,195 +1,77 @@
 part of 'services.dart';
 
 class MonthlyServices {
-  static Future<ApiReturnValue<List<MonthlyModel>>> getMonthly(DateTime month,
-      {http.Client? client}) async {
-    try {
-      client ??= http.Client();
-      String url =
-          baseUrl + 'monthly/?date=${DateFormat("y-MM-dd").format(month)}';
-      Uri uri = Uri.parse(url);
-      SharedPreferences pref = await SharedPreferences.getInstance();
+  static Future<ApiReturnValue<List<MonthlyModel>>> getMonthly(
+    DateTime month,
+  ) async {
+    final response = await ApiService().get(
+      '${ApiUrl.baseUrl}/monthly/?date=${DateFormat("y-MM-dd").format(month)}',
+      headers: await ApiUrl.headerWithToken(),
+    );
 
-      var response = await client.get(
-        uri,
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Authorization': 'Bearer ${pref.getString('token')}',
-        },
-      );
-
-      if (response.statusCode != 200) {
-        var data = jsonDecode(response.body);
-        String message = data['meta']['message'];
-        return ApiReturnValue(value: [], message: message);
-      }
-
-      var data = jsonDecode(response.body);
-      String message = data['meta']['message'];
-
-      List<MonthlyModel> value = (data['data'] as Iterable)
-          .map((e) => MonthlyModel.fromJson(e))
-          .toList();
-
-      return ApiReturnValue(value: value, message: message);
-    } catch (e) {
-      return ApiReturnValue(value: [], message: e.toString());
+    if (response.value == null) {
+      return ApiReturnValue(value: null, message: response.message);
     }
+
+    List<MonthlyModel> value = (response.value['data'] as Iterable)
+        .map((e) => MonthlyModel.fromJson(e))
+        .toList();
+
+    return ApiReturnValue(value: value, message: response.message);
   }
 
   static Future<ApiReturnValue<bool>> changeStatus({
     required int id,
     int? value,
-    http.Client? client,
   }) async {
-    try {
-      client ??= http.Client();
-      String url = baseUrl + 'monthly/change';
-      Uri uri = Uri.parse(url);
-      Map<String, dynamic> body = {
-        'id': id,
-        'value': value,
-      };
+    final response = await ApiService().post('${ApiUrl.baseUrl}/monthly/change',
+        headers: await ApiUrl.headerWithToken(),
+        body: {
+          'id': id,
+          'value': value,
+        });
 
-      SharedPreferences pref = await SharedPreferences.getInstance();
-
-      var response = await client.post(
-        uri,
-        body: jsonEncode(body),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': "Bearer ${pref.getString('token')}",
-        },
-      );
-
-      if (response.statusCode != 200) {
-        var data = jsonDecode(response.body);
-        String message = data['meta']['message'];
-        return ApiReturnValue(value: false, message: message);
-      }
-      var data = jsonDecode(response.body);
-      String message = data['meta']['message'];
-      return ApiReturnValue(value: true, message: message);
-    } catch (e) {
-      return ApiReturnValue(value: false, message: e.toString());
-    }
+    return ApiReturnValue(
+        value: response.value != null, message: response.message);
   }
 
   static Future<ApiReturnValue<bool>> submit({
-    required bool isUpdate,
-    required bool extraTask,
-    required String task,
-    required DateTime date,
-    required bool isResult,
-    String? resultValue,
-    int? id,
-    http.Client? client,
+    required MonthlyRequestModel monthlyRequestModel,
   }) async {
-    try {
-      client ??= http.Client();
+    final response = await ApiService().post(
+      '${ApiUrl.baseUrl}/monthly/${monthlyRequestModel.id == null ? "" : "edit/${monthlyRequestModel.id}"}',
+      headers: await ApiUrl.headerWithToken(),
+      body: monthlyRequestModel.toJson(),
+    );
 
-      String url = baseUrl + (isUpdate ? 'monthly/edit/$id' : 'monthly');
-      Uri uri = Uri.parse(url);
-      Map<String, dynamic> body = {
-        'is_add': extraTask,
-        'task': task,
-        'date': DateFormat('y-MM-dd').format(date),
-        'tipe': isResult ? 'RESULT' : 'NON',
-        'value_plan': isResult ? resultValue : null,
-        'status_non': isResult ? null : false,
-        'status_result': isResult ? false : null,
-        'value_actual': isResult ? 0 : null,
-      };
-      SharedPreferences pref = await SharedPreferences.getInstance();
-
-      var response = await client.post(
-        uri,
-        body: jsonEncode(body),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ${pref.getString('token')}',
-        },
-      );
-
-      if (response.statusCode != 200) {
-        var data = jsonDecode(response.body);
-        String message = data['meta']['message'];
-        return ApiReturnValue(value: false, message: message);
-      }
-      var data = jsonDecode(response.body);
-      String message = data['meta']['message'];
-      return ApiReturnValue(value: true, message: message);
-    } catch (e) {
-      return ApiReturnValue(value: false, message: e.toString());
-    }
+    return ApiReturnValue(
+        value: response.value != null, message: response.message);
   }
 
-  static Future<ApiReturnValue<bool>> delete(
-      {required int id, http.Client? client}) async {
-    try {
-      client ??= http.Client();
-      String url = baseUrl + 'monthly/delete/$id';
-      Uri uri = Uri.parse(url);
-      SharedPreferences pref = await SharedPreferences.getInstance();
+  static Future<ApiReturnValue<bool>> delete({
+    required int id,
+  }) async {
+    final response = await ApiService().get(
+      '${ApiUrl.baseUrl}/monthly/delete/$id',
+      headers: await ApiUrl.headerWithToken(),
+    );
 
-      var response = await client.get(
-        uri,
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Authorization': 'Bearer ${pref.getString('token')}',
-        },
-      );
-      if (response.statusCode != 200) {
-        var data = jsonDecode(response.body);
-        String message = data['meta']['message'];
-        return ApiReturnValue(value: false, message: message);
-      }
-
-      var data = jsonDecode(response.body);
-      String message = data['meta']['message'];
-
-      return ApiReturnValue(value: true, message: message);
-    } catch (e) {
-      return ApiReturnValue(value: false, message: e.toString());
-    }
+    return ApiReturnValue(
+        value: response.value != null, message: response.message);
   }
 
   static Future<ApiReturnValue<bool>> copy({
     required DateTime from,
     required DateTime to,
-    http.Client? client,
   }) async {
-    try {
-      client ??= http.Client();
-      String url = baseUrl + 'monthly/copy';
-      Uri uri = Uri.parse(url);
-      SharedPreferences pref = await SharedPreferences.getInstance();
-
-      var response = await client.post(
-        uri,
-        body: jsonEncode({
+    final response = await ApiService().post('${ApiUrl.baseUrl}/monthly/copy',
+        headers: await ApiUrl.headerWithToken(),
+        body: {
           'frommonth': DateFormat('y-MM-dd').format(from),
           'tomonth': DateFormat('y-MM-dd').format(to),
-        }),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ${pref.getString('token')}',
-        },
-      );
-      if (response.statusCode != 200) {
-        var data = jsonDecode(response.body);
-        String message = data['meta']['message'];
-        return ApiReturnValue(value: false, message: message);
-      }
+        });
 
-      var data = jsonDecode(response.body);
-      String message = data['meta']['message'];
-
-      return ApiReturnValue(value: true, message: message);
-    } catch (e) {
-      return ApiReturnValue(value: false, message: e.toString());
-    }
+    return ApiReturnValue(
+        value: response.value != null, message: response.message);
   }
 }

@@ -7,6 +7,7 @@ class UserModel extends Equatable {
   final AreaModel? area;
   final DivisiModel? divisi;
   final bool? daily;
+  final bool? dailyResult;
   final bool? weeklyResult;
   final bool? weeklyNon;
   final bool? monthlyResult;
@@ -20,6 +21,7 @@ class UserModel extends Equatable {
     this.area,
     this.divisi,
     this.daily,
+    this.dailyResult,
     this.weeklyResult,
     this.weeklyNon,
     this.monthlyResult,
@@ -35,6 +37,7 @@ class UserModel extends Equatable {
         area,
         divisi,
         daily,
+        dailyResult,
         weeklyResult,
         weeklyNon,
         monthlyResult,
@@ -49,6 +52,7 @@ class UserModel extends Equatable {
         area: AreaModel.fromJson(json['area']),
         divisi: DivisiModel.fromJson(json['divisi']),
         daily: json['d'] == 0 ? false : true,
+        dailyResult: json['dr'] == 0 ? false : true,
         weeklyResult: json['wr'] == 0 ? false : true,
         weeklyNon: json['wn'] == 0 ? false : true,
         monthlyResult: json['mr'] == 0 ? false : true,

@@ -9,11 +9,13 @@ class CardWeekly extends GetView<WeeklyController> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => Get.to(
-        () => AddTaskWeekly(),
-        arguments: weekly,
-        transition: Transition.cupertino,
-      ),
+      onTap: () => weekly.tag != null || weekly.send != null
+          ? snackbar(context, false, "Weekly tag/send tidak bisa di rubah")
+          : Get.to(
+              () => AddTaskWeekly(),
+              arguments: weekly,
+              transition: Transition.cupertino,
+            ),
       child: Card(
         shape: RoundedRectangleBorder(
           side: BorderSide(width: 0.2, color: greyColor),
@@ -44,7 +46,7 @@ class CardWeekly extends GetView<WeeklyController> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "WEEKLY ${weekly.type! == 'NON' ? "NON RESULT" : "RESULT"} ${!weekly.isAdd! ? '' : '(Extra Task)'}",
+                        "${weekly.isAdd == true ? 'Extra Task' : 'Weekly'} ${weekly.tag != null ? ' - TAG BY : ${weekly.tag!.namaLengkap}' : (weekly.send != null ? ' - SEND BY : ${weekly.send!.namaLengkap}' : '')} ${weekly.type! == 'NON' ? ' - NON' : ' - RESULT'} ",
                         style: blackFontStyle2.copyWith(
                             wordSpacing: 1,
                             fontSize: 10,

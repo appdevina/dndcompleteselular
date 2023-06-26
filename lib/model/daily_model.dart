@@ -10,6 +10,12 @@ class DailyModel extends Equatable {
   final bool? isPlan;
   final bool? isUpdate;
   final UserModel? tag;
+  final UserModel? send;
+  final int? valuePlan;
+  final int? valueActual;
+  final double? valueResult;
+  final bool? statusResult;
+  final String? tipe;
 
   const DailyModel({
     this.id,
@@ -21,6 +27,12 @@ class DailyModel extends Equatable {
     this.isPlan,
     this.isUpdate,
     this.tag,
+    this.send,
+    this.valuePlan,
+    this.valueActual,
+    this.valueResult,
+    this.statusResult,
+    this.tipe,
   });
 
   DailyModel copyWith({
@@ -33,6 +45,12 @@ class DailyModel extends Equatable {
     bool? isPlan,
     bool? isUpdate,
     UserModel? tag,
+    UserModel? send,
+    int? valuePlan,
+    int? valueActual,
+    double? valueResult,
+    bool? statusResult,
+    String? tipe,
   }) =>
       DailyModel(
         id: id ?? this.id,
@@ -44,6 +62,12 @@ class DailyModel extends Equatable {
         isPlan: isPlan ?? this.isPlan,
         isUpdate: isUpdate ?? this.isUpdate,
         tag: tag ?? this.tag,
+        send: send ?? this.send,
+        valuePlan: valuePlan ?? this.valuePlan,
+        valueActual: valueActual ?? this.valueActual,
+        valueResult: valueResult ?? this.valueResult,
+        statusResult: statusResult ?? this.statusResult,
+        tipe: tipe ?? this.tipe,
       );
 
   @override
@@ -57,17 +81,25 @@ class DailyModel extends Equatable {
         isPlan,
         isUpdate,
         tag,
+        send,
+        valuePlan,
+        valueActual,
+        valueResult,
+        statusResult,
+        tipe,
       ];
 
   Map<String, dynamic> toJson() => {
         'task': task,
         'date': DateFormat('y-MM-dd').format(date!),
         'time': time,
-        'status': status,
-        'ontime': ontime,
         'isplan': isPlan,
         'isupdate': isUpdate,
-        'tag_id': tag
+        'tag_id': tag,
+        'value_plan': valuePlan,
+        'value_actual': valueActual,
+        'tipe': tipe,
+        'add_id': send,
       };
 
   factory DailyModel.fromJson(Map<String, dynamic> json) => DailyModel(
@@ -84,5 +116,15 @@ class DailyModel extends Equatable {
         isPlan: json['isplan'] == 0 ? false : true,
         isUpdate: json['isupdate'] == 0 ? false : true,
         tag: json['tag'] == null ? null : UserModel.fromJson(json['tag']),
+        send: json['add'] == null ? null : UserModel.fromJson(json['add']),
+        valuePlan: json['value_plan'],
+        valueActual: json['value_actual'],
+        valueResult: json['value'] == 0
+            ? 0.0
+            : json['value'] == 1
+                ? 1.0
+                : json['value'],
+        statusResult: json['status_result'] == 1 ? true : false,
+        tipe: json['tipe'],
       );
 }

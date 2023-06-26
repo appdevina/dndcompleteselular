@@ -115,12 +115,18 @@ class ResultController extends GetxController {
         for (List<DailyModel> dailyList in dailys) {
           totalPlanTaskDaily +=
               dailyList.where((e) => e.isPlan!).toList().length;
-          totalActualDaily +=
-              dailyList.where((e) => e.isPlan! && e.status!).toList().length;
-          totalExtraTaskDaily +=
-              dailyList.where((e) => !e.isPlan! && e.status!).toList().length;
-          totalOpenDaily +=
-              dailyList.where((e) => !e.status! && e.isPlan!).toList().length;
+          totalActualDaily += dailyList
+              .where((e) => e.isPlan! && e.valueResult != 0.0)
+              .toList()
+              .length;
+          totalExtraTaskDaily += dailyList
+              .where((e) => !e.isPlan! && e.valueResult != 0.0)
+              .toList()
+              .length;
+          totalOpenDaily += dailyList
+              .where((e) => e.valueResult == 0.0 && e.isPlan!)
+              .toList()
+              .length;
           var listPoint = dailyList.map((e) => e.ontime).toList();
           for (var point in listPoint) {
             totalPointOnTime += point!;

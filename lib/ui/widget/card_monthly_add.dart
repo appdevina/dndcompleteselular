@@ -32,43 +32,40 @@ class CardMonthlyAdd extends GetView<MonthlyAddTaskController> {
               ),
             ),
             Expanded(
-              child: Container(
-                padding: const EdgeInsets.only(right: 10),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "MONTHLY ${monthly.type! == 'NON' ? "NON RESULT" : "RESULT"} ${!monthly.isAdd! ? '' : '(Extra Task)'}",
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "MONTHLY ${monthly.type! == 'NON' ? "NON RESULT" : "RESULT"} ${!monthly.isAdd! ? '' : '(Extra Task)'}",
+                    style: blackFontStyle2.copyWith(
+                        wordSpacing: 1,
+                        fontSize: 10,
+                        color: greyColor,
+                        fontWeight: FontWeight.w600),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  Tooltip(
+                    message: monthly.task!.toUpperCase(),
+                    showDuration: const Duration(milliseconds: 500),
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                    verticalOffset: -80,
+                    textStyle: blackFontStyle3.copyWith(color: white),
+                    decoration: BoxDecoration(
+                        color: "22577E".toColor(),
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: white)),
+                    child: Text(
+                      "${monthly.task!.toUpperCase()} ${monthly.type != "NON" ? controller.formatNumber(monthly.valPlan.toString()) : ""}",
+                      maxLines: 1,
                       style: blackFontStyle2.copyWith(
-                          wordSpacing: 1,
-                          fontSize: 10,
-                          color: greyColor,
-                          fontWeight: FontWeight.w600),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    Tooltip(
-                      message: monthly.task!.toUpperCase(),
-                      showDuration: const Duration(milliseconds: 500),
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 5, horizontal: 10),
-                      verticalOffset: -80,
-                      textStyle: blackFontStyle3.copyWith(color: white),
-                      decoration: BoxDecoration(
-                          color: "22577E".toColor(),
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(color: white)),
-                      child: Text(
-                        "${monthly.task!.toUpperCase()} ${monthly.type != "NON" ? controller.formatNumber(monthly.valPlan!.toString()) : ""}",
-                        maxLines: 1,
-                        style: blackFontStyle2.copyWith(
-                          wordSpacing: 1,
-                          fontSize: 12,
-                          overflow: TextOverflow.ellipsis,
-                        ),
+                        wordSpacing: 1,
+                        fontSize: 12,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ],

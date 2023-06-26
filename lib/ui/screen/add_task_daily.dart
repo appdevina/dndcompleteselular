@@ -8,10 +8,13 @@ class AddTaskDaily extends StatelessWidget {
             daily: Get.arguments,
           ),
         );
+  final homePageController = Get.find<HomePageController>();
   final DateTime? date;
+  final bool isToUser;
   AddTaskDaily({
     Key? key,
     this.date,
+    this.isToUser = false,
   }) : super(key: key);
 
   @override
@@ -84,85 +87,156 @@ class AddTaskDaily extends StatelessWidget {
               ),
             ],
           ),
+          //COPY INPUT RESULT DR ADD WEEKLY
+          controller.daily == null || controller.daily!.tipe == 'RESULT'
+              ? Container(
+                  height: homePageController.user.dailyResult! ? 110 : 0,
+                  alignment: Alignment.center,
+                  child: homePageController.user.dailyResult!
+                      ? Row(
+                          children: [
+                            Obx(
+                              () => Checkbox(
+                                  fillColor: MaterialStateProperty.all(white),
+                                  checkColor: Colors.green,
+                                  value: controller.isResult.value,
+                                  onChanged: (bool? val) {
+                                    // if (controller.daily == null) {
+                                    //   controller.isResult.toggle();
+                                    // }
+                                    controller.dailyResult();
+                                  }),
+                            ),
+                            Text(
+                              "Result ?",
+                              style: blackFontStyle3.copyWith(color: white),
+                            ),
+                            const SizedBox(
+                              width: 10,
+                            ),
+                            Obx(
+                              () => controller.isResult.value
+                                  ? Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          MyInputField(
+                                              typeInput: TextInputType.number,
+                                              controllerText:
+                                                  controller.valuePlan,
+                                              side: true,
+                                              title: "",
+                                              hint: 'Input Value',
+                                              isPassword: false),
+                                          Container(
+                                            margin:
+                                                const EdgeInsets.only(left: 10),
+                                            child: Text(
+                                              "nominal",
+                                              style: blackFontStyle3.copyWith(
+                                                  color: white),
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                    )
+                                  : Container(),
+                            ),
+                            const SizedBox(
+                              width: 10,
+                            ),
+                          ],
+                        )
+                      : const SizedBox())
+              : const SizedBox(),
           controller.daily == null && date != null
               ? const SizedBox()
-              : GetBuilder<DailyAddTaskController>(
-                  id: 'tag',
-                  builder: (_) => controller.isLoading.value
-                      ? const SizedBox()
-                      : controller.daily != null
+              : isToUser
+                  ? const SizedBox()
+                  : GetBuilder<DailyAddTaskController>(
+                      id: 'tag',
+                      builder: (_) => controller.isLoading.value
                           ? const SizedBox()
-                          : _tag(),
-                ),
+                          : controller.daily != null
+                              ? const SizedBox()
+                              : _tag(),
+                    ),
+          if (isToUser)
+            GetBuilder<DailyAddTaskController>(
+              id: 'pic',
+              builder: (_) => controller.isLoading.value
+                  ? const SizedBox()
+                  : controller.daily != null
+                      ? const SizedBox()
+                      : _pic(),
+            ),
           Container(
             padding: const EdgeInsets.only(right: 10),
             margin: const EdgeInsets.only(top: defaultMargin),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                Obx(() => MyButton(
-                      height: 50,
-                      width: 100,
-                      label: controller.daily != null ? "Update" : "+ Add",
-                      onTap: controller.button.value
-                          ? () async {
-                              FocusScope.of(context).requestFocus(FocusNode());
-                              if (date != null) {
-                                final con = Get.find<RequestTaskController>();
-                                DailyModel daily = DailyModel(
-                                  task: controller.taskText.text,
-                                  date: date,
-                                  time: controller.selectedTime,
-                                  status: false,
-                                  ontime: 0,
-                                  isPlan: true,
-                                  isUpdate: true,
-                                );
-                                con
-                                    .addTaskChange(dailyModel: daily)
-                                    .then((value) {
-                                  snackbar(
-                                      context, value, 'Berhasil menambahkan');
-                                  Get.back();
-                                });
-                              } else {
+                Obx(
+                  () => MyButton(
+                    height: 50,
+                    width: 100,
+                    label: controller.daily != null ? "Update" : "+ Add",
+                    onTap: controller.button.value
+                        ? () async {
+                            FocusScope.of(context).requestFocus(FocusNode());
+                            if (date != null) {
+                              final con = Get.find<RequestTaskController>();
+                              DailyModel daily = DailyModel(
+                                task: controller.taskText.text,
+                                date: date,
+                                time: controller.selectedTime,
+                                status: false,
+                                ontime: 0,
+                                isPlan: true,
+                                isUpdate: true,
+                                tipe: controller.isResult.value
+                                    ? 'RESULT'
+                                    : 'NON',
+                                valuePlan: int.tryParse(
+                                  controller.valuePlan.text,
+                                ),
+                              );
+                              con
+                                  .addTaskChange(dailyModel: daily)
+                                  .then((value) {
+                                snackbar(
+                                    context, value, 'Berhasil menambahkan');
+                                Get.back();
+                              });
+                            } else {
+                              controller.button.toggle();
+                              await controller.submit().then((_) {
                                 controller.button.toggle();
-                                await controller
-                                    .submit(
-                                  task: controller.taskText.text,
-                                  isAdd: controller.tambahan.value,
-                                  date: controller.selectedDate!,
-                                  time: controller.selectedTime,
-                                  id: controller.daily == null
-                                      ? null
-                                      : controller.daily!.id,
-                                  tags: controller.selectedPerson,
-                                )
-                                    .then((_) {
-                                  controller.button.toggle();
-                                  if (!_.value!) {
-                                    snackbar(context, _.value!, _.message!);
-                                  } else {
-                                    if (controller.daily != null) {
-                                      Get.back();
-                                    }
-                                    snackbar(context, _.value!, _.message!);
+                                if (!_.value!) {
+                                  snackbar(context, _.value!, _.message!);
+                                } else {
+                                  if (controller.daily != null) {
+                                    Get.back();
                                   }
-                                  DailyController daily =
-                                      Get.find<DailyController>();
-                                  if (controller.selectedDate ==
-                                          daily.selectedDate ||
-                                      controller.daily != null) {
-                                    daily.getDaily(daily.selectedDate,
-                                        isloading: true);
-                                  }
-                                  return _;
-                                });
-                                controller.getDaily(controller.selectedDate!);
-                              }
+                                  snackbar(context, _.value!, _.message!);
+                                }
+                                DailyController daily =
+                                    Get.find<DailyController>();
+                                if (controller.selectedDate ==
+                                        daily.selectedDate ||
+                                    controller.daily != null) {
+                                  daily.getDaily(daily.selectedDate,
+                                      isloading: true);
+                                }
+                                return _;
+                              });
+                              controller.getDaily(controller.selectedDate!);
                             }
-                          : () {},
-                    ))
+                          }
+                        : () {},
+                  ),
+                ),
               ],
             ),
           ),
@@ -200,7 +274,7 @@ class AddTaskDaily extends StatelessWidget {
       margin: const EdgeInsets.symmetric(vertical: 10),
       child: Column(
         children: [
-          MultiSelectDialogField(
+          MultiSelectDialogField<UserModel>(
             buttonIcon: const Icon(
               MdiIcons.arrowLeftBottom,
               color: white,
@@ -212,9 +286,11 @@ class AddTaskDaily extends StatelessWidget {
               style: blackFontStyle3.copyWith(color: white),
             ),
             title: Text("Nama", style: blackFontStyle3),
-            items: controller.users
-                .map((e) => MultiSelectItem(
-                    e.id!, "${e.namaLengkap!} - ${e.divisi!.nama}"))
+            items: controller.tempUsers
+                .where(
+                    (e) => e.divisi!.id == homePageController.user.divisi!.id)
+                .map((e) => MultiSelectItem<UserModel>(
+                    e, "${e.namaLengkap!} - ${e.divisi!.nama}"))
                 .toList(),
             onConfirm: (values) {
               controller.selectedPerson = values;
@@ -230,6 +306,57 @@ class AddTaskDaily extends StatelessWidget {
             ),
           ),
           controller.selectedPerson.isEmpty
+              ? Container(
+                  padding: const EdgeInsets.all(10),
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    "None selected tag",
+                    style: blackFontStyle3.copyWith(color: white),
+                  ))
+              : Container(),
+        ],
+      ),
+    );
+  }
+
+  Container _pic() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10),
+      margin: const EdgeInsets.symmetric(vertical: 10),
+      child: Column(
+        children: [
+          MultiSelectDialogField<UserModel>(
+            buttonIcon: const Icon(
+              MdiIcons.arrowLeftBottom,
+              color: white,
+            ),
+            listType: MultiSelectListType.CHIP,
+            searchable: true,
+            buttonText: Text(
+              "Send Daily To :",
+              style: blackFontStyle3.copyWith(color: white),
+            ),
+            title: Text("Nama", style: blackFontStyle3),
+            items: controller.tempUsers
+                .where(
+                    (e) => e.divisi!.id == homePageController.user.divisi!.id)
+                .map((e) => MultiSelectItem<UserModel>(
+                    e, "${e.namaLengkap!} - ${e.divisi!.nama}"))
+                .toList(),
+            onConfirm: (values) {
+              controller.selectedSendPerson = values;
+              controller.update(['pic']);
+            },
+            chipDisplay: MultiSelectChipDisplay(
+              chipColor: white,
+              textStyle: blackFontStyle3.copyWith(color: "22577E".toColor()),
+              onTap: (value) {
+                controller.selectedSendPerson.remove(value);
+                controller.update(['pic']);
+              },
+            ),
+          ),
+          controller.selectedSendPerson.isEmpty
               ? Container(
                   padding: const EdgeInsets.all(10),
                   alignment: Alignment.centerLeft,

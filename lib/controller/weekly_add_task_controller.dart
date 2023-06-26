@@ -13,6 +13,12 @@ class WeeklyAddTaskController extends GetxController {
   int? userId;
   List<WeeklyModel> weeklys = [];
   RxBool button = true.obs;
+  final homePageController = Get.find<HomePageController>();
+  RxBool isLoading = true.obs;
+  late List<UserModel> users;
+  List<UserModel> tempUsers = [];
+  List<UserModel> selectedPerson = [];
+  List<UserModel> selectedSendPerson = [];
 
   void changeWeek(int val) {
     selectedWeek = val;
@@ -30,7 +36,7 @@ class WeeklyAddTaskController extends GetxController {
 
   void changeTambahan() {
     tambahan.toggle();
-    week.text = minWeek.toString();
+    week.text = numOfWeeks(DateTime.now()).toString();
     update(['week']);
   }
 
@@ -81,44 +87,44 @@ class WeeklyAddTaskController extends GetxController {
     }
   }
 
-  Future<ApiReturnValue<bool>> submit({
-    required bool isUpdate,
-    required bool extraTask,
-    required String taskVal,
-    required int week,
-    required int year,
-    required bool isResultVal,
-    String? resultValueText,
-    int? id,
-  }) async {
-    if (taskVal.isEmpty || taskVal.length < 3) {
+  Future<ApiReturnValue<bool>> submit() async {
+    if (task.text.isEmpty || task.text.length < 3) {
       return ApiReturnValue(
           value: false, message: 'Kolom task harus di isi minimal 3 karakter');
     }
-    if ((isResultVal && resultValueText == '0') ||
-        (isResultVal && resultValueText == null)) {
+    if ((isResult.value && resultValue.text == '0') ||
+        (isResult.value && resultValue.text.isEmpty)) {
       return ApiReturnValue(
           value: false, message: 'Jika result isi kolom nominal result');
     }
-    ApiReturnValue<bool> result = await WeeklyService.submit(
-      isUpdate: isUpdate,
-      extraTask: extraTask,
-      task: taskVal,
-      week: week,
-      year: year,
-      isResult: isResultVal,
-      resultValue: resultValueText,
-      id: id,
+    final weekly = WeeklyRequestModel(
+      task: task.text,
+      week: int.tryParse(week.text),
+      year: selectedYear,
+      type: isResult.value ? 'RESULT' : 'NON',
+      valPlan: int.tryParse(resultValue.text.replaceAll('.', '')),
+      isAdd: tambahan.value,
+      tag: selectedPerson,
+      send: selectedSendPerson,
+      isUpdate: this.weekly == null ? false : true,
+      id: this.weekly?.id,
     );
-    if (result.value!) {
-      task.clear();
-      resultValue.clear();
-      tambahan.value = false;
-      isResult.value = false;
-      update();
+
+    final response = await WeeklyService.submit(weeklyRequestModel: weekly);
+    if (!response.value!) {
+      return ApiReturnValue(value: false, message: response.message);
     }
 
-    return result;
+    task.clear();
+    resultValue.text = '0';
+    tambahan.value = false;
+    isResult.value = false;
+    selectedPerson.clear();
+    selectedSendPerson.clear();
+    tempUsers = users.where((element) => element.weeklyNon!).toList();
+    update(['tag', 'pic']);
+
+    return ApiReturnValue(value: true, message: response.message);
   }
 
   int numOfWeeks(DateTime now) {
@@ -133,20 +139,40 @@ class WeeklyAddTaskController extends GetxController {
     update(['weekly']);
   }
 
+  Future<ApiReturnValue<List<UserModel>>> tag() async {
+    ApiReturnValue<List<UserModel>> result = await UserServices.tag();
+
+    return result;
+  }
+
+  void weeklyResult() {
+    isResult.toggle();
+    if (isResult.value) {
+      tempUsers = users.where((element) => element.weeklyResult!).toList();
+    } else {
+      tempUsers = users.where((element) => element.weeklyNon!).toList();
+    }
+    update(['tag', 'pic']);
+  }
+
   @override
-  void onInit() {
+  void onInit() async {
     task = weekly == null
         ? TextEditingController()
         : TextEditingController(text: weekly!.task);
-    resultValue = MoneyMaskedTextController(
-        initialValue: weekly == null
-            ? 0
-            : weekly!.valPlan == null
-                ? 0
-                : weekly!.valPlan!.toDouble(),
-        precision: 0,
-        thousandSeparator: '.',
-        decimalSeparator: '');
+    try {
+      resultValue = MoneyMaskedTextController(
+          initialValue: weekly == null
+              ? 0
+              : weekly!.valPlan == null
+                  ? 0
+                  : weekly!.valPlan!.toDouble(),
+          precision: 0,
+          thousandSeparator: '.',
+          decimalSeparator: '');
+    } catch (e) {
+      print(e);
+    }
     selectedWeek = weekly == null ? numOfWeeks(DateTime.now()) : weekly!.week!;
     selectedYear = weekly == null ? DateTime.now().year : weekly!.year!;
     week = TextEditingController(text: selectedWeek.toString());
@@ -158,6 +184,13 @@ class WeeklyAddTaskController extends GetxController {
         : weekly!.type == 'RESULT'
             ? true.obs
             : false.obs;
+    await tag().then((value) {
+      users = value.value!;
+      tempUsers = users.where((element) => element.weeklyNon!).toList();
+      isLoading.toggle();
+      update(['tag', 'pic']);
+    });
+
     getWeekObjective(selectedYear, selectedWeek);
     super.onInit();
   }

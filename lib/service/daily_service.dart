@@ -1,216 +1,101 @@
 part of 'services.dart';
 
 class DailyService {
-  static Future<ApiReturnValue<List<DailyModel>>> getDaily(String date,
-      {http.Client? client}) async {
-    try {
-      client ??= http.Client();
+  static Future<ApiReturnValue<List<DailyModel>>> getDaily(
+    String date,
+  ) async {
+    final response = await ApiService().get(
+      '${ApiUrl.baseUrl}/daily?date=$date',
+      headers: await ApiUrl.headerWithToken(),
+    );
 
-      String uri = baseUrl + 'daily?date=$date';
-      Uri url = Uri.parse(uri);
-      SharedPreferences pref = await SharedPreferences.getInstance();
-
-      var response = await client.get(url, headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'Authorization': 'Bearer ${pref.getString('token')}',
-      });
-
-      if (response.statusCode != 200) {
-        var data = jsonDecode(response.body);
-        String message = data['meta']['message'];
-        return ApiReturnValue(value: [], message: message);
-      }
-
-      var data = jsonDecode(response.body);
-
-      List<DailyModel> value = (data['data'] as Iterable)
-          .map((e) => DailyModel.fromJson(e))
-          .toList();
-
-      return ApiReturnValue(value: value, message: 'berhasil');
-    } catch (e) {
-      return ApiReturnValue(value: [], message: 'ada masalah pada server');
+    if (response.value == null) {
+      return ApiReturnValue(value: null, message: response.message);
     }
+    List<DailyModel> value = (response.value['data'] as Iterable)
+        .map((e) => DailyModel.fromJson(e))
+        .toList();
+
+    return ApiReturnValue(value: value, message: 'berhasil');
   }
 
   static Future<ApiReturnValue<bool>> submit({
-    required String task,
-    required DateTime date,
-    required bool isAdd,
-    String? time,
-    int? id,
-    required List<Object?> tag,
-    http.Client? client,
+    required DailyRequestModel dailyRequestModel,
   }) async {
-    try {
-      client ??= http.Client();
-      String url = baseUrl + 'daily${id == null ? "" : "/edit/$id"}';
-      Uri uri = Uri.parse(url);
-      List tagged = [];
-      if (tag.isNotEmpty) {
-        tagged = tag.map((e) => e).toList();
-      }
+    final response = await ApiService().post(
+      '${ApiUrl.baseUrl}/daily/${dailyRequestModel.id == null ? "" : "edit/${dailyRequestModel.id}"}',
+      headers: await ApiUrl.headerWithToken(),
+      body: dailyRequestModel.toJson(),
+    );
 
-      Map<String, dynamic> body = {
-        'task': task,
-        'time': isAdd ? null : time,
-        'date': DateFormat('y-MM-dd').format(date),
-        'isplan': !isAdd,
-        'tag': tagged,
-      };
-
-      SharedPreferences pref = await SharedPreferences.getInstance();
-
-      var response = await client.post(
-        uri,
-        body: jsonEncode(body),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ${pref.getString('token')}',
-        },
-      );
-
-      if (response.statusCode != 200) {
-        var data = jsonDecode(response.body);
-        String message = data['meta']['message'];
-        return ApiReturnValue(value: false, message: message);
-      }
-      var data = jsonDecode(response.body);
-      String message = data['meta']['message'];
-      return ApiReturnValue(value: true, message: message);
-    } catch (e) {
-      return ApiReturnValue(value: false, message: e.toString());
-    }
+    return ApiReturnValue(
+        value: response.value != null, message: response.message);
   }
 
   static Future<ApiReturnValue<bool>> delete({
     required int id,
-    http.Client? client,
+  }) async {
+    final response = await ApiService().get(
+      '${ApiUrl.baseUrl}/daily/delete/$id',
+      headers: await ApiUrl.headerWithToken(),
+    );
+
+    return ApiReturnValue(
+        value: response.value != null, message: response.message);
+  }
+
+  static Future<ApiReturnValue<bool>> change({
+    required int id,
+    int? value,
+  }) async {
+    final response = await ApiService().post('${ApiUrl.baseUrl}/daily/change',
+        headers: await ApiUrl.headerWithToken(),
+        body: {
+          'id': id,
+          'value': value ?? '',
+        });
+
+    return ApiReturnValue(
+        value: response.value != null, message: response.message);
+  }
+
+  static Future<ApiReturnValue<List<List<DailyModel>>>> fetchweek({
+    required int week,
+    required int year,
   }) async {
     try {
-      client ??= http.Client();
-      String url = baseUrl + 'daily/delete/$id';
-      Uri uri = Uri.parse(url);
+      final response = await ApiService().get(
+        '${ApiUrl.baseUrl}/daily/fetchweek?week=$week&year=$year',
+        headers: await ApiUrl.headerWithToken(),
+      );
 
-      SharedPreferences pref = await SharedPreferences.getInstance();
-
-      var response = await client.get(uri, headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'Authorization': 'Bearer ${pref.getString("token")}',
-      });
-
-      if (response.statusCode != 200) {
-        var data = jsonDecode(response.body);
-        String message = data['meta']['message'];
-        return ApiReturnValue(value: false, message: message);
+      if (response.value == null) {
+        return ApiReturnValue(value: null, message: response.message);
       }
 
-      var data = jsonDecode(response.body);
-      String message = data['meta']['message'];
-      return ApiReturnValue(value: true, message: message);
-    } catch (e) {
-      return ApiReturnValue(value: false, message: e.toString());
-    }
-  }
-
-  static Future<ApiReturnValue<bool>> change(
-      {required int id, http.Client? client}) async {
-    try {
-      client ??= http.Client();
-      String url = baseUrl + 'daily/change/$id';
-      Uri uri = Uri.parse(url);
-
-      SharedPreferences pref = await SharedPreferences.getInstance();
-
-      var response = await client.get(uri, headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'Authorization': 'Bearer ${pref.getString('token')}',
-      });
-
-      if (response.statusCode != 200) {
-        var data = jsonDecode(response.body);
-        String message = data['meta']['message'];
-        return ApiReturnValue(value: false, message: message);
-      }
-
-      var data = jsonDecode(response.body);
-      String message = data['meta']['message'];
-      return ApiReturnValue(value: true, message: message);
-    } catch (e) {
-      return ApiReturnValue(value: false, message: e.toString());
-    }
-  }
-
-  static Future<ApiReturnValue<List<List<DailyModel>>>> fetchweek(
-      {required int week, required int year, http.Client? client}) async {
-    try {
-      client ??= http.Client();
-      String url = baseUrl + 'daily/fetchweek?week=$week&year=$year';
-      Uri uri = Uri.parse(url);
-      SharedPreferences pref = await SharedPreferences.getInstance();
-
-      var response = await client.get(uri, headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'Authorization': 'Bearer ${pref.getString('token')}',
-      });
-
-      if (response.statusCode != 200) {
-        var data = jsonDecode(response.body);
-        String message = data['meta']['message'];
-        return ApiReturnValue(value: null, message: message);
-      }
-
-      var data = jsonDecode(response.body);
-      String message = data['meta']['message'];
-      List<List<DailyModel>> value = (data['data'] as Iterable)
+      List<List<DailyModel>> value = (response.value['data'] as Iterable)
           .map((e) =>
               (e as Iterable).map((e) => DailyModel.fromJson(e)).toList())
           .toList();
-      return ApiReturnValue(value: value, message: message);
+      return ApiReturnValue(value: value, message: response.message);
     } catch (e) {
       return ApiReturnValue(value: [], message: e.toString());
     }
   }
 
-  static Future<ApiReturnValue<bool>> copy(
-      {required int week,
-      required int year,
-      required int addweek,
-      http.Client? client}) async {
-    try {
-      client ??= http.Client();
-      String url = baseUrl + 'daily/copy';
-      Uri uri = Uri.parse(url);
-      SharedPreferences pref = await SharedPreferences.getInstance();
-
-      var response = await client.post(uri,
-          body: jsonEncode(
-            {
-              "week": week,
-              "year": year,
-              "addweek": addweek,
-            },
-          ),
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer ${pref.getString('token')}',
-          });
-
-      if (response.statusCode != 200) {
-        var data = jsonDecode(response.body);
-        String message = data['meta']['message'];
-        return ApiReturnValue(value: false, message: message);
-      }
-
-      var data = jsonDecode(response.body);
-      String message = data['meta']['message'];
-      return ApiReturnValue(value: true, message: message);
-    } catch (e) {
-      return ApiReturnValue(value: false, message: e.toString());
-    }
+  static Future<ApiReturnValue<bool>> copy({
+    required int week,
+    required int year,
+    required int addweek,
+  }) async {
+    final response = await ApiService().post('${ApiUrl.baseUrl}/daily/copy',
+        headers: await ApiUrl.headerWithToken(),
+        body: {
+          'week': week,
+          'year': year,
+          'addweek': addweek,
+        });
+    return ApiReturnValue(
+        value: response.value != null, message: response.message);
   }
 }

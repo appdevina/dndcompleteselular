@@ -2,12 +2,13 @@ part of 'screens.dart';
 
 class DailyTodo extends StatelessWidget {
   final controller = Get.put(DailyController());
+  final homeController = Get.find<HomePageController>();
   DailyTodo({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: _appBar(),
+      appBar: _appBar(context),
       body: SafeArea(
         child: Column(
           children: [
@@ -33,7 +34,7 @@ class DailyTodo extends StatelessWidget {
     );
   }
 
-  _appBar() {
+  _appBar(BuildContext context) {
     return AppBar(
       leading: IconButton(
         onPressed: () {
@@ -63,8 +64,64 @@ class DailyTodo extends StatelessWidget {
           iconSize: 16,
         ),
         IconButton(
-          onPressed: () =>
-              Get.to(() => AddTaskDaily(), transition: Transition.cupertino),
+          onPressed: () {
+            if (homeController.user.role?.nama != 'STAFF') {
+              Get.bottomSheet(
+                Container(
+                  height: MediaQuery.of(context).size.height * 0.25,
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(defaultMargin),
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(10),
+                        topRight: Radius.circular(10)),
+                  ),
+                  child: Column(
+                    children: [
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            Get.back();
+                            Get.to(
+                              () => AddTaskDaily(),
+                            );
+                          },
+                          child: const Text('My Daily'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: "22577E".toColor(),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            Get.back();
+                            Get.to(
+                              () => AddTaskDaily(
+                                isToUser: true,
+                              ),
+                            );
+                          },
+                          child: const Text('To Daily User'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: "22577E".toColor(),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+              return;
+            }
+            Get.to(() => AddTaskDaily());
+          },
           icon: const Icon(
             MdiIcons.plus,
             color: white,

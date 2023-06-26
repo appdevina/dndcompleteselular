@@ -9,13 +9,13 @@ class CardDaily extends GetView<DailyController> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => daily.tag == null
-          ? Get.to(
+      onTap: () => daily.tag != null || daily.send != null
+          ? snackbar(context, false, "Daily tag/send tidak bisa di rubah")
+          : Get.to(
               () => AddTaskDaily(),
               arguments: daily,
               transition: Transition.cupertino,
-            )
-          : snackbar(context, false, "Daily tag tidak bisa di rubah"),
+            ),
       child: Card(
         shape: RoundedRectangleBorder(
           side: BorderSide(width: 0.2, color: greyColor),
@@ -46,9 +46,7 @@ class CardDaily extends GetView<DailyController> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        daily.tag == null
-                            ? daily.time ?? 'Extra Task'
-                            : "${daily.time} - TAG BY : ${daily.tag!.namaLengkap}",
+                        "${daily.time ?? 'Extra Task'} ${daily.tag != null ? ' - TAG BY : ${daily.tag!.namaLengkap}' : daily.send != null ? ' - SEND BY : ${daily.send!.namaLengkap}' : ''} ${daily.tipe! == 'NON' ? ' - NON' : ' - RESULT'} ",
                         style: blackFontStyle2.copyWith(
                             wordSpacing: 1,
                             fontSize: 10,
@@ -66,7 +64,7 @@ class CardDaily extends GetView<DailyController> {
                             borderRadius: BorderRadius.circular(10),
                             border: Border.all(color: white)),
                         child: Text(
-                          daily.task!.toUpperCase(),
+                          " ${daily.task!.toUpperCase()} ${daily.tipe != "NON" ? controller.formatNumber(daily.valuePlan!.toString()) : ""}",
                           style: blackFontStyle2.copyWith(
                             wordSpacing: 1,
                             fontSize: 12,
@@ -80,23 +78,32 @@ class CardDaily extends GetView<DailyController> {
               ),
               Row(
                 children: [
-                  InkWell(
-                    onTap: () async => await controller
-                        .changeStatus(daily.id!)
-                        .then((value) =>
-                            snackbar(context, value.value!, value.message!)),
-                    child: Container(
-                      alignment: Alignment.center,
-                      width: 30,
-                      padding: const EdgeInsets.all(5),
-                      margin: const EdgeInsets.only(right: 10),
-                      decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: controller.getColor(daily)),
-                      child: const Icon(
-                        Icons.check,
-                        color: Colors.white,
-                        size: 20,
+                  GetBuilder<DailyController>(
+                    id: 'inputvalue',
+                    builder: (_) => InkWell(
+                      onTap: () async => daily.tipe == "NON"
+                          ? await controller
+                              .changeStatus(
+                                id: daily.id!,
+                              )
+                              .then((value) => snackbar(
+                                  context, value.value!, value.message!))
+                          : _inputDialog(context, daily.id!,
+                              daily.valuePlan!.toString(), daily.task!,
+                              valueActual: daily.valueActual.toString()),
+                      child: Container(
+                        alignment: Alignment.center,
+                        width: 30,
+                        padding: const EdgeInsets.all(5),
+                        margin: const EdgeInsets.only(right: 10),
+                        decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: controller.getColor(daily)),
+                        child: const Icon(
+                          Icons.check,
+                          color: Colors.white,
+                          size: 20,
+                        ),
                       ),
                     ),
                   ),
@@ -156,5 +163,61 @@ class CardDaily extends GetView<DailyController> {
             )),
       ],
     );
+  }
+
+  _inputDialog(BuildContext context, int id, String valuePlan, String task,
+      {String? valueActual}) {
+    return Get.bottomSheet(Container(
+      decoration: const BoxDecoration(
+          color: white,
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(10), topRight: Radius.circular(10))),
+      width: double.infinity,
+      height: 275,
+      padding: const EdgeInsets.all(20),
+      child: ListView(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              CardDetailResult(
+                title: 'Plan',
+                value: controller.formatNumber(valuePlan),
+              ),
+              CardDetailResult(
+                title: 'Actual',
+                value: valueActual == null
+                    ? '0'
+                    : controller.formatNumber(valueActual),
+              )
+            ],
+          ),
+          MyInputField(
+            title: "",
+            hint: "Submit Value Actual",
+            isPassword: false,
+            controllerText: controller.valueResult,
+            typeInput: TextInputType.number,
+          ),
+          MyButton(
+              label: "Submit",
+              onTap: () async {
+                FocusScope.of(context).requestFocus(FocusNode());
+                Get.back();
+                await controller
+                    .changeStatus(
+                        id: id,
+                        value: int.parse(controller.valueResult.value.text
+                            .replaceAll('.', '')))
+                    .then((_) =>
+                        snackbar(context, true, "berhasil input result value"));
+                controller.valueResult.text == '0';
+                controller.update(['inputvalue']);
+              },
+              height: 40,
+              width: 60)
+        ],
+      ),
+    ));
   }
 }
